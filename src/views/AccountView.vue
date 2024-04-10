@@ -1,6 +1,6 @@
 <template>
   <main>
-    <h1>THIS IS ACCOUNT</h1>
+    <h1>THIS IS </h1>
   </main>
 </template>
 

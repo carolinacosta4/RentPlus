@@ -8,5 +8,5 @@ import NavbarVue from "./components/Navbar.vue";
     <NavbarVue />
   </header>
 
-  <RouterView class="my-24 mx-6 lg:mx-12 lg:my-32" />
+  <RouterView />
 </template>

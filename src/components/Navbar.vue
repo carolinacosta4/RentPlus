@@ -8,11 +8,13 @@
 
       <div class="flex items-center gap-5">
         <!-- Rent Place -->
-        <button
-          class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
-        >
-          Rent+ your place
-        </button>
+        <router-link to="/rent-place">
+          <button
+            class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
+          >
+            Rent+ your place
+          </button>
+        </router-link>
 
         <!-- Hamburger Menu -->
         <button
