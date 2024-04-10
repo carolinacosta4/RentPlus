@@ -1,6 +1,6 @@
 <template>
   <main>
-    <h1>THIS IS HOME</h1>
+    <h1>THIS IS PROPERTIES</h1>
   </main>
 </template>
 
