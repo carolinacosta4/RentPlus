@@ -2,7 +2,9 @@
   <nav class="bg-white fixed w-full z-20 top-0 border-b">
     <div class="max-w-screen-3xl flex items-center justify-between mx-auto p-4">
       <!-- LOGO -->
-      <img src="../assets/images/logo.svg" class="h-3 md:h-5" alt="Logo" />
+      <router-link to="/">
+        <img src="../assets/images/logo.svg" class="h-3 md:h-5" alt="Logo" />
+      </router-link>
 
       <div class="flex items-center gap-5">
         <!-- Rent Place -->
