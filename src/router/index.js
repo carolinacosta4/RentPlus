@@ -7,6 +7,9 @@ import ReservationsView from "@/views/ReservationsView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import RentPlace from "@/views/RentPlace.vue";
+import MessagesView from '@/views/MessagesView.vue'
+import ManageUsersView from "@/views/ManageUsersView.vue";
+import ManagePropertiesView from "@/views/ManagePropertiesView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +53,21 @@ const router = createRouter({
       path: "/register",
       name: "register",
       component: RegisterView,
+    },
+    {
+      path: "/view-users",
+      name: "view-users",
+      component: ManageUsersView,
+    },
+    {
+      path: "/view-properties",
+      name: "view-properties",
+      component: ManagePropertiesView,
+    },
+    {
+      path: "/messages",
+      name: "messages",
+      component: MessagesView,
     },
   ],
 });
