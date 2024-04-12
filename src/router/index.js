@@ -5,7 +5,6 @@ import TripsView from "@/views/TripsView.vue";
 import PropertiesView from "@/views/PropertiesView.vue";
 import ReservationsView from "@/views/ReservationsView.vue";
 import RegisterView from "@/views/RegisterView.vue";
-import AccountView from "@/views/AccountView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 
 const router = createRouter({
@@ -20,11 +19,6 @@ const router = createRouter({
       path: "/saved",
       name: "saved",
       component: SavedView,
-    },
-    {
-      path: "/account",
-      name: "account",
-      component: AccountView,
     },
     {
       path: "/trips",

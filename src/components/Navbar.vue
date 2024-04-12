@@ -46,7 +46,7 @@
               >Saved</router-link
             >
             <router-link
-              to="/account"
+              to="/profile"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Account</router-link
             >
