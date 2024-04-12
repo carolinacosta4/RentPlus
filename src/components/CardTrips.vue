@@ -6,10 +6,10 @@
       class="rounded-md"
     />
     <div class="flex flex-col gap-1">
-      <p class="font-semibold">{{ city }}, {{ country }}</p>
-      <p>Hosted by {{ host }}</p>
-      <p>FROM {{ startDate }}</p>
-      <p>TO {{ endDate }}</p>
+      <p class="inter-semiBold font-color-black">{{ city }}, {{ country }}</p>
+      <p class="inter-light font-size-14 font-color-green">Hosted by {{ host }}</p>
+      <p class="inter-light font-size-14 font-color-green">FROM {{ startDate }}</p>
+      <p class="inter-light font-size-14 font-color-green">TO {{ endDate }}</p>
     </div>
   </div>
 </template>

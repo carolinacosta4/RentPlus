@@ -54,31 +54,53 @@ import NavbarVue from "./components/Navbar.vue";
     "slnt" 0;
 }
 
-.font-size-14{
+.font-size-14 {
   font-size: 14px;
 }
 
-.font-size-20{
+.font-size-18 {
+  font-size: 18px;
+}
+
+.font-size-20 {
   font-size: 20px;
 }
 
-.font-size-24{
+.font-size-24 {
   font-size: 24px;
 }
 
-.font-size-32{
+.font-size-32 {
   font-size: 32px;
 }
 
-.font-color-green{
+.font-color-green {
   color: #133E1A;
 }
 
-.font-color-black{
+.font-color-black {
   color: #000000;
 }
 
-.page-title{
+.page-title {
   margin-bottom: 1.5em;
+}
+
+.button-white {
+  background-color: #F5F5F5;
+  color: #133E1A;
+  border-radius: 8px;
+  width: 10em;
+  height: 2.5em;
+  font-size: 15px;
+}
+
+.button-green {
+  background-color: #133E1A;
+  color: #F5F5F5;
+  border-radius: 8px;
+  width: 10em;
+  height: 2.5em;
+  font-size: 15px;
 }
 </style>

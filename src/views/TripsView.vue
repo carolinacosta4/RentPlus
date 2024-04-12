@@ -1,13 +1,13 @@
 <template>
-  <main class="py-24 px-6 lg:px-12 lg:py-32 flex flex-col gap-16">
-    <p class="text-2xl font-semibold">Your Trips</p>
+  <main class="py-8 px-4 flex flex-col">
+    <h1 class="inter-medium font-color-green font-size-24 page-title">Your Trips</h1>
 
     <!-- CURRENT -->
     <div>
-      <p class="text-xl my-2">Current</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Current</p>
       <hr />
       <!-- Cards -->
-      <div class="flex gap-6 mt-6 overflow-x-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
         <CardTrips
           v-for="(card, index) in cards"
           :key="index"
@@ -23,10 +23,10 @@
     <!-- FUTURE -->
 
     <div>
-      <p class="text-xl my-2">Future</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Future</p>
       <hr />
       <!-- Cards -->
-      <div class="flex gap-6 mt-6 overflow-x-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
         <CardTrips
           v-for="(card, index) in cards"
           :key="index"
@@ -42,10 +42,10 @@
     <!-- PREVIOUS -->
 
     <div>
-      <p class="text-xl my-2">Previous</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Previous</p>
       <hr />
       <!-- Cards -->
-      <div class="flex gap-6 mt-6 overflow-x-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
         <CardTrips
           v-for="(card, index) in cards"
           :key="index"
