@@ -6,6 +6,7 @@ import PropertiesView from "@/views/PropertiesView.vue";
 import ReservationsView from "@/views/ReservationsView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import ProfileView from "@/views/ProfileView.vue";
+import RentPlace from "@/views/RentPlace.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,11 @@ const router = createRouter({
       path: "/profile",
       name: "profile",
       component: ProfileView,
+    },
+    {
+      path: "/rent-place",
+      name: "rent-place",
+      component: RentPlace,
     },
     {
       path: "/register",

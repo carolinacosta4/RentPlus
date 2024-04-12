@@ -2,15 +2,19 @@
   <nav class="bg-white fixed w-full z-20 top-0 border-b">
     <div class="max-w-screen-3xl flex items-center justify-between mx-auto p-4">
       <!-- LOGO -->
-      <img src="../assets/images/logo.svg" class="h-3 md:h-5" alt="Logo" />
+      <router-link to="/">
+        <img src="../assets/images/logo.svg" class="h-3 md:h-5" alt="Logo" />
+      </router-link>
 
       <div class="flex items-center gap-5">
         <!-- Rent Place -->
-        <button
-          class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
-        >
-          Rent+ your place
-        </button>
+        <router-link to="/rent-place">
+          <button
+            class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
+          >
+            Rent+ your place
+          </button>
+        </router-link>
 
         <!-- Hamburger Menu -->
         <button

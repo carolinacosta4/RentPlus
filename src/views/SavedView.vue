@@ -1,6 +1,6 @@
 <template>
-  <main>
-    <h1 class="inter-medium font-color-green font-size-24 page-title">Saved</h1>
+  <main class="py-24 px-6 lg:px-12 lg:py-32">
+    <h1 class="inter-medium font-color-green font-size-24 page-title">Saved!</h1>
     <nav id="saved" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       <div v-for="property in properties" :key="property.name">
         <PropertyContainer :image='property.image' :name='property.name' :location='property.location' :price='property.price'/>

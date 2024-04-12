@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="py-24 px-6 lg:px-12 lg:py-32">
     <div id="pictureProfile">
       <img class="w-40 h-40 rounded-full"
         src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"

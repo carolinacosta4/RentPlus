@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="py-24 px-6 lg:px-12 lg:py-32">
     <h1 class="inter-medium font-color-green font-size-24 page-title">Your properties</h1>
     <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       <div v-for="property in properties" :key="property.name">
