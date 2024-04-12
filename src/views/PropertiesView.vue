@@ -62,4 +62,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+#properties {
+  row-gap: 2em;
+}
+</style>
