@@ -3,14 +3,16 @@
     <h1 class="inter-medium font-color-green font-size-24 page-title">Properties list</h1>
     <h2 class="inter-medium font-color-green font-size-18">Total properties: {{ properties.length }}</h2>
     <div id="filters">
-      <input @click="changeFilterFlag('search')" type="text" placeholder="Search for property"
+      <input @click="changeFilterFlag('search')" type="text" placeholder="Search for property title"
         class="inter-medium font-size-14" v-model="searchUsers">
       <div class="dropdown" @mouseover="toggleDropdown(true)">
         <div class="dropbtn">
+          <Filter></Filter>
           <p class="inter-light font-color-green font-size-15">Filter</p>
         </div>
         <div v-if="isDropdownOpen" class="dropdownContent">
-          <p v-for="property in properties" @click="changeFilterFlag(property.type)" class="inter-light font-size-14">{{ property.type }}</p>
+          <p v-for="property in properties" @click="changeFilterFlag(property.type)" class="inter-light font-size-14">{{
+            property.type }}</p>
         </div>
       </div>
     </div>
@@ -18,8 +20,14 @@
       <table>
         <tr class="inter-medium font-color-green font-size-18">
           <th>ID</th>
-          <th>Type</th>
-          <th>Title</th>
+          <th id="typeColumn">
+            <p>Type</p>
+            <Sort></Sort>
+          </th>
+          <th id="titleColumn">
+            <p>Title</p>
+            <Sort></Sort>
+          </th>
           <th>Created at</th>
           <th>Actions</th>
         </tr>
@@ -30,15 +38,41 @@
           <td>{{ property.created }}</td>
           <td id="buttons">
             <button id="blockBtn" class="inter-bold">Block</button>
-            <button id="deleteBtn" class="inter-bold">Delete</button>
+            <v-dialog max-width="500">
+              <template v-slot:activator="{ props: activatorProps }">
+                <button id="deleteBtn" class="inter-bold" v-bind="activatorProps">Delete</button>
+              </template>
+
+              <template v-slot:default="{ isActive }">
+                <v-card>
+                  <v-card-text>
+                    <h1 class="page-title font-size-18 inter-semiBold font-color-green">Are you absolutely sure?</h1>
+                    <p class="inter-light font-size-14">This action cannot be undone. This will permanently delete this
+                      property's data from our servers.</p>
+                  </v-card-text>
+
+                  <v-card-actions id="containerBtn">
+                    <div class="btnsModal">
+                      <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
+                      <button class="inter-medium button-green" @click="deleteUser(property.id)">Continue</button>
+                    </div>
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
           </td>
         </tr>
       </table>
     </div>
+    <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
+        back</button></router-link>
   </main>
 </template>
 
 <script>
+import Filter from "vue-material-design-icons/FilterVariant.vue";
+import Sort from "vue-material-design-icons/Sort.vue";
+
 export default {
   data() {
     return {
@@ -51,13 +85,13 @@ export default {
       {
         id: 2,
         type: "Beach-house",
-        title: "Beautiful pent house", 
+        title: "Beautiful pent house",
         created: "16-7-2024"
       },
       {
         id: 3,
         type: "Igloo",
-        title: "Beautiful pent house", 
+        title: "Beautiful pent house",
         created: "16-7-2024"
       },
       ],
@@ -66,6 +100,11 @@ export default {
       isDropdownOpen: false,
       filterFlag: "search"
     }
+  },
+
+  components: {
+    Filter,
+    Sort
   },
 
   computed: {
@@ -87,6 +126,11 @@ export default {
 
     changeFilterFlag(change) {
       this.filterFlag = change
+    },
+
+    deleteUser(id) {
+      let index = this.properties.findIndex((property) => property.id == id)
+      this.properties.splice(index, 1)
     }
   },
 }
@@ -156,13 +200,11 @@ input {
   flex-direction: row;
   margin: 0 1em;
   align-items: center;
-}
-
-.dropbtn {
   padding: 16px;
   font-size: 16px;
   border: none;
   cursor: pointer;
+  margin-top: 1rem;
 }
 
 .dropdown {
@@ -201,8 +243,32 @@ input {
   display: block;
 }
 
-/* #filters{
-  display: grid;
-  grid-template-columns: 4fr 1fr;
-} */
+#filters {
+  display: flex;
+  align-items: center;
+}
+
+#back {
+  margin-top: 2em;
+}
+
+.btnsModal {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  padding: 0.5rem 1rem 0.13rem;
+  column-gap: 1rem;
+}
+
+#containerBtn {
+  display: block;
+}
+
+#typeColumn, #titleColumn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 1em;
+}
 </style>
