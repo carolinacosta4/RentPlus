@@ -3,8 +3,10 @@
     <h1 class="inter-medium font-color-green font-size-24 page-title">Users list</h1>
     <h2 class="inter-medium font-color-green font-size-18">Total users: {{ users.length }}</h2>
     <div id="filters">
-      <input @click="changeFilterFlag('search')" type="text" placeholder="Search for user"
-        class="inter-medium font-size-14" v-model="searchUsers">
+      <div id="searchInput" @click="changeFilterFlag('search')">
+        <input type="text" placeholder="Search for username" class="inter-medium font-size-14" v-model="searchUsers">
+        <SearchIcon></SearchIcon>
+      </div>
       <div class="dropdown" @mouseover="toggleDropdown(true)">
         <div class="dropbtn">
           <Filter></Filter>
@@ -21,7 +23,7 @@
       <table>
         <tr class="inter-medium font-color-green font-size-18">
           <th>Type</th>
-          <th id="usernameColumn">
+          <th id="usernameColumn" @click="sort">
             <p>Username</p>
             <Sort></Sort>
           </th>
@@ -43,7 +45,8 @@
                 <v-card>
                   <v-card-text>
                     <h1 class="page-title font-size-18 inter-semiBold font-color-green">Are you absolutely sure?</h1>
-                    <p class="inter-light font-size-14">This action cannot be undone. This will permanently delete this user's data from our servers.</p>
+                    <p class="inter-light font-size-14">This action cannot be undone. This will permanently delete this
+                      user's data from our servers.</p>
                   </v-card-text>
 
                   <v-card-actions id="containerBtn">
@@ -59,14 +62,24 @@
         </tr>
       </table>
     </div>
-    <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
-        back</button></router-link>
+    <div id="tools">
+      <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
+          back</button></router-link>
+      <div id="pagination" class="inter-medium">
+        <ArrowLeft @click="previousPage" :disabled="currentPage === 1"></ArrowLeft>
+        <span>{{ currentPage }}</span> of <span>{{ numberPages }}</span>
+        <ArrowRight @click="nextPage" :disabled="currentPage === numberPages"></ArrowRight>
+      </div>
+    </div>
   </main>
 </template>
 
 <script>
 import Filter from "vue-material-design-icons/FilterVariant.vue";
 import Sort from "vue-material-design-icons/Sort.vue";
+import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
+import SearchIcon from "vue-material-design-icons/Magnify.vue";
 
 export default {
   data() {
@@ -86,26 +99,67 @@ export default {
         username: "joaquim",
         joined: "16-7-2024"
       },
+      {
+        type: "Guest",
+        username: "carolina5",
+        joined: "16-7-2024"
+      },
+      {
+        type: "Admin",
+        username: "albertina",
+        joined: "16-7-2024"
+      },
+      {
+        type: "Owner",
+        username: "joaquina",
+        joined: "16-7-2024"
+      },
       ],
       searchUsers: "",
       isVisible: false,
       isDropdownOpen: false,
-      filterFlag: "search"
+      filterFlag: "search",
+      sortFlag: -1,
+      sortText: "A-Z",
+      currentPage: 1,
+      userPerPage: 5,
     }
   },
 
   components: {
     Filter,
-    Sort
+    Sort,
+    ArrowLeft,
+    ArrowRight,
+    SearchIcon
   },
 
   computed: {
     filters() {
-      if (this.filterFlag == "search") return this.users.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
+      if (this.filterFlag == "search") return this.paginatedUsers.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
       if (this.filterFlag == "admin") return this.users.filter((user) => user.type == 'Admin');
       if (this.filterFlag == "guest") return this.users.filter((user) => user.type == 'Guest');
       if (this.filterFlag == "owner") return this.users.filter((user) => user.type == 'Owner');
-    }
+    },
+
+    sortUsername() {
+      this.users.sort(
+        (c1, c2) => {
+          if (c1.username > c2.username) return 1 * this.sortFlag
+          if (c1.username < c2.username) return -1 * this.sortFlag
+          if (c1.username == c2.username) return 0
+        })
+    },
+
+    numberPages() {
+      return Math.ceil(this.users.length / this.userPerPage)
+    },
+
+    paginatedUsers() {
+      const startIndex = (this.currentPage - 1) * this.userPerPage
+      const endIndex = startIndex + this.userPerPage
+      return this.users.slice(startIndex, endIndex)
+    },
   },
 
   methods: {
@@ -122,10 +176,31 @@ export default {
       this.filterFlag = change
     },
 
-    deleteUser(username){
+    deleteUser(username) {
       let index = this.users.findIndex((user) => user.username == username)
       this.users.splice(index, 1)
-    }
+    },
+
+    sort() {
+      this.sortFlag *= -1
+      if (this.sortFlag == 1) {
+        this.sortText = "Z-A"
+      } else {
+        this.sortText = "A-Z"
+      }
+      this.sortUsername
+    },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.numberPages) {
+        this.currentPage++
+      }
+    },
   },
 }
 </script>
@@ -153,15 +228,18 @@ td {
   text-align: center;
 }
 
-input {
+#searchInput input {
   color: #133E1A20;
-  border: #133E1A20 solid 1px;
-  padding: 0.5em;
-  padding-left: 1.5em;
-  border-radius: 5px;
-  margin-top: 2em;
-  margin-bottom: 1em;
+}
+
+#searchInput {
+  display: flex;
+  flex-direction: row;
   width: 20%;
+  border: #133E1A20 solid 1px;
+  border-radius: 11px;
+  padding: 0.5em;
+  justify-content: space-between;
 }
 
 #buttons {
@@ -198,7 +276,6 @@ input {
   font-size: 16px;
   border: none;
   cursor: pointer;
-  margin-top: 1rem;
 }
 
 .dropdown {
@@ -240,10 +317,7 @@ input {
 #filters {
   display: flex;
   align-items: center;
-}
-
-#back {
-  margin-top: 2em;
+  margin-bottom: 1rem;
 }
 
 .btnsModal {
@@ -254,15 +328,45 @@ input {
   column-gap: 1rem;
 }
 
-#containerBtn{
+#containerBtn {
   display: block;
 }
 
-#usernameColumn{
+#usernameColumn {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   column-gap: 1em;
+}
+
+#tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+
+#pagination {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+  color: #133E1A50;
+}
+
+#tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+
+#pagination {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+  color: #133E1A50;
 }
 </style>
