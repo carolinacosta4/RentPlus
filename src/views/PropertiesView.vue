@@ -37,7 +37,7 @@ export default {
         {
           image: "https://clv.h-cdn.co/assets/17/09/1280x1280/square-1488319017-pastel-pretties-purple-house-0417.jpg",
           name: "Beautiful pent-house",
-          locaton: "Lisbon, PT",
+          location: "Lisbon, PT",
           price: 45
         },
         {

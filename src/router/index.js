@@ -10,6 +10,7 @@ import RentPlace from "@/views/RentPlace.vue";
 import MessagesView from '@/views/MessagesView.vue'
 import ManageUsersView from "@/views/ManageUsersView.vue";
 import ManagePropertiesView from "@/views/ManagePropertiesView.vue";
+import PropertyView from "@/views/PropertyView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: "/messages",
       name: "messages",
       component: MessagesView,
+    },
+    {
+      path: "/property",
+      name: "property",
+      component: PropertyView,
     },
   ],
 });
