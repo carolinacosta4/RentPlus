@@ -270,7 +270,7 @@ main {
     position: fixed;
     bottom: 0;
     background-color: #ffffff;
-    width: 60rem;
+    width: 70%;
     padding: 1em;
     z-index: 999;
 }
