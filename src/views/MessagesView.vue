@@ -266,8 +266,13 @@ main {
     column-gap: 1em;
     align-items: center;
     justify-content: flex-end;
-    /* margin-top: 2em; */
+    margin-top: 2em;
     position: fixed;
+    bottom: 0;
+    background-color: #ffffff;
+    width: 60rem;
+    padding: 1em;
+    z-index: 999;
 }
 
 #nomeOwner {
