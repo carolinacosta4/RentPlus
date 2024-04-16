@@ -2,7 +2,7 @@
   <main class="py-8 px-4">
       <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" />
       <div id="form">
-        <h2 class="inter-bold font-size-24 font-color-green">Register</h2>
+        <h2 class="inter-bold font-size-24 font-color-green">Log in</h2>
         <form>
           <input type="text" v-model="username" name="username" id="inputUsername" :rules='isRequired' placeholder="Username" class="font-size-14 inter-light">
           <input type="password" v-model="password" name="password" id="inputPassword" :rules='isRequired' placeholder="Password" class="font-size-14 inter-light">
@@ -12,7 +12,7 @@
           <a href="">Forgot password?</a>
         </p>
         <p class="inter-light font-color-green font-size-14">
-          Already have an account? <b><router-link :to="{name: 'login'}">Log in!</router-link></b>
+          Don't have an account? <b><router-link :to="{name: 'register'}">Register!</router-link></b>
         </p>
       </div>
   </main>
