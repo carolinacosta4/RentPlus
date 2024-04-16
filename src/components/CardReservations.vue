@@ -6,22 +6,18 @@
       class="rounded-md"
     />
     <div class="flex flex-col gap-1">
-      <p class="inter-semiBold font-color-green">{{ city }}, {{ country }}</p>
-      <p class="inter-light font-size-14 font-color-green">Hosted by {{ host }}</p>
+      <p class="inter-semiBold font-color-black">{{ guest }}</p>
+      <p class="inter-light font-size-14 font-color-green">{{ property }}</p>
       <p class="inter-light font-size-14 font-color-green">{{ startDate }} to {{ endDate }}</p>
     </div>
-    <button class="button-green ">
-      Leave a review
-    </button>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    city: String,
-    country: String,
-    host: String,
+    guest: String,
+    property : String,
     startDate: String,
     endDate: String
   }
@@ -29,4 +25,5 @@ export default {
 </script>
 
 <style scoped>
+/* Add any custom styles here */
 </style>
