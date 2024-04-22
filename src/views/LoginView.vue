@@ -3,9 +3,9 @@
       <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" />
       <div id="form">
         <h2 class="inter-bold font-size-24 font-color-green">Log in</h2>
-        <form>
-          <input type="text" v-model="username" name="username" id="inputUsername" :rules='isRequired' placeholder="Username" class="font-size-14 inter-light">
-          <input type="password" v-model="password" name="password" id="inputPassword" :rules='isRequired' placeholder="Password" class="font-size-14 inter-light">
+        <form  @submit.prevent="login">
+          <input type="text" v-model="username" name="username" id="inputUsername" required placeholder="Username" class="font-size-14 inter-light">
+          <input type="password" v-model="password" name="password" id="inputPassword" required placeholder="Password" class="font-size-14 inter-light">
           <button type="submit" class="button-green font-size-20">Get in</button>
         </form>
         <p class="inter-light font-color-green font-size-14">
@@ -19,7 +19,23 @@
 </template>
 
 <script>
-
+export default {
+  data() {
+    return {
+      username: '',
+      password: ''
+    }
+  },
+  methods: {
+    login(){
+      let user = [
+        this.username,
+        this.password
+      ]
+      console.log(user);
+    }
+  }
+}
 </script>
 
 <style scoped>
