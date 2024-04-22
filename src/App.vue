@@ -86,6 +86,10 @@ import NavbarVue from "./components/Navbar.vue";
   color: #F5F5F5;
 }
 
+.font-color-grey {
+  color: #B8B8B8;
+}
+
 .page-title {
   margin-bottom: 1.5em;
 }
@@ -106,5 +110,23 @@ import NavbarVue from "./components/Navbar.vue";
   width: 10em;
   height: 2.5em;
   font-size: 15px;
+}
+
+.button-border-green {
+  border: #133E1A20 solid 1px;
+  color: #133E1A;
+  border-radius: 8px;
+  width: 10em;
+  height: 2.5em;
+  font-size: 15px;
+}
+
+input[type='text']:focus {
+  outline: none;
+  border-color: #133E1A20;
+}
+
+input::placeholder {
+  color: #133E1A20;
 }
 </style>
