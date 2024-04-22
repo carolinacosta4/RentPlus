@@ -3,8 +3,11 @@
     <h1 class="inter-medium font-color-green font-size-24 page-title">Properties list</h1>
     <h2 class="inter-medium font-color-green font-size-18">Total properties: {{ properties.length }}</h2>
     <div id="filters">
-      <input @click="changeFilterFlag('search')" type="text" placeholder="Search for property title"
-        class="inter-medium font-size-14" v-model="searchUsers">
+      <div id="searchInput" @click="changeFilterFlag('search')">
+        <input type="text" placeholder="Search for property title" class="inter-medium font-size-14"
+          v-model="searchProperties">
+        <SearchIcon></SearchIcon>
+      </div>
       <div class="dropdown" @mouseover="toggleDropdown(true)">
         <div class="dropbtn">
           <Filter></Filter>
@@ -18,15 +21,19 @@
     </div>
     <div id="tableUsers">
       <table>
-        <tr class="inter-medium font-color-green font-size-18">
+        <tr class="inter-medium font-color-green font-size-18" id="tableHead">
           <th>ID</th>
-          <th id="typeColumn">
-            <p>Type</p>
-            <Sort></Sort>
+          <th @click="sort(0)">
+            <div id="typeColumn">
+              <p>Type</p>
+              <Sort></Sort>
+            </div>
           </th>
-          <th id="titleColumn">
-            <p>Title</p>
-            <Sort></Sort>
+          <th @click="sort(1)">
+            <div id="titleColumn">
+              <p>Title</p>
+              <Sort></Sort>
+            </div>
           </th>
           <th>Created at</th>
           <th>Actions</th>
@@ -64,14 +71,24 @@
         </tr>
       </table>
     </div>
-    <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
-        back</button></router-link>
+    <div id="tools">
+      <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
+          back</button></router-link>
+      <div id="pagination" class="inter-medium">
+        <ArrowLeft @click="previousPage" :disabled="currentPage === 1"></ArrowLeft>
+        <span>{{ currentPage }}</span> of <span>{{ numberPages }}</span>
+        <ArrowRight @click="nextPage" :disabled="currentPage === numberPages"></ArrowRight>
+      </div>
+    </div>
   </main>
 </template>
 
 <script>
 import Filter from "vue-material-design-icons/FilterVariant.vue";
 import Sort from "vue-material-design-icons/Sort.vue";
+import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
+import SearchIcon from "vue-material-design-icons/Magnify.vue";
 
 export default {
   data() {
@@ -91,27 +108,80 @@ export default {
       {
         id: 3,
         type: "Igloo",
+        title: "Aeautiful pent house",
+        created: "16-7-2024"
+      },
+      {
+        id: 4,
+        type: "Pent-house",
         title: "Beautiful pent house",
         created: "16-7-2024"
       },
+      {
+        id: 5,
+        type: "Beach-house",
+        title: "Beautiful pent house",
+        created: "16-7-2024"
+      },
+      {
+        id: 6,
+        type: "Igloo",
+        title: "Aeautiful pent house",
+        created: "16-7-2024"
+      },
       ],
-      searchUsers: "",
+      searchProperties: "",
       isVisible: false,
       isDropdownOpen: false,
-      filterFlag: "search"
+      filterFlag: "search",
+      sortFlag: -1,
+      sortText: "A-Z",
+      currentPage: 1,
+      propPerPage: 5,
     }
   },
 
   components: {
     Filter,
-    Sort
+    Sort,
+    ArrowLeft,
+    ArrowRight,
+    SearchIcon
   },
 
   computed: {
     filters() {
-      if (this.filterFlag == "search") return this.properties.filter((property) => property.title.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
-      if (this.filterFlag) return this.properties.filter((property) => property.type == this.filterFlag);
-    }
+      if (this.filterFlag == "search") return this.paginatedProperties.filter((property) => property.title.toLowerCase().startsWith(this.searchProperties.toLowerCase()))
+      if (this.filterFlag) return this.properties.filter((property) => property.type == this.filterFlag)
+    },
+
+    sortType() {
+      this.properties.sort(
+        (c1, c2) => {
+          if (c1.type > c2.type) return 1 * this.sortFlag
+          if (c1.type < c2.type) return -1 * this.sortFlag
+          if (c1.type == c2.type) return 0
+        })
+    },
+
+    sortTitle() {
+      this.properties.sort(
+        (c1, c2) => {
+          if (c1.title > c2.title) return 1 * this.sortFlag
+          if (c1.title < c2.title) return -1 * this.sortFlag
+          if (c1.title == c2.title) return 0
+        })
+    },
+
+    numberPages() {
+      return Math.ceil(this.properties.length / this.propPerPage)
+    },
+
+    paginatedProperties() {
+      const startIndex = (this.currentPage - 1) * this.propPerPage
+      const endIndex = startIndex + this.propPerPage
+      return this.properties.slice(startIndex, endIndex)
+    },
   },
 
   methods: {
@@ -121,7 +191,7 @@ export default {
     },
 
     toggleDropdown(isOpen) {
-      this.isDropdownOpen = isOpen;
+      this.isDropdownOpen = isOpen
     },
 
     changeFilterFlag(change) {
@@ -131,7 +201,34 @@ export default {
     deleteUser(id) {
       let index = this.properties.findIndex((property) => property.id == id)
       this.properties.splice(index, 1)
-    }
+    },
+
+    sort(number) {
+      this.sortFlag *= -1
+      if (this.sortFlag == 1) {
+        this.sortText = "Z-A"
+      } else {
+        this.sortText = "A-Z"
+      }
+
+      if (number == 1) {
+        this.sortTitle
+      } else {
+        this.sortType
+      }
+    },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.numberPages) {
+        this.currentPage++
+      }
+    },
+
   },
 }
 </script>
@@ -155,26 +252,29 @@ td {
 
 th,
 td {
-  height: 3em;
+  height: 3rem;
   text-align: center;
 }
 
-input {
+#searchInput input {
   color: #133E1A20;
-  border: #133E1A20 solid 1px;
-  padding: 0.5em;
-  padding-left: 1.5em;
-  border-radius: 5px;
-  margin-top: 2em;
-  margin-bottom: 1em;
+}
+
+#searchInput {
+  display: flex;
+  flex-direction: row;
   width: 20%;
+  border: #133E1A20 solid 1px;
+  border-radius: 11px;
+  padding: 0.5em;
+  justify-content: space-between;
 }
 
 #buttons {
   display: flex;
   justify-content: center;
   align-items: center;
-  column-gap: 2em;
+  column-gap: 2rem;
 }
 
 #blockBtn {
@@ -204,7 +304,6 @@ input {
   font-size: 16px;
   border: none;
   cursor: pointer;
-  margin-top: 1rem;
 }
 
 .dropdown {
@@ -246,10 +345,7 @@ input {
 #filters {
   display: flex;
   align-items: center;
-}
-
-#back {
-  margin-top: 2em;
+  margin-bottom: 1rem;
 }
 
 .btnsModal {
@@ -264,11 +360,27 @@ input {
   display: block;
 }
 
-#typeColumn, #titleColumn {
+#titleColumn,
+#typeColumn {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   column-gap: 1em;
+}
+
+#tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+
+#pagination {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+  color: #133E1A50;
 }
 </style>
