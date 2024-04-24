@@ -95,9 +95,8 @@
           elementum
           congue.</p>
         <div id="buttons">
-          <button class="button-green inter-bold">Add new property</button>
-          <router-link :to="{ name: 'properties' }"><button class="button-white inter-bold">See
-              properties</button></router-link>
+          <router-link :to="{ name: 'create-property' }"><button class="button-green inter-bold">Add new property</button></router-link>
+          <router-link :to="{ name: 'properties' }"><button class="button-white inter-bold">See properties</button></router-link>
         </div>
       </div>
     </div>

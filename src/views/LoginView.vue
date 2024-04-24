@@ -1,6 +1,6 @@
 <template>
   <main class="py-8 px-4">
-      <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" />
+      <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')"/>
       <div id="form">
         <h2 class="inter-bold font-size-24 font-color-green">Log in</h2>
         <form  @submit.prevent="login">
@@ -26,13 +26,17 @@ export default {
       password: ''
     }
   },
+  created() {
+    this.$router;
+  },
   methods: {
     login(){
       let user = [
         this.username,
         this.password
       ]
-      console.log(user);
+      console.log(user)
+      this.$router.push({ name: "home" })
     }
   }
 }
@@ -66,6 +70,10 @@ input{
   padding: 0.5em;
   width: 18em;
   border-radius: 6px;
+}
+
+::placeholder{
+  color: #133E1A;
 }
 
 #form {

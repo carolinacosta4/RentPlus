@@ -1,6 +1,6 @@
 <template>
   <main class="py-8 px-4">
-    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" />
+    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')" />
     <div id="form">
       <h2 class="inter-bold font-size-24 font-color-green">Register</h2>
       <form @submit.prevent="register">
@@ -13,8 +13,9 @@
         <input type="password" v-model="confirmPassword" name="confirmPassword" id="inputConfirmPassword" required
           placeholder="Confirm Password" class="font-size-14 inter-light">
         <div id="divPrivacy">
-          <input type="checkbox" v-model="privacyPolicy" name="PrivacyPolicy" id="privacyPolicy" required>
-          <label for="PrivacyPolicy">I agree to the Privacy Policy</label>
+          <input type="checkbox" v-model="privacyPolicy" name="PrivacyPolicy" id="privacyPolicy"
+            class="font-color-green" required>
+          <label for="PrivacyPolicy" class="font-color-green">I agree to the Privacy Policy</label>
         </div>
         <button type="submit" class="button-green font-size-20">Sign in</button>
       </form>
@@ -25,6 +26,24 @@
         Already have an account? <b><router-link :to="{ name: 'login' }">Log in!</router-link></b>
       </p>
     </div>
+
+    <v-dialog max-width="500" v-model="showModal">
+      <template v-slot:default="{ isActive }">
+        <v-card>
+          <v-card-text>
+            <h1 class="page-title font-size-18 inter-semiBold font-color-green">Error</h1>
+            <p class="inter-light font-size-16">Your passwords do not match!</p>
+          </v-card-text>
+
+          <v-card-actions id="containerBtn">
+            <div class="btnsModal">
+              <button class="inter-medium button-border-green" @click="isActive.value = false">Try again</button>
+            </div>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+
   </main>
 </template>
 
@@ -36,20 +55,22 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      privacyPolicy: ''
+      privacyPolicy: '',
+      showModal: false
     }
   },
   methods: {
     register() {
       if (this.password != this.confirmPassword) {
-        alert('Passwords do not match')
+        this.showModal = true;
       }
       else {
         try {
           let newUser = [
             this.username, this.email, this.password, this.confirmPassword
           ]
-          console.log(newUser);
+          console.log(newUser)
+          this.$router.push({ name: "home" })
         } catch (error) {
           alert(`Error: ${error.message}`)
         }
@@ -83,8 +104,12 @@ form {
   row-gap: 1.5em;
 }
 
+::placeholder {
+  color: #133E1A;
+}
+
 input {
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
   padding: 0.5em;
   width: 18em;
   border-radius: 6px;
@@ -108,5 +133,17 @@ p {
 
 input#privacyPolicy {
   width: 2em !important;
+}
+
+.btnsModal {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  padding: 0.5rem 1rem 0.13rem;
+  column-gap: 1rem;
+}
+
+#containerBtn {
+  display: block;
 }
 </style>

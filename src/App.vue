@@ -11,7 +11,7 @@ import NavbarVue from "./components/Navbar.vue";
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
   <header >
-    <NavbarVue v-if="this.$route.name !== 'register' && this.$route.name !== 'rent-place' && this.$route.name !== 'login'" />
+    <NavbarVue v-if="$route.name !== 'register' && $route.name !== 'rent-place' && $route.name !== 'login'" />
   </header>
 
   <RouterView class="mt-24 mx-10" />
@@ -88,6 +88,10 @@ import NavbarVue from "./components/Navbar.vue";
 
 .font-color-grey {
   color: #B8B8B8;
+}
+
+.font-color-red{
+  color: #ff0000
 }
 
 .page-title {
