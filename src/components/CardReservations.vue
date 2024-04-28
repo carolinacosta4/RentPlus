@@ -1,5 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
+    <router-link :to="{name: 'property'}">
     <img
       :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
       :alt="`${city}, ${country}`"
@@ -10,6 +11,7 @@
       <p class="inter-light font-size-14 font-color-green">{{ property }}</p>
       <p class="inter-light font-size-14 font-color-green">{{ startDate }} to {{ endDate }}</p>
     </div>
+    </router-link>
   </div>
 </template>
 

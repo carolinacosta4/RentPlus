@@ -58,6 +58,10 @@ import NavbarVue from "./components/Navbar.vue";
   font-size: 14px;
 }
 
+.font-size-16 {
+  font-size: 16px;
+}
+
 .font-size-18 {
   font-size: 18px;
 }
