@@ -130,7 +130,7 @@ input[type='text']:focus {
   border-color: #133E1A20;
 }
 
-input::placeholder {
-  color: #133E1A20;
+::placeholder {
+    color: rgba(19, 62, 26, 0.609);
 }
 </style>

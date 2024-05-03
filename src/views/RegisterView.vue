@@ -1,20 +1,24 @@
 <template>
   <main class="py-8 px-4">
-    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')" />
+    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="$router.push('/')" />
     <div id="form">
       <h2 class="inter-bold font-size-24 font-color-green">Register</h2>
       <form @submit.prevent="register">
-        <input type="text" v-model="username" name="username" id="inputUsername" required placeholder="Username"
-          class="font-size-14 inter-light">
-        <input type="text" v-model="email" name="email" id="inputEmail" required placeholder="Email"
-          class="font-size-14 inter-light">
-        <input type="password" v-model="password" name="password" id="inputPassword" required placeholder="Password"
-          class="font-size-14 inter-light">
-        <input type="password" v-model="confirmPassword" name="confirmPassword" id="inputConfirmPassword" required
-          placeholder="Confirm Password" class="font-size-14 inter-light">
+        <v-text-field type="text" v-model="username" name="username" id="inputUsername" :rules="[rules.required]" placeholder="Username"
+          class="font-size-14 inter-light input"></v-text-field>
+
+        <v-text-field type="text" v-model="email" name="email" id="inputEmail" :rules="[rules.required]" placeholder="Email"
+          class="font-size-14 inter-light input"></v-text-field>
+
+        <v-text-field type="password" v-model="password" name="password" id="inputPassword" :rules="[rules.required]" placeholder="Password"
+          class="font-size-14 inter-light input"></v-text-field>
+
+        <v-text-field type="password" v-model="confirmPassword" name="confirmPassword" id="inputConfirmPassword" :rules="[rules.required]"
+          placeholder="Confirm Password" class="font-size-14 inter-light input"></v-text-field>
+
         <div id="divPrivacy">
           <input type="checkbox" v-model="privacyPolicy" name="PrivacyPolicy" id="privacyPolicy"
-            class="font-color-green" required>
+            class="font-color-green">
           <label for="PrivacyPolicy" class="font-color-green">I agree to the Privacy Policy</label>
         </div>
         <button type="submit" class="button-green font-size-20">Sign in</button>
@@ -56,12 +60,18 @@ export default {
       password: '',
       confirmPassword: '',
       privacyPolicy: '',
-      showModal: false
+      showModal: false,
+      rules: {
+        required: (value) => !!value || "Required."
+      },
     }
   },
   methods: {
     register() {
-      if (this.password != this.confirmPassword) {
+      if (!this.username || !this.email || !this.password || !this.confirmPassword){
+        throw new Error("Missing information");
+      }
+      else if (this.password != this.confirmPassword) {
         this.showModal = true;
       }
       else {
@@ -70,7 +80,7 @@ export default {
             this.username, this.email, this.password, this.confirmPassword
           ]
           console.log(newUser)
-          this.$router.push({ name: "home" })
+          $router.push({ name: "home" })
         } catch (error) {
           alert(`Error: ${error.message}`)
         }
@@ -108,9 +118,7 @@ form {
   color: #133E1A;
 }
 
-input {
-  background-color: #f2f2f2;
-  padding: 0.5em;
+.input {
   width: 18em;
   border-radius: 6px;
 }
