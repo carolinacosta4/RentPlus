@@ -1,5 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
+    <router-link :to="{name: 'property'}">
     <img
       :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
       :alt="`${city}, ${country}`"
@@ -13,6 +14,7 @@
     <button class="button-green ">
       Leave a review
     </button>
+  </router-link>
   </div>
 </template>
 

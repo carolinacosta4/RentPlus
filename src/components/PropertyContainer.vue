@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <router-link :to="{name: 'property'}">
         <button class="absolute background text-white p-2">
             <BookmarkIcon v-if="route != 'properties'"></BookmarkIcon>
             <EditIcon v-else @click="this.$router.push('/edit-property')"></EditIcon>
@@ -8,7 +8,7 @@
         <h1 class="inter-semiBold font-color-green">{{ name }}</h1>
         <p class="inter-light font-size-14 font-color-green">{{ location }}</p>
         <h2 class="inter-light font-color-green"><span class="inter-semiBold">{{ price }}€</span> /night</h2>
-    </div>
+    </router-link>
 </template>
 
 <script>
