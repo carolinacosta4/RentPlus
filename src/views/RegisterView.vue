@@ -1,6 +1,6 @@
 <template>
   <main class="py-8 px-4">
-    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="$router.push('/')" />
+    <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')" />
     <div id="form">
       <h2 class="inter-bold font-size-24 font-color-green">Register</h2>
       <form @submit.prevent="register">
@@ -80,7 +80,7 @@ export default {
             this.username, this.email, this.password, this.confirmPassword
           ]
           console.log(newUser)
-          $router.push({ name: "home" })
+          this.$router.push({ name: "home" })
         } catch (error) {
           alert(`Error: ${error.message}`)
         }
