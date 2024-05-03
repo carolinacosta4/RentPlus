@@ -13,6 +13,7 @@ import ManagePropertiesView from "@/views/ManagePropertiesView.vue";
 import LoginView from "@/views/LoginView.vue";
 import PropertyView from "@/views/PropertyView.vue";
 import CreatePropertyView from "@/views/CreatePropertyView.vue";
+import EditPropertyView from "@/views/EditPropertyView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +87,11 @@ const router = createRouter({
       path: "/create-property",
       name: "create-property",
       component: CreatePropertyView,
+    },
+    {
+      path: "/edit-property",
+      name: "edit-property",
+      component: EditPropertyView,
     },
   ],
 });

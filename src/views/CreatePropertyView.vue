@@ -361,6 +361,30 @@
         </div>
       </div>
     </v-form>
+
+    <v-dialog max-width="500" v-model="showModal">
+      <template v-slot:default="{ isActive }">
+        <v-card class="green-bg">
+          <v-card-text>
+            <h1 class="page-title font-size-18 inter-semiBold font-color-white">
+              Congratulations!
+            </h1> <h2 class="font-size-14 inter-semiBold font-color-white">Your property is available on our app!</h2>
+            <p class="inter-light font-size-14 font-color-white">
+              Check your owners page to see your previous, pending and current guests. Also you can edit your property information as many times you want!
+            </p>
+          </v-card-text>
+
+          <v-card-actions id="containerBtn" class="btnsModalCongratulations">
+              <button
+                class="inter-medium button-white "
+                @click="this.$router.push({ name: 'profile' })"
+              >
+                Continue
+              </button>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
   </main>
 </template>
 
@@ -375,6 +399,7 @@ export default {
       showStepTwo: true,
       showStepThree: false,
       checkbox: false,
+      showModal: false,
       title: "",
       type: "",
       mapUrl: "",
@@ -514,7 +539,9 @@ export default {
           this.newProperty.beds = this.beds;
           this.newProperty.bedrooms = this.bedrooms;
           this.newProperty.bathrooms = this.bathrooms;
-          console.log(this.newProperty);
+          this.showModal = true;
+          console.log(`NOVA PROPRIEDADE: ${this.newProperty}`);
+          
           //   create property in the bd
         }
       }
@@ -659,5 +686,9 @@ export default {
   justify-content: right;
   padding: 0.5rem 1rem 0.13rem;
   column-gap: 1rem;
+}
+
+.btnsModalCongratulations{
+  padding: 1.5em;
 }
 </style>

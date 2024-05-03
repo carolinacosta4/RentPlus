@@ -133,4 +133,8 @@ input[type='text']:focus {
 ::placeholder {
     color: rgba(19, 62, 26, 0.609);
 }
+
+.green-bg{
+  background-color: #133E1A;;
+}
 </style>

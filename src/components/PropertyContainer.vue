@@ -2,7 +2,7 @@
     <div>
         <button class="absolute background text-white p-2">
             <BookmarkIcon v-if="route != 'properties'"></BookmarkIcon>
-            <EditIcon v-else></EditIcon>
+            <EditIcon v-else @click="this.$router.push('/edit-property')"></EditIcon>
         </button>
         <img :src="image" class="thumbnailHouse mb-3">
         <h1 class="inter-semiBold font-color-green">{{ name }}</h1>
