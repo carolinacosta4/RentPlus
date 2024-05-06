@@ -413,13 +413,9 @@ import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 export default {
   data() {
     return {
-      // showStepOne: true,
-      // showStepTwo: false,
-      // showStepThree: false,
-      showStepOne: false,
+      showStepOne: true,
       showStepTwo: false,
-      showStepThree: true,
-
+      showStepThree: false,
       checkbox: false,
       showModal: false,
       title: "",
