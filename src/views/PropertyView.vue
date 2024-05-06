@@ -38,7 +38,7 @@
                         <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date"
                             v-model="dateOut" />
                         <div id="guests">
-                            <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
+                            <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number" :max="this.property.maxGuests" :min="minGuests"
                                 placeholder="Guests" v-model="nrGuests">
                             <Guests />
                         </div>
@@ -172,12 +172,14 @@ export default {
                 location: "Porto, PT",
                 price: 25,
                 rating: 4,
+                maxGuests: 8,
                 description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus arcu ligula, fermentum at lorem id, euismod ullamcorper felis.Proin aliquet bibendum dolor eu semper.Nunc consequat venenatis elementum.Nulla nunc felis, euismod sit amet ornare sed, consequat quis eros.Cras at dignissim velit.Phasellus vitae lorem dignissim, maximus elit vitae, ornare tortor.Nunc aliquam ultricies eros nec ultricies.Maecenas ultrices lacinia sollicitudin.Praesent luctus sapien nisi, sed malesuada eros porttitor sed.Fusce vestibulum arcu non nisl egestas lobortis.Duis euismod maximus justo, eu iaculis ex egestas nec.Praesent venenatis sem dui, et porta mi mattis nec."
             },
             images: ["https://via.placeholder.com/900x500", "https://via.placeholder.com/900x500"],
             dateOut: "",
             dateIn: "",
             nrGuests: 0,
+            minGuests: 1,
             readMore: false,
             readMoreMeet: false,
             extras: [
@@ -197,7 +199,7 @@ export default {
                 { name: "TV", icon: "Television" },
             ],
             reviews: [
-                { id: 1, username: "carolina4", rating: 4, comments: "Loved this place, it was very peaceful and close to turist places!! :)" },
+                { id: 1, username: "carolina4", rating: 4, comments: "Loved this place, it was very peaceful and close to tourist places!! :)" },
                 { id: 2, username: "carolina4", rating: 4, comments: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
                 { id: 3, username: "carolina4", rating: 4, comments: "Loved this place!" },
                 { id: 4, username: "carolina4", rating: 4, comments: "Loved this place!" },

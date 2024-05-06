@@ -66,19 +66,17 @@
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="type">Type of property</label>
-
+              <label for="price">Price/night</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-
-            <v-autocomplete
-              v-model="type"
-              class="input select inter-light"
-              :items="optionTypes.sort()"
-              label="Select an option"
+            <v-text-field
+              name="price"
+              class="input inter-light"
+              v-model="price"
               density="comfortable"
-              :rules="[rules.required]"
-            ></v-autocomplete>
+              placeholder="Ex.: 1200,00"
+              :rules="[rules.required, rules.isANumber]"
+            ></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -219,23 +217,39 @@
       </div>
 
       <div id="inputs3" class="inputPage" v-if="this.showStepThree">
-        <div id="left" class="groupInputs">
+        <div class="singleInput">
+          <div class="label inter-medium font-size-14 font-color-black">
+            <label for="type">Type of property</label>
+
+            <p class="font-color-red inter-medium">*</p>
+          </div>
+
+          <v-autocomplete
+            id="selectType"
+            v-model="type"
+            class="input select inter-light"
+            :items="optionTypes.sort()"
+            label="Select an option"
+            density="comfortable"
+            :rules="[rules.required]"
+          ></v-autocomplete>
+        </div>
+
+        <div id="right" class="groupInputs">
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="price">Price/night</label>
+              <label for="guests">Number of Guests</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
             <v-text-field
-              name="price"
+              name="guests"
               class="input inter-light"
-              v-model="price"
+              v-model="guests"
               density="comfortable"
-              placeholder="Ex.: 1200,00"
-              :rules="[rules.required, rules.isANumber]"
+              :rules="[rules.required, rules.isANumber, rules.isInteger]"
             ></v-text-field>
           </div>
-        </div>
-        <div id="right" class="groupInputs">
+
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
               <label for="beds">Number of Beds</label>
@@ -289,7 +303,7 @@
       </div>
 
       <div class="buttons">
-        <div >
+        <div>
           <v-dialog max-width="500">
             <template v-slot:activator="{ props: activatorProps }">
               <button
@@ -368,19 +382,23 @@
           <v-card-text>
             <h1 class="page-title font-size-18 inter-semiBold font-color-white">
               Congratulations!
-            </h1> <h2 class="font-size-14 inter-semiBold font-color-white">Your property is available on our app!</h2>
+            </h1>
+            <h2 class="font-size-14 inter-semiBold font-color-white">
+              Your property is available on our app!
+            </h2>
             <p class="inter-light font-size-14 font-color-white">
-              Check your owners page to see your previous, pending and current guests. Also you can edit your property information as many times you want!
+              Check your owners page to see your previous, pending and current guests.
+              Also you can edit your property information as many times you want!
             </p>
           </v-card-text>
 
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
-              <button
-                class="inter-medium button-white "
-                @click="this.$router.push({ name: 'profile' })"
-              >
-                Continue
-              </button>
+            <button
+              class="inter-medium button-white"
+              @click="this.$router.push({ name: 'profile' })"
+            >
+              Continue
+            </button>
           </v-card-actions>
         </v-card>
       </template>
@@ -395,9 +413,13 @@ import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 export default {
   data() {
     return {
+      // showStepOne: true,
+      // showStepTwo: false,
+      // showStepThree: false,
       showStepOne: false,
-      showStepTwo: true,
-      showStepThree: false,
+      showStepTwo: false,
+      showStepThree: true,
+
       checkbox: false,
       showModal: false,
       title: "",
@@ -411,6 +433,7 @@ export default {
       beds: null,
       bedrooms: null,
       bathrooms: null,
+      guests: null,
       amenitiesData: [],
       pictures: [],
       optionTypes: ["Igloo", "Pent-house", "Mansion", "Beach house"],
@@ -426,6 +449,7 @@ export default {
         beds: null,
         bedrooms: null,
         bathrooms: null,
+        guests: null,
       },
       amenitiesList: ["TV", "Swimming pool", "Fridge", "Pets allowed", "Wifi"],
       countries: [
@@ -483,7 +507,7 @@ export default {
 
         if (
           !this.title ||
-          !this.type ||
+          !this.rules.isANumber(this.price) ||
           !this.mapUrl ||
           !this.country ||
           !this.city ||
@@ -497,7 +521,7 @@ export default {
           let countryShort = selectedCountry.short;
 
           this.newProperty.title = this.title;
-          this.newProperty.type = this.type;
+          this.newProperty.price = this.price;
           this.newProperty.mapUrl = this.mapUrl;
           this.newProperty.location = `${this.city}, ${countryShort}`;
           this.newProperty.description = this.description;
@@ -523,25 +547,29 @@ export default {
 
       if (this.showStepThree) {
         if (
-          !this.rules.isANumber(this.price) ||
           !this.rules.isANumber(this.beds) ||
           !this.rules.isInteger(this.beds) ||
           !this.rules.isANumber(this.bedrooms) ||
           !this.rules.isInteger(this.bedrooms) ||
           !this.rules.isANumber(this.bathrooms) ||
-          !this.rules.isInteger(this.bathrooms)
+          !this.rules.isInteger(this.bathrooms) ||
+          !this.rules.isANumber(this.guests) ||
+          !this.rules.isInteger(this.guests)
         ) {
           throw new Error("Invalid number format");
+        } else if (!this.type) {
+          throw new Error("Missing information");
         } else if (!this.checkbox) {
           throw new Error("Must agree to the Privacy Policy");
         } else {
-          this.newProperty.price = this.price;
+          this.newProperty.type = this.type;
           this.newProperty.beds = this.beds;
           this.newProperty.bedrooms = this.bedrooms;
           this.newProperty.bathrooms = this.bathrooms;
+          this.newProperty.guests = this.guests;
           this.showModal = true;
           console.log(`NOVA PROPRIEDADE: ${this.newProperty}`);
-          
+
           //   create property in the bd
         }
       }
@@ -641,6 +669,10 @@ export default {
   column-gap: 0.5em;
 }
 
+#selectType {
+  height: 200em !important;
+}
+
 #checkbox {
   display: flex;
   flex-direction: row;
@@ -688,7 +720,7 @@ export default {
   column-gap: 1rem;
 }
 
-.btnsModalCongratulations{
+.btnsModalCongratulations {
   padding: 1.5em;
 }
 </style>

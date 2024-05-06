@@ -17,6 +17,12 @@
 
 <script>
 export default {
+  data() {
+    return {
+      city: "city",
+      country: "country"
+    }
+  },
   props: {
     guest: String,
     property : String,

@@ -5,30 +5,33 @@
     </h1>
 
     <div>
-      <p class="text-xl my-2 inter-light font-color-black font-size-20">This week</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Current</p>
       <hr />
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
-      >
-        <div v-if="thisWeek.length <= 0" class="noDataDiv">
-          <p>There are no current reservations</p>
-          <SadFaceIcon class="font-color-green"></SadFaceIcon>
-        </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4 gridCards">
+        <div class="cards">
+          <div v-if="thisWeek.length <= 0" class="noDataDiv">
+            <p>There are no current reservations</p>
+            <SadFaceIcon class="font-color-green"></SadFaceIcon>
+          </div>
 
-        <CardReservations
-          v-else
-          v-for="(card, index) in thisWeek"
-          :key="index"
-          :guest="card.guest"
-          :property="card.property"
-          :startDate="card.startDate"
-          :endDate="card.endDate"
-        />
+          <div v-else class="displayCards"> 
+            <ArrowLeft fillColor="#133E1A" @click="prevPage('this')" :disabled="currentPageThis == 0" v-if="thisWeek.length > pageSizeCards"/>
+            <CardReservations
+            v-for="(card, index) in paginatedCardsThis"
+            :key="index"
+            :guest="card.guest"
+            :property="card.property"
+            :startDate="card.startDate"
+            :endDate="card.endDate"/>
+            <ArrowRight fillColor="#133E1A" @click="nextPage('this')" :disabled="currentPageThis == currentPageThis - 1" v-if="thisWeek.length > pageSizeCards" />
+          </div>
+          <p class="font-size-14 inter-light font-color-green" style="text-align: center">{{ currentPageThis + 1 }} of {{ totalPagesThis }}</p>
+        </div>
       </div>
     </div>
 
     <div>
-      <p class="text-xl my-2 inter-light font-color-black font-size-20">Future weeks</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Future </p>
       <hr />
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
@@ -38,7 +41,7 @@
           <SadFaceIcon class="font-color-green"></SadFaceIcon>
         </div>
 
-        <CardReservations
+        <CardReservations 
           v-else
           v-for="(card, index) in futureWeeks"
           :key="index"
@@ -51,7 +54,7 @@
     </div>
 
     <div>
-      <p class="text-xl my-2 inter-light font-color-black font-size-20">Previous weeks</p>
+      <p class="text-xl my-2 inter-light font-color-black font-size-20">Previous </p>
       <hr />
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
@@ -78,16 +81,41 @@
 <script>
 import CardReservations from "@/components/CardReservations.vue";
 import SadFaceIcon from "vue-material-design-icons/EmoticonSadOutline.vue";
+import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 
 export default {
   components: {
     CardReservations,
     SadFaceIcon,
+    ArrowLeft,
+    ArrowRight,
   },
   data() {
     return {
       cards: [
         {
+          guest: "Carlos",
+          property: "Beautiful pent-house",
+          startDate: "2024-05-05",
+          endDate: "2024-05-20",
+        },  
+        {
+          guest: "Bernando",
+          property: "Beautiful pent-house",
+          startDate: "2025-05-05",
+          endDate: "2025-05-20",
+        },{
+          guest: "Miguela",
+          property: "Beautiful pent-house",
+          startDate: "2024-05-01",
+          endDate: "2024-05-20",
+        },{
+          guest: "Joana",
+          property: "Beautiful pent-house",
+          startDate: "2024-05-01",
+          endDate: "2024-05-20",
+        },{
           guest: "João",
           property: "Beautiful pent-house",
           startDate: "2024-04-01",
@@ -96,8 +124,8 @@ export default {
         {
           guest: "Maria",
           property: "Beautiful pent-house",
-          startDate: "2024-12-10",
-          endDate: "2024-12-15",
+          startDate: "2025-12-10",
+          endDate: "2025-12-15",
         },
         {
           guest: "Ana",
@@ -112,6 +140,10 @@ export default {
           endDate: "2024-02-20",
         },
       ],
+      pageSizeCards: 2,
+      currentPageThis: 0,
+      currentPagePrevious: 0,
+      currentPageFuture: 0
     };
   },
   computed: {
@@ -142,8 +174,42 @@ export default {
       });
       return previousWeeks;
     },
+    paginatedCardsThis(){
+      const startIndex = this.currentPageThis * this.pageSizeCards;
+      const endIndex = startIndex + this.pageSizeCards;
+      return this.thisWeek.slice(startIndex, endIndex);
+    },
+    totalPagesThis() {
+      return Math.ceil(this.thisWeek.length / this.pageSizeCards);
+    },
   },
-};
+  methods: {
+    nextPage(n) {
+        if (n == "this") {
+            if (this.currentPageThis < this.totalPagesThis - 1) {
+                this.currentPageThis++;
+            }
+        } else if (n == "previous"){
+          if (this.currentPagePrevious < this.totalPagesPrevious - 1) {
+                this.currentPagePrevious++;
+            }
+        }
+    },
+    prevPage(n) {
+        if (n == "this") {
+            if (this.currentPageThis > 0) {
+                this.currentPageThis--;
+            }
+
+        } else if (n == "previous") {
+            if (this.currentPagePrevious > 0) {
+                this.currentPagePrevious--;
+            }
+        }
+    },
+    },
+    
+  };
 </script>
 
 <style>
@@ -151,5 +217,19 @@ export default {
   display: flex;
   flex-direction: row;
   column-gap: 0.5em;
+}
+
+
+.displayCards{
+  display: flex;
+  flex-direction: row;
+  column-gap: 5em;
+  align-items: center;
+}
+
+.gridCards{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
