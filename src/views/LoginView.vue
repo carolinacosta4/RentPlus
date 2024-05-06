@@ -1,11 +1,11 @@
 <template>
   <main class="py-8 px-4">
-      <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" />
+      <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')"/>
       <div id="form">
         <h2 class="inter-bold font-size-24 font-color-green">Log in</h2>
         <form  @submit.prevent="login">
-          <input type="text" v-model="username" name="username" id="inputUsername" required placeholder="Username" class="font-size-14 inter-light">
-          <input type="password" v-model="password" name="password" id="inputPassword" required placeholder="Password" class="font-size-14 inter-light">
+          <v-text-field type="text" v-model="username" name="username" id="inputUsername"  :rules="[rules.required]" placeholder="Username" class="font-size-14 inter-light input"></v-text-field>
+          <v-text-field type="password" v-model="password" name="password" id="inputPassword" :rules="[rules.required]"  placeholder="Password" class="font-size-14 inter-light input"></v-text-field>
           <button type="submit" class="button-green font-size-20">Get in</button>
         </form>
         <p class="inter-light font-color-green font-size-14">
@@ -23,8 +23,15 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      rules: {
+        required: (value) => !!value || "Required."
+      },
     }
+  },
+  
+  created() {
+    this.$router;
   },
   methods: {
     login(){
@@ -32,7 +39,8 @@ export default {
         this.username,
         this.password
       ]
-      console.log(user);
+      console.log(user)
+      this.$router.push({ name: "home" })
     }
   }
 }
@@ -61,11 +69,13 @@ img {
   row-gap: 1.5em;
 }
 
-input{
-  background-color: #F2F2F2;
-  padding: 0.5em;
+.input{
   width: 18em;
   border-radius: 6px;
+}
+
+::placeholder{
+  color: #133E1A;
 }
 
 #form {
