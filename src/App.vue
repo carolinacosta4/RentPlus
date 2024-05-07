@@ -14,7 +14,8 @@ import NavbarVue from "./components/Navbar.vue";
     <NavbarVue v-if="$route.name !== 'register' && $route.name !== 'rent-place' && $route.name !== 'login'" />
   </header>
 
-  <RouterView class="mt-24 mx-10" />
+  <RouterView v-if = "$route.name == 'rent-place'"/>
+  <RouterView class="mt-24 mx-10" v-else/>
 </template>
 
 <style>
