@@ -1,13 +1,13 @@
 <template>
     <main class="py-8 px-4">
         <div class="rating">
-            <h1 class="font-size-24 inter-medium font-color-green">{{ property.name }}</h1>
-            <h2 class="font-size-18 inter-medium font-color-green" style="margin-left: 1rem;">{{ property.rating }}</h2>
+            <h1 class="font-size-24 inter-medium font-color-green">{{ property.title }}</h1>
+            <h2 class="font-size-18 inter-medium font-color-green" style="margin-left: 1rem;">{{ rating }}</h2>
             <Star fillColor="#133E1A" />
         </div>
         <h3 class="font-size-20 inter-light font-color-black page-title">{{ property.location }}</h3>
         <div id="moreInfo">
-            <v-carousel hide-delimiter-background show-arrows>
+            <v-carousel hide-delimiter-background show-arrows class="carrousel">
                 <template v-slot:prev="{ props }">
                     <v-btn @click="props.onClick">
                         <ArrowLeft />
@@ -18,7 +18,7 @@
                         <ArrowRight />
                     </v-btn>
                 </template>
-                <v-carousel-item v-for="(image, i) in images" :key="i">
+                <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
                     <v-sheet>
                         <div class="d-flex justify-center align-center">
                             <img :src="image" class="carousel-img">
@@ -28,18 +28,18 @@
             </v-carousel>
             <div id="containerBooking">
                 <div id="bookingInfo">
-                    <h2 class="font-size-24 inter-light font-color-black"><span class="inter-medium">{{ property.price
-                            }}€
-                        </span>/night
-                    </h2>
-                    <p class="font-size-18 inter-light font-color-black">2 bedrooms | 4 beds | 8 guests</p>
+                    <h2 class="font-size-24 inter-light font-color-black"><span class="inter-medium">{{
+                        property.daily_price }}€</span>/night</h2>
+                    <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{
+                        property.bathrooms
+                        }} bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
                     <div id="book">
-                        <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" />
+                        <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" id="dateIn" />
                         <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date"
                             v-model="dateOut" />
                         <div id="guests">
-                            <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number" :max="this.property.maxGuests" :min="minGuests"
-                                placeholder="Guests" v-model="nrGuests">
+                            <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
+                                :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests">
                             <Guests />
                         </div>
                     </div>
@@ -57,8 +57,12 @@
             <div id="info">
                 <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
                 <div class="rating">
-                    <p class="font-size-16 inter-medium font-color-black">Lindsay Lorran</p>
-                    <h2 class="font-size-16 inter-medium font-color-green" style="margin-left: 0.5rem;">4</h2>
+                    <div class="name">
+                        <p class="font-size-16 inter-medium font-color-black">{{ owner.first_name }}</p>
+                        <p class="font-size-16 inter-medium font-color-black">{{ owner.last_name }}</p>
+                    </div>
+                    <h2 class="font-size-16 inter-medium font-color-green" style="margin-left: 0.5rem;">{{ ownerRating
+                        }}</h2>
                     <Star fillColor="#133E1A" />
                 </div>
             </div>
@@ -68,7 +72,8 @@
             <div id="description">
                 <h3 class="font-size-20 inter-medium font-color-green page-title">Description</h3>
                 <p class="font-size-18 inter-light font-color-green">{{ descriptionProperty }}</p>
-                <p @click="readMore = true" v-if="!readMore" class="font-size-16 inter-medium font-color-green read">
+                <p @click="readMore = true" v-if="!readMore & property.description.split('').length > 240"
+                    class="font-size-16 inter-medium font-color-green read">
                     Read more +
                 </p>
                 <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">
@@ -78,29 +83,33 @@
             <div id="extras">
                 <h3 class="font-size-20 inter-medium font-color-green page-title">What this place has to offer</h3>
                 <div id="extraContainer">
-                    <ArrowLeft fillColor="#133E1A" @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
+                    <ArrowLeft v-if="property.amenities.length > 6" fillColor="#133E1A" @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
                     <div id="extrasGrid">
                         <div v-for="(extra, index) in paginatedExtras" :key="index">
                             <Television fillColor="#133E1A" />
-                            <p class="font-size-18 inter-light font-color-green">{{ extra.name }}</p>
+                            <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
                         </div>
                     </div>
-                    <ArrowRight fillColor="#133E1A" @click="nextPage('extras')"
+                    <ArrowRight v-if="property.amenities.length > 6" fillColor="#133E1A" @click="nextPage('extras')"
                         :disabled="currentPageExtras == totalPagesExtras - 1" />
                 </div>
-                <p class="font-size-14 inter-light font-color-green">{{ currentPageExtras + 1 }} of {{ totalPagesExtras
+                <p v-if="property.amenities.length > 6" class="font-size-14 inter-light font-color-green">{{
+                    currentPageExtras +
+                    1 }} of {{ totalPagesExtras
                     }}</p>
             </div>
         </div>
         <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
+        <!-- <iframe :src="property.map_url" height="400" style="border:0;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe> -->
         <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2994.3614374759904!2d-8.741617385292779!3d41.36623140527072!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd244419ac8a36b3%3A0x9219b42064878c38!2sEscola%20Superior%20de%20Media%20Artes%20e%20Design%20-%20Polit%C3%A9cnico%20do%20Porto!5e0!3m2!1spt-PT!2spt!4v1671057312921!5m2!1spt-PT!2spt"
-            height="400" style="border:0;" allowfullscreen="" loading="lazy"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49666.92346360088!2d-104.93549284333204!3d38.919801040086455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8713517510b3e71d%3A0x129d2eeec706b3b0!2sNorthwest%20Colorado%20Springs%2C%20Colorado%20Springs%2C%20CO%2C%20EUA!5e0!3m2!1spt-PT!2spt!4v1716240879380!5m2!1spt-PT!2spt"
+            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"></iframe>
         <h3 class="font-size-20 inter-medium font-color-green page-title">What the guests say</h3>
         <div id="reviews">
             <div id="allReviews">
-                <ArrowLeft fillColor="#133E1A" @click="prevPage('reviews')" />
+                <ArrowLeft v-if="reviews.length > 4" fillColor="#133E1A" @click="prevPage('reviews')" />
                 <div id="reviewsContainer">
                     <div v-for="review in paginatedReviews" id="review" :key="review.id">
                         <div id="mainInfo">
@@ -109,20 +118,21 @@
                             <div id="infoUser">
                                 <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
                                 <div class="rating">
-                                    <h2 class="font-size-16 inter-medium font-color-green">4</h2>
+                                    <h2 class="font-size-16 inter-medium font-color-green">{{ review.rating }}</h2>
                                     <Star fillColor="#133E1A" />
                                 </div>
                             </div>
                         </div>
-                        <p class="font-size-16 inter-light font-color-black">{{ review.comments }}</p>
+                        <p class="font-size-16 inter-light font-color-black">{{ review.comment }}</p>
                     </div>
                 </div>
-                <ArrowRight fillColor="#133E1A" @click="nextPage('reviews')"
+                <ArrowRight v-if="reviews.length > 4" fillColor="#133E1A" @click="nextPage('reviews')"
                     :disabled="currentPageReviews == totalPagesReviews - 1" />
             </div>
-            <p class="font-size-14 inter-light font-color-green" style="text-align: center">{{ currentPageReviews + 1 }}
+            <p v-if="reviews.length > 4" class="font-size-14 inter-light font-color-green" style="text-align: center">{{
+                currentPageReviews + 1 }}
                 of {{
-                totalPagesReviews }}
+                    totalPagesReviews }}
             </p>
         </div>
         <hr>
@@ -132,23 +142,30 @@
                 <img id="meetPhotoOwner"
                     src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg">
                 <div id="info">
-                    <h2 class="font-size-32 inter-medium font-color-green">Lindsay Lorran</h2>
+                    <div class="name">
+                        <h2 class="font-size-24 inter-medium font-color-green">{{ owner.first_name }}</h2>
+                        <h2 class="font-size-24 inter-medium font-color-green">{{ owner.last_name }}</h2>
+                    </div>
                     <div class="rating">
-                        <h2 class="font-size-32 inter-medium font-color-green">4</h2>
+                        <h2 class="font-size-32 inter-medium font-color-green">{{ ownerRating }}</h2>
                         <Star fillColor="#133E1A" />
                     </div>
                 </div>
             </router-link>
             <div id="moreOwnerInfo">
-                <p class="font-size-18 inter-light font-color-green">{{ descriptionOwner }}</p>
-                <p @click="readMoreMeet = true" v-if="!readMoreMeet"
-                    class="font-size-16 inter-medium font-color-green read">
-                    Read more +
-                </p>
-                <p @click="readMoreMeet = false" v-if="readMoreMeet"
-                    class="font-size-16 inter-medium font-color-green read">
-                    Read less -
-                </p>
+                <div v-if="owner.owner_description != null">
+                    <p class="font-size-18 inter-light font-color-green">{{ owner.owner_description }}</p>
+                    <p @click="readMoreMeet = true"
+                        v-if="!readMoreMeet & owner.owner_description.split('').length > 240"
+                        class="font-size-16 inter-medium font-color-green read">
+                        Read more +
+                    </p>
+                    <p @click="readMoreMeet = false" v-if="readMoreMeet"
+                        class="font-size-16 inter-medium font-color-green read">
+                        Read less -
+                    </p>
+                </div>
+                <div v-else style="margin-top: 2em;"></div>
                 <router-link :to="{ name: 'messages' }"><button class="button-green">Message
                         Lindsay</button></router-link>
             </div>
@@ -162,54 +179,31 @@ import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import Guests from "vue-material-design-icons/AccountPlusOutline.vue";
 import Star from "vue-material-design-icons/Star.vue";
 import Television from "vue-material-design-icons/Television.vue";
+import { usePropertiesStore } from "@/stores/properties";
+import { useReviewsStore } from "@/stores/reviews";
+import { useUsersStore } from "@/stores/users";
 
 export default {
     data() {
         return {
-            property: {
-                image: "https://via.placeholder.com/700x500",
-                name: "Beautiful pent-house",
-                location: "Porto, PT",
-                price: 25,
-                rating: 4,
-                maxGuests: 8,
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus arcu ligula, fermentum at lorem id, euismod ullamcorper felis.Proin aliquet bibendum dolor eu semper.Nunc consequat venenatis elementum.Nulla nunc felis, euismod sit amet ornare sed, consequat quis eros.Cras at dignissim velit.Phasellus vitae lorem dignissim, maximus elit vitae, ornare tortor.Nunc aliquam ultricies eros nec ultricies.Maecenas ultrices lacinia sollicitudin.Praesent luctus sapien nisi, sed malesuada eros porttitor sed.Fusce vestibulum arcu non nisl egestas lobortis.Duis euismod maximus justo, eu iaculis ex egestas nec.Praesent venenatis sem dui, et porta mi mattis nec."
-            },
-            images: ["https://via.placeholder.com/900x500", "https://via.placeholder.com/900x500"],
+            propertyImages: [
+                "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg",
+                "https://media.istockphoto.com/id/1456467039/photo/beautiful-living-room-and-kitchen-in-new-luxury-home-with-white-cabinets-wood-beams-pendant.jpg?s=612x612&w=0&k=20&c=x_ZXg6o_H6Bsww7Vr8126nXnNJULmYKABuXS3sc8qqE=",
+                "https://st.depositphotos.com/1321174/2454/i/450/depositphotos_24547869-stock-photo-modern-living-room.jpg",
+            ],
             dateOut: "",
             dateIn: "",
             nrGuests: 0,
-            minGuests: 1,
             readMore: false,
             readMoreMeet: false,
-            extras: [
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "Smoking allowed", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-                { name: "TV", icon: "Television" },
-            ],
-            reviews: [
-                { id: 1, username: "carolina4", rating: 4, comments: "Loved this place, it was very peaceful and close to tourist places!! :)" },
-                { id: 2, username: "carolina4", rating: 4, comments: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-                { id: 3, username: "carolina4", rating: 4, comments: "Loved this place!" },
-                { id: 4, username: "carolina4", rating: 4, comments: "Loved this place!" },
-                { id: 5, username: "carolina4", rating: 4, comments: "Loved this place!" },
-                { id: 6, username: "carolina4", rating: 4, comments: "Loved this place!" },
-            ],
             currentPageExtras: 0,
             currentPageReviews: 0,
             pageSizeExtras: 6,
             pageSizeReviews: 4,
+            propertiesStore: usePropertiesStore(),
+            reviewsStore: useReviewsStore(),
+            usersStore: useUsersStore(),
+            ownerFetched: false
         }
     },
 
@@ -223,7 +217,7 @@ export default {
             const dateOut = new Date(this.dateOut);
             const timeDiff = dateOut.getTime() - dateIn.getTime();
             const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            return diffDays * this.property.price;
+            return diffDays * this.property.daily_price;
         },
 
         descriptionProperty() {
@@ -236,7 +230,8 @@ export default {
         },
 
         descriptionOwner() {
-            let descriptionArray = this.property.description.split('')
+            let descriptionArray = this.owner.owner_description.split('')
+            console.log(descriptionArray);
             if (descriptionArray.length > 240 && !this.readMoreMeet) {
                 return descriptionArray.slice(0, 240).join('')
             } else {
@@ -245,8 +240,10 @@ export default {
         },
 
         paginatedExtras() {
+            console.log("Here");
+            console.log(this.property.amenities);
             const start = this.currentPageExtras * this.pageSizeExtras;
-            return this.extras.slice(start, start + this.pageSizeExtras);
+            return this.property.amenities.slice(start, start + this.pageSizeExtras);
         },
 
         paginatedReviews() {
@@ -255,19 +252,54 @@ export default {
         },
 
         totalPagesExtras() {
-            return Math.ceil(this.extras.length / this.pageSizeExtras);
+            return Math.ceil(this.property.amenities.length / this.pageSizeExtras);
         },
 
         totalPagesReviews() {
             return Math.ceil(this.reviews.length / this.pageSizeReviews);
         },
+
+        property() {
+            console.log(this.propertiesStore.getProperty.amenities);
+            return this.propertiesStore.getProperty
+        },
+
+        reviews() {
+            return this.reviewsStore.getReviews
+        },
+
+        rating() {
+            let total = 0
+            this.reviews.forEach(review => {
+                total += review.rating
+            });
+            if (total == 0) {
+                return 0
+            } else {
+                const rating = total / this.reviews.length
+                return rating
+            }
+        },
+
+        owner() {
+            return this.usersStore.getUser
+        },
+
+        ownerRating() {
+            let total = 0
+            this.usersStore.getOwnerReviews.forEach(review => {
+                total += review.rating
+            });
+
+            if (total > 0) {
+                return (total / this.usersStore.getOwnerReviews.length)
+            } else {
+                return 0
+            }
+        }
     },
 
     methods: {
-        openCalendar() {
-            return this.opened = !this.opened
-        },
-
         nextPage(n) {
             if (n == "extras") {
                 if (this.currentPageExtras < this.totalPagesExtras - 1) {
@@ -279,6 +311,7 @@ export default {
                 }
             }
         },
+
         prevPage(n) {
             if (n == "extras") {
                 if (this.currentPageExtras > 0) {
@@ -300,6 +333,13 @@ export default {
         Star,
         Television,
     },
+
+    async created() {
+        await this.propertiesStore.fetchProperty(this.$route.params.id)
+        await this.reviewsStore.fetchReviews(this.$route.params.id)
+        await this.usersStore.fetchUser(this.property.owner_username);
+        await this.usersStore.fetchUserReviews(this.property.owner_username);
+    },
 }
 </script>
 
@@ -308,22 +348,29 @@ export default {
     display: grid;
     grid-template-columns: 2fr 1fr;
     column-gap: 4em;
+    margin-bottom: 1.5em;
 }
 
 #book {
     display: flex;
     flex-direction: column;
-    padding: 2rem;
+    padding: 1nrem;
     background-color: #F2F2F2;
     border-radius: 11px;
     margin: 2rem 0;
     height: 10rem;
+    row-gap: 1rem;
+}
+
+#dateIn{
+    margin-top: 1rem;
 }
 
 #guests {
     display: flex;
     flex-direction: row;
-    column-gap: 1.5rem;
+    column-gap: 2rem;
+    margin-bottom: 1rem;
 }
 
 #total {
@@ -335,18 +382,22 @@ export default {
     width: 100%;
 }
 
+.carrousel{
+    max-height: 450px;
+    border-radius: 11px;
+}
+
 .carousel-img {
     border-radius: 11px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
 }
 
 #containerBooking {
     display: flex;
     flex-wrap: wrap;
     align-content: space-around;
-}
-
-#bookingInfo {
-    /* height: 500px; */
 }
 
 #infoOwner {
@@ -401,6 +452,7 @@ hr {
     grid-template-columns: 3fr 2fr;
     column-gap: 3rem;
     margin-bottom: 2rem;
+    min-height: 15em;
 }
 
 #description h3 {
@@ -496,5 +548,14 @@ iframe {
 #review p {
     width: 100%;
     word-wrap: break-word;
+}
+
+#reviews {
+    min-height: 25em;
+}
+
+.name {
+    display: flex;
+    column-gap: 0.5em;
 }
 </style>
