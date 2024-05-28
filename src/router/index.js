@@ -79,7 +79,7 @@ const router = createRouter({
       component: MessagesView,
     },
     {
-      path: "/property",
+      path: "/property/:id",
       name: "property",
       component: PropertyView,
     },

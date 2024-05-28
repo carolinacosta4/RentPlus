@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="{name: 'property'}">
+    <router-link :to="{ name: 'property', params: { id: id } }">
         <button class="absolute background text-white p-2">
             <BookmarkIcon v-if="route != 'properties'"></BookmarkIcon>
             <EditIcon v-else @click="this.$router.push('/edit-property')"></EditIcon>
@@ -33,6 +33,11 @@ export default {
         },
 
         price: {
+            type: Number,
+            required: true
+        },
+
+        id: {
             type: Number,
             required: true
         }
