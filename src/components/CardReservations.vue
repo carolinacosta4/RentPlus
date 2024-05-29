@@ -1,6 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
-    <router-link :to="{name: 'property'}">
+    <router-link :to="{name: 'property', params: { id: 26 } }"> <!-- mudar -->
     <img
       :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
       :alt="`${city}, ${country}`"

@@ -1,5 +1,5 @@
 <template>
-  <main class="h-screen flex flex-col md:flex-row pt-16">
+  <main class="h-screen flex flex-col md:flex-row">
     <!-- LEFT (visible on md and above) -->
     <div class="hidden md:flex justify-center h-full w-1/2">
       <img
@@ -23,11 +23,13 @@
       <p class="text-white text-base lg:text-lg">
         Start by putting property online!
       </p>
-      <button
+      <router-link :to="{name: 'create-property'}">
+        <button
         class="text-green-900 font-bold px-12 py-3 mt-6 bg-white rounded-lg"
       >
         Start
       </button>
+      </router-link>
     </div>
   </main>
 </template>

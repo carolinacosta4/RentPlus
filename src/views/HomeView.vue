@@ -64,12 +64,13 @@
     <div
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
     >
-      <div v-for="property in properties" :key="property.name">
+      <div v-for="property in properties" :key="property.ID">
         <PropertyContainer
-          :image="property.image"
+          image="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg"
           :name="property.title"
           :location="property.location"
-          :price="property.price"
+          :price="property.daily_price"
+          :id = "property.ID"
         />
       </div>
     </div>
@@ -81,6 +82,7 @@
 import FilterIcon from "vue-material-design-icons/Filter.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
 import PropertyContainer from "../components/PropertyContainer.vue";
+import { usePropertiesStore } from "@/stores/properties";
 
 export default {
   components: {
@@ -90,72 +92,18 @@ export default {
   },
   data() {
     return {
-      properties: [
-        {
-          id: 1,
-          image: "https://via.placeholder.com/200x200",
-          title: "Beautiful Penthouse",
-          location: "Porto, PT",
-          price: 25,
-        },
-        {
-          id: 2,
-          image: "https://via.placeholder.com/200x200",
-          title: "Cozy Apartment",
-          location: "Lisbon, PT",
-          price: 30,
-        },
-        {
-          id: 3,
-          image: "https://via.placeholder.com/200x200",
-          title: "Seaside Villa",
-          location: "Algarve, PT",
-          price: 50,
-        },
-        {
-          id: 4,
-          image: "https://via.placeholder.com/200x200",
-          title: "Beautiful Penthouse",
-          location: "Porto, PT",
-          price: 25,
-        },
-        {
-          id: 5,
-          image: "https://via.placeholder.com/200x200",
-          title: "Cozy Apartment",
-          location: "Lisbon, PT",
-          price: 30,
-        },
-        {
-          id: 6,
-          image: "https://via.placeholder.com/200x200",
-          title: "Seaside Villa",
-          location: "Algarve, PT",
-          price: 50,
-        },
-        {
-          id: 7,
-          image: "https://via.placeholder.com/200x200",
-          title: "Beautiful Penthouse",
-          location: "Porto, PT",
-          price: 25,
-        },
-        {
-          id: 8,
-          image: "https://via.placeholder.com/200x200",
-          title: "Cozy Apartment",
-          location: "Lisbon, PT",
-          price: 30,
-        },
-        {
-          id: 9,
-          image: "https://via.placeholder.com/200x200",
-          title: "Seaside Villa",
-          location: "Algarve, PT",
-          price: 50,
-        },
-      ],
+      propertiesStore: usePropertiesStore(),
     };
+  },
+
+  created() {
+    this.propertiesStore.fetchProperties();
+  },
+
+  computed: {
+    properties() {
+      return this.propertiesStore.getProperties
+    }
   },
 };
 </script>
