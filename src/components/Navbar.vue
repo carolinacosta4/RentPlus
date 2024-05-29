@@ -4,7 +4,7 @@
       <!-- LOGO -->
       <router-link :to="{ name: 'home' }" @click="toggleDropdown">
         <img
-          src="../assets/images/logoHouse.svg"
+          src="../assets/images/logo.svg"
           class="h-3 md:h-5"
           alt="Logo"
         />
@@ -14,7 +14,7 @@
         <!-- Rent Place -->
         <router-link :to="{ name: 'rent-place' }" @click="toggleDropdown">
           <button
-            class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
+            class="hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2 button-green"
           >
             Rent+ your place
           </button>
