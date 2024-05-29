@@ -4,18 +4,35 @@ import NavbarVue from "./components/Navbar.vue";
 </script>
 
 <template>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
-  <header >
-    <NavbarVue v-if="$route.name !== 'register' && $route.name !== 'rent-place' && $route.name !== 'login'" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap"
+    rel="stylesheet"
+  />
+  <header>
+    <NavbarVue
+      v-if="
+        $route.name !== 'register' &&
+        $route.name !== 'rent-place' &&
+        $route.name !== 'login'
+      "
+    />
   </header>
-
-  <RouterView v-if = "$route.name == 'rent-place'"/>
-  <RouterView class="mt-24 mx-10" v-else/>
+  <RouterView v-if="$route.name == 'rent-place'" />
+  <RouterView class="mt-24 mx-10" v-else />
 </template>
 
 <style>
@@ -24,8 +41,7 @@ import NavbarVue from "./components/Navbar.vue";
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  font-variation-settings:
-    "slnt" 0;
+  font-variation-settings: "slnt" 0;
 }
 
 .inter-medium {
@@ -33,8 +49,7 @@ import NavbarVue from "./components/Navbar.vue";
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
-  font-variation-settings:
-    "slnt" 0;
+  font-variation-settings: "slnt" 0;
 }
 
 .inter-light {
@@ -42,8 +57,7 @@ import NavbarVue from "./components/Navbar.vue";
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
-  font-variation-settings:
-    "slnt" 0;
+  font-variation-settings: "slnt" 0;
 }
 
 .inter-bold {
@@ -51,8 +65,7 @@ import NavbarVue from "./components/Navbar.vue";
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
-  font-variation-settings:
-    "slnt" 0;
+  font-variation-settings: "slnt" 0;
 }
 
 .font-size-14 {
@@ -80,7 +93,7 @@ import NavbarVue from "./components/Navbar.vue";
 }
 
 .font-color-green {
-  color: #133E1A;
+  color: #133e1a;
 }
 
 .font-color-black {
@@ -88,15 +101,15 @@ import NavbarVue from "./components/Navbar.vue";
 }
 
 .font-color-white {
-  color: #F5F5F5;
+  color: #f5f5f5;
 }
 
 .font-color-grey {
-  color: #B8B8B8;
+  color: #b8b8b8;
 }
 
-.font-color-red{
-  color: #ff0000
+.font-color-red {
+  color: #ff0000;
 }
 
 .page-title {
@@ -104,8 +117,8 @@ import NavbarVue from "./components/Navbar.vue";
 }
 
 .button-white {
-  background-color: #F5F5F5;
-  color: #133E1A;
+  background-color: #f5f5f5;
+  color: #133e1a;
   border-radius: 8px;
   width: 10em;
   height: 2.5em;
@@ -113,8 +126,8 @@ import NavbarVue from "./components/Navbar.vue";
 }
 
 .button-green {
-  background-color: #133E1A;
-  color: #F5F5F5;
+  background-color: #133e1a;
+  color: #f5f5f5;
   border-radius: 8px;
   width: 10em;
   height: 2.5em;
@@ -122,24 +135,24 @@ import NavbarVue from "./components/Navbar.vue";
 }
 
 .button-border-green {
-  border: #133E1A20 solid 1px;
-  color: #133E1A;
+  border: #133e1a20 solid 1px;
+  color: #133e1a;
   border-radius: 8px;
   width: 10em;
   height: 2.5em;
   font-size: 15px;
 }
 
-input[type='text']:focus {
+input[type="text"]:focus {
   outline: none;
-  border-color: #133E1A20;
+  border-color: #133e1a20;
 }
 
 ::placeholder {
-    color: rgba(19, 62, 26, 0.609);
+  color: rgba(19, 62, 26, 0.609);
 }
 
-.green-bg{
-  background-color: #133E1A;;
+.green-bg {
+  background-color: #133e1a;
 }
 </style>
