@@ -31,11 +31,13 @@
           <th>Actions</th>
         </tr>
         <tr v-for="user in filters" :key="user.username" class="inter-light font-color-black font-size-18">
-          <td>{{ user.type }}</td>
+          <td>{{ capitalize(user.user_role) }}</td>
           <td>{{ user.username }}</td>
-          <td>{{ user.joined }}</td>
+          <td>{{ formatDate(user.created_at) }}</td>
           <td id="buttons">
-            <button id="blockBtn" class="inter-bold">Block</button>
+            <button id="blockBtn" class="inter-bold" v-if="!user.is_blocked"
+              @click="blockUser(user.username)">Block</button>
+            <button id="blockBtn" class="inter-bold" v-else @click="blockUser(user.username)">Unblock</button>
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
                 <button id="deleteBtn" class="inter-bold" v-bind="activatorProps">Delete</button>
@@ -80,41 +82,12 @@ import Sort from "vue-material-design-icons/Sort.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
+import { useUsersStore } from "@/stores/users";
 
 export default {
   data() {
     return {
-      users: [{
-        type: "Guest",
-        username: "carolina4",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Admin",
-        username: "alberto",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Owner",
-        username: "joaquim",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Guest",
-        username: "carolina5",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Admin",
-        username: "albertina",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Owner",
-        username: "joaquina",
-        joined: "16-7-2024"
-      },
-      ],
+      usersStore: useUsersStore(),
       searchUsers: "",
       isVisible: false,
       isDropdownOpen: false,
@@ -137,9 +110,9 @@ export default {
   computed: {
     filters() {
       if (this.filterFlag == "search") return this.paginatedUsers.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
-      if (this.filterFlag == "admin") return this.users.filter((user) => user.type == 'Admin');
-      if (this.filterFlag == "guest") return this.users.filter((user) => user.type == 'Guest');
-      if (this.filterFlag == "owner") return this.users.filter((user) => user.type == 'Owner');
+      if (this.filterFlag == "admin") return this.users.filter((user) => user.user_role == 'admin');
+      if (this.filterFlag == "guest") return this.users.filter((user) => user.user_role == 'guest');
+      if (this.filterFlag == "owner") return this.users.filter((user) => user.user_role == 'owner');
     },
 
     sortUsername() {
@@ -160,6 +133,10 @@ export default {
       const endIndex = startIndex + this.userPerPage
       return this.users.slice(startIndex, endIndex)
     },
+
+    users() {
+      return this.usersStore.getUsers
+    }
   },
 
   methods: {
@@ -176,9 +153,14 @@ export default {
       this.filterFlag = change
     },
 
-    deleteUser(username) {
-      let index = this.users.findIndex((user) => user.username == username)
-      this.users.splice(index, 1)
+    async deleteUser(username) {
+      await this.usersStore.delete(username)
+      this.usersStore.fetchUsers()
+    },
+
+    async blockUser(username) {
+      await this.usersStore.block(username)
+      this.usersStore.fetchUsers()
     },
 
     sort() {
@@ -201,6 +183,23 @@ export default {
         this.currentPage++
       }
     },
+
+    capitalize(string) {
+      if (!string) return string;
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+  },
+
+  created() {
+    this.usersStore.fetchUsers()
   },
 }
 </script>
