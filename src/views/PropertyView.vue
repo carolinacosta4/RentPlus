@@ -322,14 +322,12 @@ export default {
   async created() {
     await this.propertiesStore.fetchProperty(this.$route.params.id);
     console.log(this.property);
-    /* await this.reviewsStore.fetchReviews(this.$route.params.id);
+    await this.reviewsStore.fetchReviews(this.$route.params.id);
     await this.usersStore.fetchUser(this.property.owner_username);
-    await this.usersStore.fetchUserReviews(this.property.owner_username); */
+    await this.usersStore.fetchUserReviews(this.property.owner_username);
   },
 
   computed: {
-    /* 
-
     descriptionProperty() {
       let descriptionArray = this.property.description.split("");
       if (descriptionArray.length > 240 && !this.readMore) {
@@ -345,8 +343,6 @@ export default {
       const start = this.currentPageExtras * this.pageSizeExtras;
       return this.property.amenities.slice(start, start + this.pageSizeExtras);
     },
-    
-     */
 
     total() {
       if (this.dateIn == "" || this.dateOut == "") {
