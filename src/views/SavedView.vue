@@ -4,7 +4,7 @@
     <nav id="saved" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       <div v-for="property in properties" :key="property.name">
         <PropertyContainer :image='property.image' :name='property.name' :location='property.location'
-          :price='property.price' />
+          :price='property.price' :id="26"/>
       </div>
     </nav>
   </main>
