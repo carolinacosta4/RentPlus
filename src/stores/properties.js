@@ -11,8 +11,8 @@ export const usePropertiesStore = defineStore("property", {
   getters: {
     getProperties: (state) => state.properties,
     getProperty: (state) => state.property,
-    getPropertyById: (state) => (id) =>
-      state.properties.find((property) => property.ID === id),
+    /* getPropertyById: (state) => (id) =>
+      state.properties.find((property) => property.ID === id), */
   },
   actions: {
     async fetchProperties() {

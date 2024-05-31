@@ -86,10 +86,10 @@
         <div class="rating">
           <div class="name">
             <p class="font-size-16 inter-medium font-color-black">
-              {{ owner.first_name }}
+              {{ owner?.first_name }}
             </p>
             <p class="font-size-16 inter-medium font-color-black">
-              {{ owner.last_name }}
+              {{ owner?.last_name }}
             </p>
           </div>
           <h2
@@ -113,7 +113,11 @@
         </p>
         <p
           @click="readMore = true"
-          v-if="!readMore & (property.description.split('').length > 240)"
+          v-if="
+            !readMore &&
+            property.description &&
+            property.description.split('').length > 240
+          "
           class="font-size-16 inter-medium font-color-green read"
         >
           Read more +
@@ -132,7 +136,7 @@
         </h3>
         <div id="extraContainer">
           <ArrowLeft
-            v-if="property.amenities.length > 6"
+            v-if="property.amenities && property.amenities.length > 6"
             fillColor="#133E1A"
             @click="prevPage('extras')"
             :disabled="currentPageExtras == 0"
@@ -146,14 +150,14 @@
             </div>
           </div>
           <ArrowRight
-            v-if="property.amenities.length > 6"
+            v-if="property.amenities && property.amenities.length > 6"
             fillColor="#133E1A"
             @click="nextPage('extras')"
             :disabled="currentPageExtras == totalPagesExtras - 1"
           />
         </div>
         <p
-          v-if="property.amenities.length > 6"
+          v-if="property.amenities && property.amenities.length > 6"
           class="font-size-14 inter-light font-color-green"
         >
           {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}
@@ -180,7 +184,7 @@
     <div id="reviews">
       <div id="allReviews">
         <ArrowLeft
-          v-if="reviews.length > 4"
+          v-if="reviews && reviews.length > 4"
           fillColor="#133E1A"
           @click="prevPage('reviews')"
         />
@@ -209,14 +213,14 @@
           </div>
         </div>
         <ArrowRight
-          v-if="reviews.length > 4"
+          v-if="reviews && reviews.length > 4"
           fillColor="#133E1A"
           @click="nextPage('reviews')"
           :disabled="currentPageReviews == totalPagesReviews - 1"
         />
       </div>
       <p
-        v-if="reviews.length > 4"
+        v-if="reviews && reviews.length > 4"
         class="font-size-14 inter-light font-color-green"
         style="text-align: center"
       >
@@ -251,7 +255,7 @@
         </div>
       </router-link>
       <div id="moreOwnerInfo">
-        <div v-if="owner.owner_description != null">
+        <div v-if="owner && owner.owner_description != null">
           <p class="font-size-18 inter-light font-color-green">
             {{ owner.owner_description }}
           </p>
@@ -315,7 +319,35 @@ export default {
     };
   },
 
+  async created() {
+    await this.propertiesStore.fetchProperty(this.$route.params.id);
+    console.log(this.property);
+    /* await this.reviewsStore.fetchReviews(this.$route.params.id);
+    await this.usersStore.fetchUser(this.property.owner_username);
+    await this.usersStore.fetchUserReviews(this.property.owner_username); */
+  },
+
   computed: {
+    /* 
+
+    descriptionProperty() {
+      let descriptionArray = this.property.description.split("");
+      if (descriptionArray.length > 240 && !this.readMore) {
+        return descriptionArray.slice(0, 240).join("");
+      } else {
+        return descriptionArray.join("");
+      }
+    },
+
+    paginatedExtras() {
+      console.log("Here");
+      console.log(this.property.amenities);
+      const start = this.currentPageExtras * this.pageSizeExtras;
+      return this.property.amenities.slice(start, start + this.pageSizeExtras);
+    },
+    
+     */
+
     total() {
       if (this.dateIn == "" || this.dateOut == "") {
         return 0;
@@ -328,15 +360,6 @@ export default {
       return diffDays * this.property.daily_price;
     },
 
-    descriptionProperty() {
-      let descriptionArray = this.property.description.split("");
-      if (descriptionArray.length > 240 && !this.readMore) {
-        return descriptionArray.slice(0, 240).join("");
-      } else {
-        return descriptionArray.join("");
-      }
-    },
-
     descriptionOwner() {
       let descriptionArray = this.owner.owner_description.split("");
       console.log(descriptionArray);
@@ -345,13 +368,6 @@ export default {
       } else {
         return descriptionArray.join("");
       }
-    },
-
-    paginatedExtras() {
-      console.log("Here");
-      console.log(this.property.amenities);
-      const start = this.currentPageExtras * this.pageSizeExtras;
-      return this.property.amenities.slice(start, start + this.pageSizeExtras);
     },
 
     paginatedReviews() {
@@ -372,8 +388,8 @@ export default {
       return this.propertiesStore.getProperty;
     },
 
-    reviews() {
-      return this.reviewsStore.getReviews;
+    owner() {
+      return this.usersStore.getUser;
     },
 
     rating() {
@@ -389,8 +405,8 @@ export default {
       }
     },
 
-    owner() {
-      return this.usersStore.getUser;
+    reviews() {
+      return this.reviewsStore.getReviews;
     },
 
     ownerRating() {
@@ -439,13 +455,6 @@ export default {
     Guests,
     Star,
     Television,
-  },
-
-  async created() {
-    await this.propertiesStore.fetchProperty(this.$route.params.id);
-    await this.reviewsStore.fetchReviews(this.$route.params.id);
-    await this.usersStore.fetchUser(this.property.owner_username);
-    await this.usersStore.fetchUserReviews(this.property.owner_username);
   },
 };
 </script>

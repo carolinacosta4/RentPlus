@@ -5,7 +5,7 @@
     </h1>
     <nav
       id="properties"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"
     >
       <div v-for="property in properties" :key="property.ID">
         <PropertyContainer
@@ -56,9 +56,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-#properties {
-  row-gap: 2em;
-}
-</style>
