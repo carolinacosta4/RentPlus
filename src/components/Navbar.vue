@@ -4,7 +4,7 @@
       <!-- LOGO -->
       <router-link :to="{ name: 'home' }" @click="toggleDropdown">
         <img
-          src="../assets/images/logoHouse.svg"
+          src="../assets/images/logo.svg"
           class="h-3 md:h-5"
           alt="Logo"
         />
@@ -14,7 +14,7 @@
         <!-- Rent Place -->
         <router-link :to="{ name: 'rent-place' }" @click="toggleDropdown">
           <button
-            class="text-black hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2"
+            class="hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2 button-green"
           >
             Rent+ your place
           </button>
@@ -81,8 +81,8 @@
               >Reservations</router-link
             >
             <router-link
-              @click="toggleDropdown"
-              :to="{ name: 'register' }"
+              @click="usersStore.logout"
+              :to="{ name: 'login' }"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Logout</router-link
             >
@@ -103,10 +103,13 @@
 </template>
 
 <script>
+import { useUsersStore } from "@/stores/users";
+
 export default {
   data() {
     return {
       isDropdownOpen: false,
+      usersStore: useUsersStore()
     };
   },
   methods: {
