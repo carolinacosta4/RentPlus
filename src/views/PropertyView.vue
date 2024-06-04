@@ -9,10 +9,14 @@
     <div id="moreInfo">
       <v-carousel hide-delimiter-background show-arrows class="carrousel">
         <template v-slot:prev="{ props }">
-          <v-btn @click="props.onClick"><ArrowLeft /></v-btn>
+          <v-btn @click="props.onClick">
+            <ArrowLeft />
+          </v-btn>
         </template>
         <template v-slot:next="{ props }">
-          <v-btn @click="props.onClick"><ArrowRight /></v-btn>
+          <v-btn @click="props.onClick">
+            <ArrowRight />
+          </v-btn>
         </template>
         <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
           <v-sheet>
@@ -27,12 +31,15 @@
           <h2 class="font-size-24 inter-light font-color-black">
             <span class="inter-medium">{{ property.daily_price }}€</span>/night
           </h2>
-          <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{ property.bathrooms }} bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
+          <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{
+            property.bathrooms }}
+            bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
           <div id="book">
             <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" id="dateIn" />
             <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateOut" />
             <div id="guests">
-              <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number" :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required/>
+              <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
+                :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required />
               <Guests />
             </div>
             <h3>{{ errorMessage }}</h3>
@@ -45,7 +52,8 @@
       </div>
     </div>
     <router-link :to="{ name: 'profile' }" id="infoOwner">
-      <img id="photoOwner" src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+      <img id="photoOwner"
+        src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
       <div id="info">
         <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
         <div class="rating">
@@ -63,13 +71,17 @@
       <div id="description">
         <h3 class="font-size-20 inter-medium font-color-green page-title">Description</h3>
         <p class="font-size-18 inter-light font-color-green"> {{ descriptionProperty }}</p>
-        <p @click="readMore = true" v-if="!readMore && property.description && property.description.split('').length > 240" class="font-size-16 inter-medium font-color-green read">Read more +</p>
-        <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">Read less -</p>
+        <p @click="readMore = true"
+          v-if="!readMore && property.description && property.description.split('').length > 240"
+          class="font-size-16 inter-medium font-color-green read">Read more +</p>
+        <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">Read less -
+        </p>
       </div>
       <div id="extras">
         <h3 class="font-size-20 inter-medium font-color-green page-title">What this place has to offer</h3>
         <div id="extraContainer">
-          <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A" @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
+          <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+            @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
           <div id="extrasGrid" v-if="property.amenities">
             <div v-for="(extra, index) in paginatedExtras" :key="index">
               <Television fillColor="#133E1A" />
@@ -77,9 +89,12 @@
             </div>
           </div>
           <div v-else>No amenities found.</div>
-          <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A" @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
+          <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+            @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
         </div>
-        <p v-if="property.amenities && property.amenities.length > 6" class="font-size-14 inter-light font-color-green">{{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
+        <p v-if="property.amenities && property.amenities.length > 6" class="font-size-14 inter-light font-color-green">
+          {{
+            currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
       </div>
     </div>
     <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
@@ -109,10 +124,13 @@
             <p class="font-size-16 inter-light font-color-black">{{ review.comment }}</p>
           </div>
         </div>
-        <ArrowRight v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="nextPage('reviews')" :disabled="currentPageReviews == totalPagesReviews - 1" />
+        <ArrowRight v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="nextPage('reviews')"
+          :disabled="currentPageReviews == totalPagesReviews - 1" />
       </div>
       <div v-else>No reviews found.</div>
-      <p v-if="reviews && reviews.length > 4" class="font-size-14 inter-light font-color-green" style="text-align: center">{{ currentPageReviews + 1 }} of {{ totalPagesReviews }}</p>
+      <p v-if="reviews && reviews.length > 4" class="font-size-14 inter-light font-color-green"
+        style="text-align: center">
+        {{ currentPageReviews + 1 }} of {{ totalPagesReviews }}</p>
     </div>
     <hr />
     <h3 class="font-size-20 inter-medium font-color-green page-title">Meet your host</h3>
@@ -134,8 +152,11 @@
       <div id="moreOwnerInfo">
         <div v-if="owner && owner.owner_description != null">
           <p class="font-size-18 inter-light font-color-green">{{ owner.owner_description }}</p>
-          <p @click="readMoreMeet = true" v-if="!readMoreMeet & (owner.owner_description.split('').length > 240)" class="font-size-16 inter-medium font-color-green read">Read more +</p>
-          <p @click="readMoreMeet = false" v-if="readMoreMeet" class="font-size-16 inter-medium font-color-green read">Read less -</p>
+          <p @click="readMoreMeet = true" v-if="!readMoreMeet & (owner.owner_description.split('').length > 240)"
+            class="font-size-16 inter-medium font-color-green read">Read more +</p>
+          <p @click="readMoreMeet = false" v-if="readMoreMeet" class="font-size-16 inter-medium font-color-green read">
+            Read
+            less -</p>
         </div>
         <div v-else style="margin-top: 2em"></div>
         <router-link :to="{ name: 'messages' }"><button class="button-green">Message Lindsay</button></router-link>
@@ -309,12 +330,12 @@ export default {
       }
     },
 
-    async rentProperty(){
+    async rentProperty() {
       console.log(this.dateIn, this.dateOut, this.total);
-      if(!this.dateIn || !this.dateOut || this.total <= 0){
+      if (!this.dateIn || !this.dateOut || this.total <= 0) {
         this.errorMessage = 'Invalid booking details'
         return
-      }else{
+      } else {
         try {
           const response = await this.reservationsStore.createReservation({
             "property_ID": this.property.ID,
@@ -339,213 +360,213 @@ export default {
 
 <style lang="css" scoped>
 #moreInfo {
-display: grid;
-grid-template-columns: 2fr 1fr;
-column-gap: 4em;
-margin-bottom: 1.5em;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  column-gap: 4em;
+  margin-bottom: 1.5em;
 }
 
 #book {
-display: flex;
-flex-direction: column;
-padding: 1nrem;
-background-color: #f2f2f2;
-border-radius: 11px;
-margin: 2rem 0;
-height: 10rem;
-row-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1nrem;
+  background-color: #f2f2f2;
+  border-radius: 11px;
+  margin: 2rem 0;
+  height: 10rem;
+  row-gap: 1rem;
 }
 
 #dateIn {
-margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 #guests {
-display: flex;
-flex-direction: row;
-column-gap: 2rem;
-margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  column-gap: 2rem;
+  margin-bottom: 1rem;
 }
 
 #total {
-text-align: right;
-margin-bottom: 1rem;
+  text-align: right;
+  margin-bottom: 1rem;
 }
 
 #rentBtn {
-width: 100%;
+  width: 100%;
 }
 
 .carrousel {
-max-height: 450px;
-border-radius: 11px;
+  max-height: 450px;
+  border-radius: 11px;
 }
 
 .carousel-img {
-border-radius: 11px;
-width: 100%;
-height: auto;
-object-fit: cover;
+  border-radius: 11px;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 #containerBooking {
-display: flex;
-flex-wrap: wrap;
-align-content: space-around;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
 }
 
 #infoOwner {
-display: flex;
-flex-direction: row;
-column-gap: 2rem;
-align-items: center;
-width: 50%;
+  display: flex;
+  flex-direction: row;
+  column-gap: 2rem;
+  align-items: center;
+  width: 50%;
 }
 
 #meetInfoOwner {
-display: flex;
-flex-direction: row;
-column-gap: 2rem;
-align-items: center;
-width: 80%;
+  display: flex;
+  flex-direction: row;
+  column-gap: 2rem;
+  align-items: center;
+  width: 80%;
 }
 
 #photoOwner {
-border-radius: 100%;
-height: 60px;
-width: 60px;
+  border-radius: 100%;
+  height: 60px;
+  width: 60px;
 }
 
 #meetPhotoOwner {
-border-radius: 100%;
-height: 160px;
-width: 160px;
+  border-radius: 100%;
+  height: 160px;
+  width: 160px;
 }
 
 #info {
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .rating {
-display: flex;
-flex-direction: row;
-column-gap: 0.2rem;
-align-items: center;
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.2rem;
+  align-items: center;
 }
 
 hr {
-background-color: #133e1a50;
-height: 0.1rem;
-border-radius: 11px;
-margin: 2rem 0;
+  background-color: #133e1a50;
+  height: 0.1rem;
+  border-radius: 11px;
+  margin: 2rem 0;
 }
 
 #propertyInfo {
-display: grid;
-grid-template-columns: 3fr 2fr;
-column-gap: 3rem;
-margin-bottom: 2rem;
-min-height: 15em;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  column-gap: 3rem;
+  margin-bottom: 2rem;
+  min-height: 15em;
 }
 
 #description h3 {
-margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .read {
-margin: 0.5rem 0 2rem;
-text-decoration: underline #133e1a;
+  margin: 0.5rem 0 2rem;
+  text-decoration: underline #133e1a;
 }
 
 #extrasGrid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-grid-template-rows: 1fr 1fr 1fr;
-row-gap: 1rem;
-width: 80%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  row-gap: 1rem;
+  width: 80%;
 }
 
 #extrasGrid div {
-display: flex;
-flex-direction: row;
-column-gap: 1rem;
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
 }
 
 #extraContainer {
-display: flex;
-flex-direction: row;
-column-gap: 2rem;
-align-items: center;
-margin: 2rem 0 1rem;
+  display: flex;
+  flex-direction: row;
+  column-gap: 2rem;
+  align-items: center;
+  margin: 2rem 0 1rem;
 }
 
 iframe {
-width: 100%;
-border-radius: 11px;
-margin-bottom: 3rem;
+  width: 100%;
+  border-radius: 11px;
+  margin-bottom: 3rem;
 }
 
 hostInfo {
-display: grid;
-grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 #reviewsPhoto {
-border-radius: 100%;
-height: 60px;
-width: 60px;
+  border-radius: 100%;
+  height: 60px;
+  width: 60px;
 }
 
 #allReviews {
-display: flex;
-flex-direction: row;
-height: 100%;
-column-gap: 2rem;
-align-items: center;
-margin: 1rem 0 1rem;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  column-gap: 2rem;
+  align-items: center;
+  margin: 1rem 0 1rem;
 }
 
 #reviewsContainer {
-display: grid;
-grid-template-columns: 1fr 1fr;
-grid-template-rows: 1fr 1fr;
-width: 100%;
-row-gap: 3rem;
-padding: 0 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  row-gap: 3rem;
+  padding: 0 0.5rem;
 }
 
 #mainInfo {
-display: flex;
-flex-direction: row;
-column-gap: 1rem;
-align-items: center;
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
+  align-items: center;
 }
 
 #infoUser {
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 #review {
-display: flex;
-flex-direction: column;
-row-gap: 1rem;
-width: 100%;
-max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  width: 100%;
+  max-width: 500px;
 }
 
 #review p {
-width: 100%;
-word-wrap: break-word;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 #reviews {
-min-height: 25em;
+  min-height: 25em;
 }
 
 .name {
-display: flex;
-column-gap: 0.5em;
+  display: flex;
+  column-gap: 0.5em;
 }
 </style>
