@@ -58,9 +58,9 @@
         </v-dialog>
       </div>
       <div id="photoBtn">
-        <button class="font-color-green inter-bold button-white">
-          Change photo
-        </button>
+        <button class="font-color-green inter-bold button-white" @click="triggerFileInput">Change photo</button> 
+        <!-- AQUI -->
+        <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none" />
       </div>
       <div id="infoProfile">
         <h3 class="inter-medium font-size-20 firstName font-color-green">
@@ -181,7 +181,12 @@ export default {
     Users,
     Edit,
   },
-};
+  methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+  }
+}
 </script>
 
 <style scoped>

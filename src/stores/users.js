@@ -7,12 +7,14 @@ export const useUsersStore = defineStore('user', {
   state: () => ({
     users: [],
     user: "",
-    reviews: []
+    reviews: [],
+    token: null
   }),
   getters: {
     getUsers: (state) => state.users,
     getUser: (state) => state.user,
-    getOwnerReviews: (state) => state.reviews
+    getOwnerReviews: (state) => state.reviews,
+    getToken: (state) => state.token
   },
   actions: {
     async fetchUsers() {
@@ -62,5 +64,25 @@ export const useUsersStore = defineStore('user', {
         console.error(error)
       }
     },
+    async login(username, password) {
+      try {
+        const response = await api.post(`${API_BASE_URL}/users`, 'login', {
+          username: username,
+          password: password
+        });
+    
+        if (response.success) {
+          this.token = response.accessToken;
+          sessionStorage.setItem("authToken", this.token);
+        }
+
+      } catch (error) {
+        throw error.message 
+      }
+    },
+    async logout(){
+      this.token = null
+      sessionStorage.removeItem("authToken");
+    }
   },
 })
