@@ -80,8 +80,8 @@
               >Reservations</router-link
             >
             <router-link
-              @click="toggleDropdown"
-              :to="{ name: 'register' }"
+              @click="usersStore.logout"
+              :to="{ name: 'login' }"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Logout</router-link
             >
@@ -102,10 +102,13 @@
 </template>
 
 <script>
+import { useUsersStore } from "@/stores/users";
+
 export default {
   data() {
     return {
       isDropdownOpen: false,
+      usersStore: useUsersStore()
     };
   },
   methods: {

@@ -43,7 +43,9 @@
         </v-dialog>
       </div>
       <div id="photoBtn">
-        <button class="font-color-green inter-bold button-white">Change photo</button>
+        <button class="font-color-green inter-bold button-white" @click="triggerFileInput">Change photo</button> 
+        <!-- AQUI -->
+        <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none" />
       </div>
       <div id="infoProfile">
         <h3 class="inter-medium font-size-20 firstName font-color-green">First name</h3>
@@ -128,12 +130,18 @@ import Users from "vue-material-design-icons/AccountMultiple.vue";
 import Edit from "vue-material-design-icons/Pencil.vue";
 
 
+
 export default {
   components: {
     Home,
     Users,
     Edit
   },
+  methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+  }
 }
 </script>
 

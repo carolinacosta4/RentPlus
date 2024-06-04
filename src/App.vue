@@ -55,6 +55,10 @@ import NavbarVue from "./components/Navbar.vue";
     "slnt" 0;
 }
 
+.font-size-13 {
+  font-size: 13px;
+}
+
 .font-size-14 {
   font-size: 14px;
 }

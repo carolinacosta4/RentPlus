@@ -30,13 +30,16 @@ export async function get(apiBaseUrl, endpoint){
  * @param {*} data - this is the data that we will send to the server
  */
 
-export async function post(apiBaseUrl, endpoint, data){
+
+// Buscar aqui a parte dos tokens
+export async function post(apiBaseUrl, endpoint, data, token){
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`,
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Token Bearer"
             },
             body:JSON.stringify(data)
         })
