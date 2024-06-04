@@ -45,6 +45,25 @@ export const useUsersStore = defineStore('user', {
         console.error(error)
       }
     },
+
+    async delete(username) {
+      try {
+        const response = await api.remove(API_BASE_URL, `users/${username}`)
+        console.log("User deleted successfully:", response.data);
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async block(username) {
+      try {
+        // await api.patch(API_BASE_URL, `users/block/${username}`)
+        const response = await api.patch(API_BASE_URL, `users/block/${username}`)
+        console.log("User updated successfully:", response.data);
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async login(username, password) {
       try {
         const response = await api.post(`${API_BASE_URL}/users`, 'login', {

@@ -14,8 +14,8 @@
           <p class="inter-light font-color-green font-size-15">Filter</p>
         </div>
         <div v-if="isDropdownOpen" class="dropdownContent">
-          <p v-for="property in properties" @click="changeFilterFlag(property.type)" class="inter-light font-size-14">{{
-            property.type }}</p>
+          <p v-for="property in properties" @click="changeFilterFlag(property['type_of_prop.type_name'])" class="inter-light font-size-14">{{
+            property['type_of_prop.type_name'] }}</p>
         </div>
       </div>
     </div>
@@ -38,11 +38,11 @@
           <th>Created at</th>
           <th>Actions</th>
         </tr>
-        <tr v-for="property in filters" :key="property.username" class="inter-light font-color-black font-size-18">
-          <td>{{ property.id }}</td>
-          <td>{{ property.type }}</td>
+        <tr v-for="property in filters" :key="property.ID" class="inter-light font-color-black font-size-18">
+          <td>{{ property.ID }}</td>
+          <td>{{ property['type_of_prop.type_name'] }}</td>
           <td>{{ property.title }}</td>
-          <td>{{ property.created }}</td>
+          <td>{{ formatDate(property.created_at) }}</td>
           <td id="buttons">
             <button id="blockBtn" class="inter-bold">Block</button>
             <v-dialog max-width="500">
@@ -89,47 +89,48 @@ import Sort from "vue-material-design-icons/Sort.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
+import { usePropertiesStore } from "@/stores/properties";
 
 export default {
   data() {
     return {
-      properties: [{
-        id: 1,
-        type: "Pent-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 2,
-        type: "Beach-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 3,
-        type: "Igloo",
-        title: "Aeautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 4,
-        type: "Pent-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 5,
-        type: "Beach-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 6,
-        type: "Igloo",
-        title: "Aeautiful pent house",
-        created: "16-7-2024"
-      },
-      ],
+      // properties: [{
+      //   id: 1,
+      //   type: "Pent-house",
+      //   title: "Beautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // {
+      //   id: 2,
+      //   type: "Beach-house",
+      //   title: "Beautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // {
+      //   id: 3,
+      //   type: "Igloo",
+      //   title: "Aeautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // {
+      //   id: 4,
+      //   type: "Pent-house",
+      //   title: "Beautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // {
+      //   id: 5,
+      //   type: "Beach-house",
+      //   title: "Beautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // {
+      //   id: 6,
+      //   type: "Igloo",
+      //   title: "Aeautiful pent house",
+      //   created: "16-7-2024"
+      // },
+      // ],
       searchProperties: "",
       isVisible: false,
       isDropdownOpen: false,
@@ -138,6 +139,7 @@ export default {
       sortText: "A-Z",
       currentPage: 1,
       propPerPage: 5,
+      propertiesStore: usePropertiesStore()
     }
   },
 
@@ -152,7 +154,7 @@ export default {
   computed: {
     filters() {
       if (this.filterFlag == "search") return this.paginatedProperties.filter((property) => property.title.toLowerCase().startsWith(this.searchProperties.toLowerCase()))
-      if (this.filterFlag) return this.properties.filter((property) => property.type == this.filterFlag)
+      if (this.filterFlag) return this.properties.filter((property) => property['type_of_prop.type_name'] == this.filterFlag)
     },
 
     sortType() {
@@ -181,6 +183,10 @@ export default {
       const startIndex = (this.currentPage - 1) * this.propPerPage
       const endIndex = startIndex + this.propPerPage
       return this.properties.slice(startIndex, endIndex)
+    },
+
+    properties() {
+      return this.propertiesStore.getProperties
     },
   },
 
@@ -229,6 +235,17 @@ export default {
       }
     },
 
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+  },
+
+  created() {
+    this.propertiesStore.fetchProperties();
   },
 }
 </script>

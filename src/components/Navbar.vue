@@ -38,6 +38,7 @@
 
         <!-- Dropdown Menu -->
         <div
+          @mouseleave="toggleDropdown"
           v-show="isDropdownOpen"
           class="absolute right-0 top-16 w-48 bg-white rounded-md shadow-lg"
         >
