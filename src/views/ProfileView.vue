@@ -2,11 +2,9 @@
   <main class="py-8 px-4 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-8">
     <div id="normalProfile">
       <div id="pictureProfile">
-        <img
-          class="w-40 h-40 rounded-full object-cover"
+        <img class="w-40 h-40 rounded-full object-cover"
           src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"
-          alt="user photo"
-        />
+          alt="user photo" />
       </div>
       <div id="usernameProfile">
         <h1 class="inter-medium font-size-32 font-color-green">carolina04</h1>
@@ -18,9 +16,7 @@
           <template v-slot:default="{ isActive }">
             <v-card>
               <v-card-text>
-                <h1 class="page-title font-size-14 modalTitle inter-light">
-                  Edit your profile
-                </h1>
+                <h1 class="page-title font-size-14 modalTitle inter-light">Edit your profile</h1>
                 <div id="inputs">
                   <label class="inter-medium">Name</label>
                   <input class="inter-medium" type="text" v-model="newName" />
@@ -29,11 +25,7 @@
                   <input type="text" v-model="newSurname" />
 
                   <label class="inter-medium">Username</label>
-                  <input
-                    class="inter-medium"
-                    type="text"
-                    v-model="newUsername"
-                  />
+                  <input class="inter-medium" type="text" v-model="newUsername" />
 
                   <label class="inter-medium">Phone Number</label>
                   <input class="inter-medium" type="text" v-model="newPhone" />
@@ -42,15 +34,8 @@
 
               <v-card-actions>
                 <div class="btnsModal">
-                  <button class="inter-medium button-green">
-                    Save changes
-                  </button>
-                  <button
-                    class="inter-medium button-border-green"
-                    @click="isActive.value = false"
-                  >
-                    Cancel
-                  </button>
+                  <button class="inter-medium button-green">Save changes</button>
+                  <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
                 </div>
               </v-card-actions>
             </v-card>
@@ -58,14 +43,10 @@
         </v-dialog>
       </div>
       <div id="photoBtn">
-        <button class="font-color-green inter-bold button-white">
-          Change photo
-        </button>
+        <button class="font-color-green inter-bold button-white">Change photo</button>
       </div>
       <div id="infoProfile">
-        <h3 class="inter-medium font-size-20 firstName font-color-green">
-          First name
-        </h3>
+        <h3 class="inter-medium font-size-20 firstName font-color-green">First name</h3>
         <p class="inter-light font-size-20">Carolina</p>
         <h3 class="inter-medium font-size-20 font-color-green">Last name</h3>
         <p class="inter-light font-size-20">Costa</p>
@@ -94,28 +75,15 @@
                   </h1>
                   <div id="inputs">
                     <label class="inter-medium">Description</label>
-                    <textarea
-                      name="newDescription"
-                      class="inter-medium"
-                      cols="30"
-                      rows="10"
-                      id="newDescription"
-                      v-model="newDescription"
-                    ></textarea>
+                    <textarea name="newDescription" class="inter-medium" cols="30" rows="10" id="newDescription"
+                      v-model="newDescription"></textarea>
                   </div>
                 </v-card-text>
 
                 <v-card-actions>
                   <div class="btnsModal">
-                    <button class="inter-medium button-green">
-                      Save changes
-                    </button>
-                    <button
-                      class="inter-medium button-border-green"
-                      @click="isActive.value = false"
-                    >
-                      Cancel
-                    </button>
+                    <button class="inter-medium button-green">Save changes</button>
+                    <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
                   </div>
                 </v-card-actions>
               </v-card>
@@ -125,24 +93,14 @@
         <h3 class="inter-medium font-size-20 font-color-green">
           Owner description
         </h3>
-        <p class="inter-light font-size-18">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mi
-          arcu, bibendum vitae fringilla aliquet, hendrerit et nisi. Mauris
-          tincidunt, sem id semper fringilla, leo elit suscipit nibh, non mollis
-          tellus lacus ac nunc. In in tellus sollicitudin, dictum enim ut,
-          scelerisque massa. Nullam rutrum elementum congue.
-        </p>
+        <p class="inter-light font-size-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mi arcu, bibendum vitae fringilla aliquet, hendrerit et nisi. Mauris tincidunt, sem id semper fringilla, leo elit suscipit nibh, non mollis tellus lacus ac nunc. In in tellus sollicitudin, dictum enim ut, scelerisque massa. Nullam rutrum elementum congue.</p>
         <div id="buttons">
-          <router-link :to="{ name: 'create-property' }"
-            ><button class="button-green inter-bold">
+          <router-link :to="{ name: 'create-property' }"><button class="button-green inter-bold">
               Add new property
-            </button></router-link
-          >
-          <router-link :to="{ name: 'properties' }"
-            ><button class="button-white inter-bold">
+            </button></router-link>
+          <router-link :to="{ name: 'properties' }"><button class="button-white inter-bold">
               See properties
-            </button></router-link
-          >
+            </button></router-link>
         </div>
       </div>
     </div>

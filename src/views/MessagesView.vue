@@ -7,9 +7,10 @@
                     v-model="ownerSearch">
                 <SearchIcon></SearchIcon>
             </div>
-            <button @click=openConversation(user.receiver_username) v-for="user in filters" :key="user.name" id="user">
+            <button @click=openConversation(user.sender_username) v-for="user in filters" :key="user.name" id="user">
                 <img :src="user.image" id="pfp">
-                <h2 class="inter-light font-size-18">{{ user.name }} {{ user.last }}</h2>
+                <!-- <h2 class="inter-light font-size-18">{{ user.first }} {{ user.last }}</h2> -->
+                <h2 class="inter-light font-size-18">{{ user.sender_username }}</h2>
             </button>
         </div>
         <div v-if="!openFlag" id="selectMessage">
@@ -17,8 +18,9 @@
             <p class="inter-light font-color-grey">Select a message to read</p>
         </div>
         <div v-else id="selectedMessage">
-            <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ openConvo[0].name }} {{
-                openConvo[0].last }}</h1>
+            <!-- <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ openConvo[0].name }} {{
+                openConvo[0].last }}</h1> -->
+                <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ openConvo[0].sender_username }}</h1>
             <div id="messages-container">
                 <div id="messages">
                     <div v-for="user in openConvo" id="message">
@@ -46,27 +48,31 @@
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
 import Send from "vue-material-design-icons/Send.vue";
 import Message from "vue-material-design-icons/MessageReplyText.vue";
+import { useMessagesStore } from "@/stores/messages";
+import { useUsersStore } from "@/stores/users";
 
 export default {
     data() {
         return {
-            messages: [
-                { name: 'Carolina', last: 'Costa', receiver_username: 'alice', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Carolina', last: 'Costa', receiver_username: 'carolina4', sender_username: 'alice', content: 'Hello, do u have any doubts?', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Joana', last: 'Nunes', receiver_username: 'joana', sender_username: 'carolina4', content: 'Hello, is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Joaquim', last: 'Neves', receiver_username: 'joaquim', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Álvaro', last: 'Cunha', receiver_username: 'alvaro', sender_username: 'carolina4', content: 'Hello, is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Carolina', last: 'Costa', receiver_username: 'alice', sender_username: 'carolina4', content: 'Is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Joaquim', last: 'Neves', receiver_username: 'carolina4', sender_username: 'joaquim', content: 'Hello!', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Álvaro', last: 'Cunha', receiver_username: 'carolina4', sender_username: 'alvaro', content: '?', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Álvaro', last: 'Cunha', receiver_username: 'carolina4', sender_username: 'alvaro', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
-                { name: 'Carolina', last: 'Cunha', receiver_username: 'cunha', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
-            ],
+            // messages: [
+            //     { name: 'Carolina', last: 'Costa', receiver_username: 'alice', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Carolina', last: 'Costa', receiver_username: 'carolina4', sender_username: 'alice', content: 'Hello, do u have any doubts?', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Joana', last: 'Nunes', receiver_username: 'joana', sender_username: 'carolina4', content: 'Hello, is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Joaquim', last: 'Neves', receiver_username: 'joaquim', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Álvaro', last: 'Cunha', receiver_username: 'alvaro', sender_username: 'carolina4', content: 'Hello, is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Carolina', last: 'Costa', receiver_username: 'alice', sender_username: 'carolina4', content: 'Is there heating in the igloo?', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Joaquim', last: 'Neves', receiver_username: 'carolina4', sender_username: 'joaquim', content: 'Hello!', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Álvaro', last: 'Cunha', receiver_username: 'carolina4', sender_username: 'alvaro', content: '?', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Álvaro', last: 'Cunha', receiver_username: 'carolina4', sender_username: 'alvaro', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
+            //     { name: 'Carolina', last: 'Cunha', receiver_username: 'cunha', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
+            // ],
             openFlag: false,
             conversation: "",
-            loggedUser: 'carolina4',
+            loggedUser: 'jahon',
             newMessage: "",
             ownerSearch: "",
+            messagesStore: useMessagesStore(),
+            usersStore: useUsersStore()
         }
     },
 
@@ -105,8 +111,16 @@ export default {
     },
 
     computed: {
+        messages(){
+            return this.messagesStore.getMessages
+        },
+
         users() {
-            const filteredUsers = this.messages.filter((user) => user.sender_username === this.loggedUser)
+            const filteredUsers = this.messages.filter((user) => user.receiver_username === this.loggedUser)
+            console.log(filteredUsers);
+            console.log(filteredUsers.filter((user, index, self) => {
+                return self.findIndex((u) => u.sender_username === user.sender_username && u.receiver_username === user.receiver_username) === index
+            }));
             return filteredUsers.filter((user, index, self) => {
                 return self.findIndex((u) => u.sender_username === user.sender_username && u.receiver_username === user.receiver_username) === index
             })
@@ -117,11 +131,18 @@ export default {
         },
 
         filters() {
+            // return this.users.filter((user) => {
+            //     const fullName = `${user.first_name.toLowerCase()} ${user.last_name.toLowerCase()}`
+            //     return fullName.includes(this.ownerSearch.toLowerCase())
+            // })
             return this.users.filter((user) => {
-                const fullName = `${user.name.toLowerCase()} ${user.last.toLowerCase()}`
-                return fullName.includes(this.ownerSearch.toLowerCase())
+                return user.sender_username.startsWith(this.ownerSearch.toLowerCase())
             })
-        }
+        },
+    },
+
+    created () {
+        this.messagesStore.fetchMessage("jahon");
     },
 }
 </script>
