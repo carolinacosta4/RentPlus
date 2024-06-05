@@ -35,14 +35,17 @@
             property.bathrooms }}
             bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
           <div id="book">
-            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" id="dateIn" />
-            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateOut" />
+            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" :min="minDate"
+              id="dateIn" />
+            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" :min="minDate"
+              v-model="dateOut" />
             <div id="guests">
               <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
                 :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required />
               <Guests />
             </div>
-            <h3>{{ errorMessage }}</h3>
+            <h3 id="errorMessage">{{ errorMessage }}</h3>
+            <h3 id="sucessfullMessage">{{ sucessfullMessage }}</h3>
           </div>
           <p id="total" class="font-size-18 inter-light font-color-black">
             <span class="inter-medium">Total</span> {{ total }}€
@@ -51,7 +54,7 @@
         </div>
       </div>
     </div>
-    <router-link :to="{ name: 'profile' }" id="infoOwner">
+    <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="infoOwner">
       <img id="photoOwner"
         src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
       <div id="info">
@@ -82,7 +85,7 @@
         <div id="extraContainer">
           <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
             @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
-          <div id="extrasGrid" v-if="property.amenities">
+          <div id="extrasGrid" v-if="property.amenities?.length > 0">
             <div v-for="(extra, index) in paginatedExtras" :key="index">
               <Television fillColor="#133E1A" />
               <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
@@ -93,8 +96,7 @@
             @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
         </div>
         <p v-if="property.amenities && property.amenities.length > 6" class="font-size-14 inter-light font-color-green">
-          {{
-            currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
+          {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
       </div>
     </div>
     <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
@@ -135,7 +137,7 @@
     <hr />
     <h3 class="font-size-20 inter-medium font-color-green page-title">Meet your host</h3>
     <div id="hostInfo">
-      <router-link :to="{ name: 'profile' }" id="meetInfoOwner">
+      <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="meetInfoOwner">
         <img id="meetPhotoOwner"
           src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
         <div id="info">
@@ -159,9 +161,11 @@
             less -</p>
         </div>
         <div v-else style="margin-top: 2em"></div>
-        <router-link :to="{ name: 'messages' }"><button class="button-green">Message Lindsay</button></router-link>
+        <router-link :to="{ name: 'messages' }"><button class="button-green" id="msgBtn">Message {{ owner.username
+            }}</button></router-link>
       </div>
     </div>
+    <VCalendar :initial-page="{ month: new Date().getMonth() + 1, year: 2024 }" :attributes="attributes" />
   </main>
 </template>
 
@@ -175,6 +179,7 @@ import { usePropertiesStore } from "@/stores/properties";
 import { useReviewsStore } from "@/stores/reviews";
 import { useUsersStore } from "@/stores/users";
 import { useReservationsStore } from "@/stores/reservations";
+import { ref } from 'vue';
 
 export default {
   data() {
@@ -199,6 +204,10 @@ export default {
       reservationsStore: useReservationsStore(),
       ownerFetched: false,
       errorMessage: "",
+      sucessfullMessage: "",
+      disabledDates: [],
+      minDate: new Date().toISOString().split("T")[0],
+      attributes: null
     };
   },
 
@@ -215,15 +224,18 @@ export default {
     await this.reviewsStore.fetchReviews(this.$route.params.id);
     await this.usersStore.fetchUser(this.property.owner_username);
     await this.usersStore.fetchUserReviews(this.property.owner_username);
+    await this.reservationsStore.fetchReservationsPerProperty(this.$route.params.id);
+    console.log(new Date(2018, 0, 15));
+    this.computeDisabledDates()
   },
 
   computed: {
     descriptionProperty() {
-      let descriptionArray = this.property.description.split("");
-      if (descriptionArray.length > 240 && !this.readMore) {
+      let descriptionArray = this.property.description?.split("");
+      if (descriptionArray?.length > 240 && !this.readMore) {
         return descriptionArray.slice(0, 240).join("");
       } else {
-        return descriptionArray.join("");
+        return descriptionArray?.join("");
       }
     },
 
@@ -306,6 +318,23 @@ export default {
   },
 
   methods: {
+    computeDisabledDates() {
+      const reservations = this.reservationsStore.getReservationsProperty
+      reservations.forEach(reservation => {
+        const start = new Date(reservation.dateIn);
+        const end = new Date(reservation.dateOut);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          this.disabledDates.push(new Date(d));
+          this.attributes = ref([
+            {
+              content: 'red',
+              dates: this.disabledDates
+            },
+          ])
+        }
+      });
+    },
+
     nextPage(n) {
       if (n == "extras") {
         if (this.currentPageExtras < this.totalPagesExtras - 1) {
@@ -337,7 +366,7 @@ export default {
         return
       } else {
         try {
-          const response = await this.reservationsStore.createReservation({
+          await this.reservationsStore.createReservation({
             "property_ID": this.property.ID,
             "dateIn": this.dateIn,
             "dateOut": this.dateOut,
@@ -346,11 +375,16 @@ export default {
             "payment_type": 1
           })
 
-          this.errorMessage = 'Reservation Successful'
+          this.sucessfullMessage = 'Reservation Successful'
+          this.errorMessage = ''
         } catch (error) {
-          console.log("Here");
-          console.log(error);
-          this.errorMessage = error
+          if (error == 'Error: API request failed with status 400: {"success":false,"error":"Invalid date","msg":"You can only make reservations for future days"}') {
+            this.errorMessage = ''
+            this.errorMessage = 'You can only make reservations for future days.';
+          } else if (error == 'Error: API request failed with status 400: {"success":false,"error":"Property already booked","msg":"You cant proceed with the reservation because there is already a reservation during the chosen dates."}') {
+            this.errorMessage = ''
+            this.errorMessage = 'There is already a reservation during the chosen dates.';
+          }
         }
       }
     }
@@ -373,19 +407,18 @@ export default {
   background-color: #f2f2f2;
   border-radius: 11px;
   margin: 2rem 0;
-  height: 10rem;
+  height: 50%;
   row-gap: 1rem;
 }
 
 #dateIn {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 #guests {
   display: flex;
   flex-direction: row;
   column-gap: 2rem;
-  margin-bottom: 1rem;
 }
 
 #total {
@@ -507,7 +540,7 @@ iframe {
   margin-bottom: 3rem;
 }
 
-hostInfo {
+#hostInfo {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -568,5 +601,23 @@ hostInfo {
 .name {
   display: flex;
   column-gap: 0.5em;
+}
+
+#msgBtn {
+  margin-top: 1em;
+}
+
+#errorMessage,
+#sucessfullMessage {
+  padding: 0 16px;
+  margin-bottom: 0.5em;
+}
+
+#errorMessage {
+  color: red;
+}
+
+#sucessfullMessage {
+  color: green;
 }
 </style>
