@@ -14,7 +14,7 @@
         <!-- Rent Place -->
         <router-link :to="{ name: 'rent-place' }" @click="toggleDropdown">
           <button
-            class="hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2 button-green"
+            class="font-medium rounded-lg text-sm px-4 py-2 button-green"
           >
             Rent+ your place
           </button>
