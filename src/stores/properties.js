@@ -34,5 +34,25 @@ export const usePropertiesStore = defineStore("property", {
         console.error(error);
       }
     },
+    async create(newProperty){
+      try {
+        const response = await api.post(API_BASE_URL, 'properties', {
+          username: newUser.username,
+          email: newUser.email,
+          user_role: "guest",
+          password: newUser.password,
+          first_name: newUser.firstName,
+          last_name: newUser.lastName
+        });
+
+        if (response.success) {
+          await this.login(newUser.username, newUser.password);
+        } else {
+          throw new Error('Registration failed');
+        }
+      } catch (error) {
+        throw error.message
+      }
+    }
   },
 });
