@@ -32,14 +32,13 @@ export async function get(apiBaseUrl, endpoint){
 
 
 // Buscar aqui a parte dos tokens
-export async function post(apiBaseUrl, endpoint, data, token){
+export async function post(apiBaseUrl, endpoint, data){
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`,
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token Bearer"
+                "Content-Type": "application/json"
             },
             body:JSON.stringify(data)
         })
