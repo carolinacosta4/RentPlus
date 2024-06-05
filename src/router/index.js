@@ -44,7 +44,7 @@ const router = createRouter({
       component: ReservationsView,
     },
     {
-      path: "/profile",
+      path: "/profile/:id",
       name: "profile",
       component: ProfileView,
     },
