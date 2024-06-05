@@ -336,7 +336,7 @@
                     </button>
                     <button
                       class="inter-medium button-green"
-                      @click="this.$router.push({ name: 'profile' })"
+                      @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
                     >
                       Yes, cancel
                     </button>
@@ -395,7 +395,7 @@
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
             <button
               class="inter-medium button-white"
-              @click="this.$router.push({ name: 'profile' })"
+              @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
             >
               Continue
             </button>

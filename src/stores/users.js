@@ -8,13 +8,15 @@ export const useUsersStore = defineStore('user', {
     users: [],
     user: "",
     reviews: [],
-    token: null
+    token: null,
+    loggedUser: "alice"
   }),
   getters: {
     getUsers: (state) => state.users,
     getUser: (state) => state.user,
     getOwnerReviews: (state) => state.reviews,
-    getToken: (state) => state.token
+    getToken: (state) => state.token,
+    getUserLogged: (state) => state.loggedUser
   },
   actions: {
     async fetchUsers() {
@@ -57,22 +59,24 @@ export const useUsersStore = defineStore('user', {
 
     async block(username) {
       try {
-        // await api.patch(API_BASE_URL, `users/block/${username}`)
         const response = await api.patch(API_BASE_URL, `users/block/${username}`)
         console.log("User updated successfully:", response.data);
       } catch (error) {
         console.error(error)
       }
     },
+
     async login(username, password) {
       try {
-        const response = await api.post(`${API_BASE_URL}/users`, 'login', {
+        const response = await api.post(API_BASE_URL, 'users/login', {
           username: username,
           password: password
         });
     
         if (response.success) {
           this.token = response.accessToken;
+          this.loggedUser = username
+          console.log(this.loggedUser);
           sessionStorage.setItem("authToken", this.token);
         }
 
@@ -80,9 +84,18 @@ export const useUsersStore = defineStore('user', {
         throw error.message 
       }
     },
+
     async logout(){
       this.token = null
+      this.loggedUser = ""
       sessionStorage.removeItem("authToken");
+    },
+
+    async editProfile(data, username){
+      console.log(data);
+      const response = await api.patch(API_BASE_URL, `users/${username}`, data);
+      console.log("User edited successfully:", response);
+
     }
   },
 })
