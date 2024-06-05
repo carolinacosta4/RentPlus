@@ -3,32 +3,51 @@
     <img src="../assets/images/logoWhite.svg" class="h-5 md:h-8" alt="Logo white" @click="this.$router.push('/')" />
     <div id="form">
       <h2 class="inter-bold font-size-24 font-color-green">Register</h2>
-      <form @submit.prevent="register">
-        <v-text-field type="text" v-model="username" name="username" id="inputUsername" :rules="[rules.required]" placeholder="Username"
-          class="font-size-14 inter-light input"></v-text-field>
+      <form @submit.prevent="submit">
+        <div id="divs">
+          <div id="div1">
+            <v-text-field type="text" v-model="firstName" name="firstName" id="inputfirstName" :rules="[rules.required]"
+              placeholder="First Name" class="font-size-14 inter-light input"></v-text-field>
 
-        <v-text-field type="text" v-model="email" name="email" id="inputEmail" :rules="[rules.required]" placeholder="Email"
-          class="font-size-14 inter-light input"></v-text-field>
+            <v-text-field type="text" v-model="lastName" name="lastName" id="inputlastName" :rules="[rules.required]"
+              placeholder="Last Name" class="font-size-14 inter-light input"></v-text-field>
 
-        <v-text-field type="password" v-model="password" name="password" id="inputPassword" :rules="[rules.required]" placeholder="Password"
-          class="font-size-14 inter-light input"></v-text-field>
+            <v-text-field type="text" v-model="username" name="username" id="inputUsername" :rules="[rules.required]"
+              placeholder="Username" class="font-size-14 inter-light input"></v-text-field>
+          </div>
 
-        <v-text-field type="password" v-model="confirmPassword" name="confirmPassword" id="inputConfirmPassword" :rules="[rules.required]"
-          placeholder="Confirm Password" class="font-size-14 inter-light input"></v-text-field>
+          <div id="div2">
+            <v-text-field type="text" v-model="email" name="email" id="inputEmail" :rules="[rules.required]"
+              placeholder="Email" class="font-size-14 inter-light input"></v-text-field>
+
+            <v-text-field type="password" v-model="password" name="password" id="inputPassword"
+              :rules="[rules.required]" placeholder="Password" class="font-size-14 inter-light input"></v-text-field>
+
+            <v-text-field type="password" v-model="confirmPassword" name="confirmPassword" id="inputConfirmPassword"
+              :rules="[rules.required]" placeholder="Confirm Password"
+              class="font-size-14 inter-light input"></v-text-field>
+          </div>
+        </div>
 
         <div id="divPrivacy">
           <input type="checkbox" v-model="privacyPolicy" name="PrivacyPolicy" id="privacyPolicy"
             class="font-color-green">
           <label for="PrivacyPolicy" class="font-color-green">I agree to the Privacy Policy</label>
         </div>
+        <div class="error-message">
+          <p v-if="showError" class="font-size-13 inter-medium">{{ errorMessage }}</p>
+        </div>
         <button type="submit" class="button-green font-size-20">Sign in</button>
       </form>
-      <p class="inter-light font-color-green font-size-14">
-        <a href="">Forgot password?</a>
-      </p>
-      <p class="inter-light font-color-green font-size-14">
-        Already have an account? <b><router-link :to="{ name: 'login' }">Log in!</router-link></b>
-      </p>
+
+      <div class="moreInfo">
+        <p class="inter-light font-color-green font-size-14">
+          <a href="">Forgot password?</a>
+        </p>
+        <p class="inter-light font-color-green font-size-14">
+          Already have an account? <b><router-link :to="{ name: 'login' }">Log in!</router-link></b>
+        </p>
+      </div>
     </div>
 
     <v-dialog max-width="500" v-model="showModal">
@@ -52,6 +71,8 @@
 </template>
 
 <script>
+import { useUsersStore } from "@/stores/users";
+
 export default {
   data() {
     return {
@@ -59,30 +80,56 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      privacyPolicy: '',
+      firstName: '',
+      lastName: '',
+      privacyPolicy: false,
       showModal: false,
       rules: {
         required: (value) => !!value || "Required."
       },
+      usersStore: useUsersStore(),
+      showError: false,
+      errorMessage: ''
     }
   },
   methods: {
-    register() {
-      if (!this.username || !this.email || !this.password || !this.confirmPassword){
+    async submit() {
+      if (!this.username || !this.email || !this.password || !this.confirmPassword || !this.firstName || !this.lastName) {
+        this.showError = true
+        this.errorMessage = 'Missing information';
         throw new Error("Missing information");
       }
       else if (this.password != this.confirmPassword) {
-        this.showModal = true;
+        this.showError = true
+        this.errorMessage = 'Passwords do not match';
+      }
+      else if (!this.privacyPolicy) {
+        this.showError = true
+        this.errorMessage = 'You have to agree with our terms!';
       }
       else {
-        try {
-          let newUser = [
-            this.username, this.email, this.password, this.confirmPassword
-          ]
-          console.log(newUser)
+        this.register();
+      }
+
+    },
+    async register() {
+      try {
+        let newUser = {
+          username: this.username,
+          email: this.email,
+          password: this.password,
+          firstName: this.firstName,
+          lastName: this.lastName
+        }
+        await this.usersStore.register(newUser)
+        if (this.usersStore.getToken != null) {
           this.$router.push({ name: "home" })
-        } catch (error) {
-          alert(`Error: ${error.message}`)
+        }
+        this.showError = false
+      } catch (error) {
+        this.showError = true
+        if (error === 'API request failed with status 409: {"success":false,"msg":"The username is already taken. Please choose another one."}') {
+          this.errorMessage = 'The username is already taken.';
         }
       }
     }
@@ -91,10 +138,16 @@ export default {
 </script>
 
 <style scoped>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 main {
   background-color: #133E1A;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   margin: 0 !important;
   display: flex;
   flex-direction: column;
@@ -111,7 +164,22 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  row-gap: 1.5em;
+  row-gap: 0.5em;
+}
+
+#divs{
+  display: flex;
+  flex-direction: row;
+  column-gap: 2em;
+  margin-top: 1em;
+}
+
+.moreInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 1em;
+  margin-top: 1em;
 }
 
 ::placeholder {
@@ -121,6 +189,7 @@ form {
 .input {
   width: 18em;
   border-radius: 6px;
+  margin-bottom: 0.5em;
 }
 
 #form {
@@ -153,5 +222,10 @@ input#privacyPolicy {
 
 #containerBtn {
   display: block;
+}
+
+.error-message {
+  color: rgb(168, 6, 6);
+  margin-bottom: 1em;
 }
 </style>

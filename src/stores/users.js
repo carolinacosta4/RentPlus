@@ -96,6 +96,26 @@ export const useUsersStore = defineStore('user', {
       const response = await api.patch(API_BASE_URL, `users/${username}`, data);
       console.log("User edited successfully:", response);
 
+    },
+    async register(newUser){
+      try {
+        const response = await api.post(API_BASE_URL, 'users', {
+          username: newUser.username,
+          email: newUser.email,
+          user_role: "guest",
+          password: newUser.password,
+          first_name: newUser.firstName,
+          last_name: newUser.lastName
+        });
+
+        if (response.success) {
+          await this.login(newUser.username, newUser.password);
+        } else {
+          throw new Error('Registration failed');
+        }
+      } catch (error) {
+        throw error.message
+      }
     }
   },
 })
