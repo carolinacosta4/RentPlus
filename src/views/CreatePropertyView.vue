@@ -226,7 +226,10 @@
                     <button class="inter-medium button-border-green" @click="isActive.value = false">
                       No
                     </button>
-                    <button class="inter-medium button-green" @click="this.$router.push({ name: 'profile' })">
+                    <button
+                      class="inter-medium button-green"
+                      @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
+                    >
                       Yes, cancel
                     </button>
                   </div>
@@ -270,7 +273,10 @@
           </v-card-text>
 
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
-            <button class="inter-medium button-white" @click="this.$router.push({ name: 'profile' })">
+            <button
+              class="inter-medium button-white"
+              @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
+            >
               Continue
             </button>
           </v-card-actions>

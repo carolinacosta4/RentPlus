@@ -1,20 +1,11 @@
 <template>
   <main class="py-8 px-4">
     <div class="rating">
-      <h1 class="font-size-24 inter-medium font-color-green">
-        {{ property.title }}
-      </h1>
-      <h2
-        class="font-size-18 inter-medium font-color-green"
-        style="margin-left: 1rem"
-      >
-        {{ rating }}
-      </h2>
+      <h1 class="font-size-24 inter-medium font-color-green">{{ property.title }}</h1>
+      <h2 class="font-size-18 inter-medium font-color-green" style="margin-left: 1rem">{{ rating }}</h2>
       <Star fillColor="#133E1A" />
     </div>
-    <h3 class="font-size-20 inter-light font-color-black page-title">
-      {{ property.location }}
-    </h3>
+    <h3 class="font-size-20 inter-light font-color-black page-title">{{ property.location }}</h3>
     <div id="moreInfo">
       <v-carousel hide-delimiter-background show-arrows class="carrousel">
         <template v-slot:prev="{ props }">
@@ -40,64 +31,40 @@
           <h2 class="font-size-24 inter-light font-color-black">
             <span class="inter-medium">{{ property.daily_price }}€</span>/night
           </h2>
-          <p class="font-size-18 inter-light font-color-black">
-            {{ property.bathrooms }} bathrooms |
-            {{ property.bathrooms }} bedrooms | {{ property.beds }} beds |
-            {{ property.guest_number }} guests
-          </p>
+          <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{
+            property.bathrooms }}
+            bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
           <div id="book">
-            <input
-              class="w-8/12 border-x px-4 inter-light font-color-green"
-              type="date"
-              v-model="dateIn"
-              id="dateIn"
-            />
-            <input
-              class="w-8/12 border-x px-4 inter-light font-color-green"
-              type="date"
-              v-model="dateOut"
-            />
+            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" v-model="dateIn" :min="minDate"
+              id="dateIn" />
+            <input class="w-8/12 border-x px-4 inter-light font-color-green" type="date" :min="minDate"
+              v-model="dateOut" />
             <div id="guests">
-              <input
-                class="w-5/12 border-x px-4 inter-light font-color-green"
-                type="number"
-                :max="this.property.guest_number"
-                min="1"
-                placeholder="Guests"
-                v-model="nrGuests"
-              />
+              <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
+                :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required />
               <Guests />
             </div>
+            <h3 id="errorMessage">{{ errorMessage }}</h3>
+            <h3 id="sucessfullMessage">{{ sucessfullMessage }}</h3>
           </div>
           <p id="total" class="font-size-18 inter-light font-color-black">
             <span class="inter-medium">Total</span> {{ total }}€
           </p>
-          <button class="button-green" id="rentBtn">Rent</button>
+          <button class="button-green" id="rentBtn" @click="rentProperty">Rent</button>
         </div>
       </div>
     </div>
-    <router-link :to="{ name: 'profile' }" id="infoOwner">
-      <img
-        id="photoOwner"
-        src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"
-      />
+    <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="infoOwner">
+      <img id="photoOwner"
+        src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
       <div id="info">
         <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
         <div class="rating">
           <div class="name">
-            <p class="font-size-16 inter-medium font-color-black">
-              {{ owner?.first_name }}
-            </p>
-            <p class="font-size-16 inter-medium font-color-black">
-              {{ owner?.last_name }}
-            </p>
+            <p class="font-size-16 inter-medium font-color-black"> {{ owner.first_name }} </p>
+            <p class="font-size-16 inter-medium font-color-black"> {{ owner.last_name }} </p>
           </div>
-          <h2
-            class="font-size-16 inter-medium font-color-green"
-            style="margin-left: 0.5rem"
-          >
-            {{ ownerRating }}
-          </h2>
+          <h2 class="font-size-16 inter-medium font-color-green" style="margin-left: 0.5rem"> {{ ownerRating }} </h2>
           <Star fillColor="#133E1A" />
         </div>
       </div>
@@ -105,183 +72,100 @@
     <hr />
     <div id="propertyInfo">
       <div id="description">
-        <h3 class="font-size-20 inter-medium font-color-green page-title">
-          Description
-        </h3>
-        <p class="font-size-18 inter-light font-color-green">
-          {{ descriptionProperty }}
-        </p>
-        <p
-          @click="readMore = true"
-          v-if="
-            !readMore &&
-            property.description &&
-            property.description.split('').length > 240
-          "
-          class="font-size-16 inter-medium font-color-green read"
-        >
-          Read more +
-        </p>
-        <p
-          @click="readMore = false"
-          v-if="readMore"
-          class="font-size-16 inter-medium font-color-green read"
-        >
-          Read less -
+        <h3 class="font-size-20 inter-medium font-color-green page-title">Description</h3>
+        <p class="font-size-18 inter-light font-color-green"> {{ descriptionProperty }}</p>
+        <p @click="readMore = true"
+          v-if="!readMore && property.description && property.description.split('').length > 240"
+          class="font-size-16 inter-medium font-color-green read">Read more +</p>
+        <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">Read less -
         </p>
       </div>
       <div id="extras">
-        <h3 class="font-size-20 inter-medium font-color-green page-title">
-          What this place has to offer
-        </h3>
+        <h3 class="font-size-20 inter-medium font-color-green page-title">What this place has to offer</h3>
         <div id="extraContainer">
-          <ArrowLeft
-            v-if="property.amenities && property.amenities.length > 6"
-            fillColor="#133E1A"
-            @click="prevPage('extras')"
-            :disabled="currentPageExtras == 0"
-          />
-          <div id="extrasGrid">
+          <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+            @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
+          <div id="extrasGrid" v-if="property.amenities?.length > 0">
             <div v-for="(extra, index) in paginatedExtras" :key="index">
               <Television fillColor="#133E1A" />
-              <p class="font-size-18 inter-light font-color-green">
-                {{ extra.amenity_name }}
-              </p>
+              <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
             </div>
           </div>
-          <ArrowRight
-            v-if="property.amenities && property.amenities.length > 6"
-            fillColor="#133E1A"
-            @click="nextPage('extras')"
-            :disabled="currentPageExtras == totalPagesExtras - 1"
-          />
+          <div v-else>No amenities found.</div>
+          <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+            @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
         </div>
-        <p
-          v-if="property.amenities && property.amenities.length > 6"
-          class="font-size-14 inter-light font-color-green"
-        >
-          {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}
-        </p>
+        <p v-if="property.amenities && property.amenities.length > 6" class="font-size-14 inter-light font-color-green">
+          {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
       </div>
     </div>
-    <h3 class="font-size-20 inter-medium font-color-green page-title">
-      Where you will be
-    </h3>
+    <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
     <!-- <iframe :src="property.map_url" height="400" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"></iframe> -->
     <iframe
       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49666.92346360088!2d-104.93549284333204!3d38.919801040086455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8713517510b3e71d%3A0x129d2eeec706b3b0!2sNorthwest%20Colorado%20Springs%2C%20Colorado%20Springs%2C%20CO%2C%20EUA!5e0!3m2!1spt-PT!2spt!4v1716240879380!5m2!1spt-PT!2spt"
-      width="600"
-      height="450"
-      style="border: 0"
-      allowfullscreen=""
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
-    <h3 class="font-size-20 inter-medium font-color-green page-title">
-      What the guests say
-    </h3>
+      width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <h3 class="font-size-20 inter-medium font-color-green page-title">What the guests say</h3>
     <div id="reviews">
-      <div id="allReviews">
-        <ArrowLeft
-          v-if="reviews && reviews.length > 4"
-          fillColor="#133E1A"
-          @click="prevPage('reviews')"
-        />
+      <div id="allReviews" v-if="reviews.length > 0">
+        <ArrowLeft v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="prevPage('reviews')" />
         <div id="reviewsContainer">
           <div v-for="review in paginatedReviews" id="review" :key="review.id">
             <div id="mainInfo">
-              <img
-                id="reviewsPhoto"
-                src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"
-              />
+              <img id="reviewsPhoto"
+                src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
               <div id="infoUser">
-                <h3 class="font-size-16 inter-light font-color-green">
-                  {{ review.username }}
-                </h3>
+                <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
                 <div class="rating">
-                  <h2 class="font-size-16 inter-medium font-color-green">
-                    {{ review.rating }}
-                  </h2>
+                  <h2 class="font-size-16 inter-medium font-color-green">{{ review.rating }}</h2>
                   <Star fillColor="#133E1A" />
                 </div>
               </div>
             </div>
-            <p class="font-size-16 inter-light font-color-black">
-              {{ review.comment }}
-            </p>
+            <p class="font-size-16 inter-light font-color-black">{{ review.comment }}</p>
           </div>
         </div>
-        <ArrowRight
-          v-if="reviews && reviews.length > 4"
-          fillColor="#133E1A"
-          @click="nextPage('reviews')"
-          :disabled="currentPageReviews == totalPagesReviews - 1"
-        />
+        <ArrowRight v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="nextPage('reviews')"
+          :disabled="currentPageReviews == totalPagesReviews - 1" />
       </div>
-      <p
-        v-if="reviews && reviews.length > 4"
-        class="font-size-14 inter-light font-color-green"
-        style="text-align: center"
-      >
-        {{ currentPageReviews + 1 }} of {{ totalPagesReviews }}
-      </p>
+      <div v-else>No reviews found.</div>
+      <p v-if="reviews && reviews.length > 4" class="font-size-14 inter-light font-color-green"
+        style="text-align: center">
+        {{ currentPageReviews + 1 }} of {{ totalPagesReviews }}</p>
     </div>
     <hr />
-    <h3 class="font-size-20 inter-medium font-color-green page-title">
-      Meet your host
-    </h3>
+    <h3 class="font-size-20 inter-medium font-color-green page-title">Meet your host</h3>
     <div id="hostInfo">
-      <router-link :to="{ name: 'profile' }" id="meetInfoOwner">
-        <img
-          id="meetPhotoOwner"
-          src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"
-        />
+      <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="meetInfoOwner">
+        <img id="meetPhotoOwner"
+          src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
         <div id="info">
           <div class="name">
-            <h2 class="font-size-24 inter-medium font-color-green">
-              {{ owner.first_name }}
-            </h2>
-            <h2 class="font-size-24 inter-medium font-color-green">
-              {{ owner.last_name }}
-            </h2>
+            <h2 class="font-size-24 inter-medium font-color-green">{{ owner.first_name }}</h2>
+            <h2 class="font-size-24 inter-medium font-color-green">{{ owner.last_name }}</h2>
           </div>
           <div class="rating">
-            <h2 class="font-size-32 inter-medium font-color-green">
-              {{ ownerRating }}
-            </h2>
+            <h2 class="font-size-32 inter-medium font-color-green">{{ ownerRating }}</h2>
             <Star fillColor="#133E1A" />
           </div>
         </div>
       </router-link>
       <div id="moreOwnerInfo">
         <div v-if="owner && owner.owner_description != null">
-          <p class="font-size-18 inter-light font-color-green">
-            {{ owner.owner_description }}
-          </p>
-          <p
-            @click="readMoreMeet = true"
-            v-if="
-              !readMoreMeet & (owner.owner_description.split('').length > 240)
-            "
-            class="font-size-16 inter-medium font-color-green read"
-          >
-            Read more +
-          </p>
-          <p
-            @click="readMoreMeet = false"
-            v-if="readMoreMeet"
-            class="font-size-16 inter-medium font-color-green read"
-          >
-            Read less -
-          </p>
+          <p class="font-size-18 inter-light font-color-green">{{ owner.owner_description }}</p>
+          <p @click="readMoreMeet = true" v-if="!readMoreMeet & (owner.owner_description.split('').length > 240)"
+            class="font-size-16 inter-medium font-color-green read">Read more +</p>
+          <p @click="readMoreMeet = false" v-if="readMoreMeet" class="font-size-16 inter-medium font-color-green read">
+            Read
+            less -</p>
         </div>
         <div v-else style="margin-top: 2em"></div>
-        <router-link :to="{ name: 'messages' }"
-          ><button class="button-green">Message Lindsay</button></router-link
-        >
+        <router-link :to="{ name: 'messages' }"><button class="button-green" id="msgBtn">Message {{ owner.username
+            }}</button></router-link>
       </div>
     </div>
+    <VCalendar :initial-page="{ month: new Date().getMonth() + 1, year: 2024 }" :attributes="attributes" />
   </main>
 </template>
 
@@ -294,6 +178,8 @@ import Television from "vue-material-design-icons/Television.vue";
 import { usePropertiesStore } from "@/stores/properties";
 import { useReviewsStore } from "@/stores/reviews";
 import { useUsersStore } from "@/stores/users";
+import { useReservationsStore } from "@/stores/reservations";
+import { ref } from 'vue';
 
 export default {
   data() {
@@ -305,7 +191,7 @@ export default {
       ],
       dateOut: "",
       dateIn: "",
-      nrGuests: 0,
+      nrGuests: 1,
       readMore: false,
       readMoreMeet: false,
       currentPageExtras: 0,
@@ -315,31 +201,45 @@ export default {
       propertiesStore: usePropertiesStore(),
       reviewsStore: useReviewsStore(),
       usersStore: useUsersStore(),
+      reservationsStore: useReservationsStore(),
       ownerFetched: false,
+      errorMessage: "",
+      sucessfullMessage: "",
+      disabledDates: [],
+      minDate: new Date().toISOString().split("T")[0],
+      attributes: null
     };
+  },
+
+  components: {
+    ArrowLeft,
+    ArrowRight,
+    Guests,
+    Star,
+    Television,
   },
 
   async created() {
     await this.propertiesStore.fetchProperty(this.$route.params.id);
-    console.log(this.property);
     await this.reviewsStore.fetchReviews(this.$route.params.id);
     await this.usersStore.fetchUser(this.property.owner_username);
     await this.usersStore.fetchUserReviews(this.property.owner_username);
+    await this.reservationsStore.fetchReservationsPerProperty(this.$route.params.id);
+    console.log(new Date(2018, 0, 15));
+    this.computeDisabledDates()
   },
 
   computed: {
     descriptionProperty() {
-      let descriptionArray = this.property.description.split("");
-      if (descriptionArray.length > 240 && !this.readMore) {
+      let descriptionArray = this.property.description?.split("");
+      if (descriptionArray?.length > 240 && !this.readMore) {
         return descriptionArray.slice(0, 240).join("");
       } else {
-        return descriptionArray.join("");
+        return descriptionArray?.join("");
       }
     },
 
     paginatedExtras() {
-      console.log("Here");
-      console.log(this.property.amenities);
       const start = this.currentPageExtras * this.pageSizeExtras;
       return this.property.amenities.slice(start, start + this.pageSizeExtras);
     },
@@ -358,7 +258,6 @@ export default {
 
     descriptionOwner() {
       let descriptionArray = this.owner.owner_description.split("");
-      console.log(descriptionArray);
       if (descriptionArray.length > 240 && !this.readMoreMeet) {
         return descriptionArray.slice(0, 240).join("");
       } else {
@@ -380,7 +279,6 @@ export default {
     },
 
     property() {
-      //console.log(this.propertiesStore.getProperty.amenities);
       return this.propertiesStore.getProperty;
     },
 
@@ -420,6 +318,23 @@ export default {
   },
 
   methods: {
+    computeDisabledDates() {
+      const reservations = this.reservationsStore.getReservationsProperty
+      reservations.forEach(reservation => {
+        const start = new Date(reservation.dateIn);
+        const end = new Date(reservation.dateOut);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          this.disabledDates.push(new Date(d));
+          this.attributes = ref([
+            {
+              content: 'red',
+              dates: this.disabledDates
+            },
+          ])
+        }
+      });
+    },
+
     nextPage(n) {
       if (n == "extras") {
         if (this.currentPageExtras < this.totalPagesExtras - 1) {
@@ -443,14 +358,36 @@ export default {
         }
       }
     },
-  },
 
-  components: {
-    ArrowLeft,
-    ArrowRight,
-    Guests,
-    Star,
-    Television,
+    async rentProperty() {
+      console.log(this.dateIn, this.dateOut, this.total);
+      if (!this.dateIn || !this.dateOut || this.total <= 0) {
+        this.errorMessage = 'Invalid booking details'
+        return
+      } else {
+        try {
+          await this.reservationsStore.createReservation({
+            "property_ID": this.property.ID,
+            "dateIn": this.dateIn,
+            "dateOut": this.dateOut,
+            "total_price": this.total,
+            "username": "carolina",
+            "payment_type": 1
+          })
+
+          this.sucessfullMessage = 'Reservation Successful'
+          this.errorMessage = ''
+        } catch (error) {
+          if (error == 'Error: API request failed with status 400: {"success":false,"error":"Invalid date","msg":"You can only make reservations for future days"}') {
+            this.errorMessage = ''
+            this.errorMessage = 'You can only make reservations for future days.';
+          } else if (error == 'Error: API request failed with status 400: {"success":false,"error":"Property already booked","msg":"You cant proceed with the reservation because there is already a reservation during the chosen dates."}') {
+            this.errorMessage = ''
+            this.errorMessage = 'There is already a reservation during the chosen dates.';
+          }
+        }
+      }
+    }
   },
 };
 </script>
@@ -470,19 +407,18 @@ export default {
   background-color: #f2f2f2;
   border-radius: 11px;
   margin: 2rem 0;
-  height: 10rem;
+  height: 50%;
   row-gap: 1rem;
 }
 
 #dateIn {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 #guests {
   display: flex;
   flex-direction: row;
   column-gap: 2rem;
-  margin-bottom: 1rem;
 }
 
 #total {
@@ -576,10 +512,6 @@ hr {
   text-decoration: underline #133e1a;
 }
 
-#extras p {
-  text-align: center;
-}
-
 #extrasGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -669,5 +601,23 @@ iframe {
 .name {
   display: flex;
   column-gap: 0.5em;
+}
+
+#msgBtn {
+  margin-top: 1em;
+}
+
+#errorMessage,
+#sucessfullMessage {
+  padding: 0 16px;
+  margin-bottom: 0.5em;
+}
+
+#errorMessage {
+  color: red;
+}
+
+#sucessfullMessage {
+  color: green;
 }
 </style>

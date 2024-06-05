@@ -1,8 +1,6 @@
 <template>
   <main class="py-8 px-4">
-    <h1 class="inter-medium font-color-green font-size-24 page-title">
-      Your properties
-    </h1>
+    <h1 class="inter-medium font-color-green font-size-24 page-title">Your properties</h1>
     <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
       <div v-for="property in properties" :key="property.ID">
         <PropertyContainer :id="property.ID" :image="getPropertyImage(property)" :name="property.title"
