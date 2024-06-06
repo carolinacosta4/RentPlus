@@ -288,7 +288,7 @@ import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import { usePropertiesStore } from "@/stores/properties";
 import { useAmenitiesStore } from "@/stores/amenities";
 import { usePropertyTypesStore } from "@/stores/propertyTypes";
-
+import { useUsersStore } from "@/stores/users";
 
 export default {
   data() {
@@ -318,6 +318,7 @@ export default {
       amenitiesData: [],
       photos: [],
       newProperty: {
+        owner_username: "",
         title: "",
         type: "",
         mapUrl: "",
@@ -373,7 +374,8 @@ export default {
       },
       propertiesStore: usePropertiesStore(),
       amenitiesStore: useAmenitiesStore(),
-      propertyTypesStore: usePropertyTypesStore()
+      propertyTypesStore: usePropertyTypesStore(),
+      usersStore: useUsersStore()
     };
   },
   components: {
@@ -382,12 +384,13 @@ export default {
   },
   computed: {
     amenities() {
-      console.log("amenitites " + this.amenitiesStore.getAmenities);
       return this.amenitiesStore.getAmenities;
     },
     propertyTypes() {
-      console.log("property types " + this.propertyTypesStore.getPropertyTypes);
       return this.propertyTypesStore.getPropertyTypes;
+    },
+    loggedUser(){
+      return this.usersStore.getUserLogged;
     }
   },
   async created() {
@@ -397,6 +400,7 @@ export default {
   methods: {
     async sendInfo() {
       if (this.showStepOne) {
+        console.log(this.loggedUser);
         let selectedCountry = this.countries.find(
           (country) => country.name === this.country
         );
@@ -416,6 +420,7 @@ export default {
         } else {
           let countryShort = selectedCountry.short;
 
+          this.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
           this.newProperty.price = this.price;
           this.newProperty.mapUrl = this.mapUrl;
@@ -423,7 +428,6 @@ export default {
           this.newProperty.description = this.description;
           this.newProperty.photos = this.photos;
 
-          console.log(this.newProperty);
           this.showStepOne = false;
           this.showStepTwo = true;
         }
@@ -452,22 +456,28 @@ export default {
           throw new Error("Invalid number format");
           console.log("Invalid number format");
         } else if (!this.type) {
+          
           // throw new Error("Missing type");
           console.log("Missing type");
         } else if (!this.checkbox) {
           // throw new Error("Must agree to the Privacy Policy");
           console.log("Must agree to the Privacy Policy");
         } else {
+
           this.newProperty.type = this.type;
           this.newProperty.beds = this.beds;
           this.newProperty.bedrooms = this.bedrooms;
           this.newProperty.bathrooms = this.bathrooms;
           this.newProperty.guests = this.guests;
-          this.showModal = true;
+          console.log(this.type);
+          console.log(this.newProperty);
           try {
+            console.log(this.newProperty);
             await this.propertiesStore.create(this.newProperty)
+            this.showModal = true;
+            console.log("here");
           } catch (error) {
-            console.log(error.message);
+            console.log(error);
           }
         }
       }
