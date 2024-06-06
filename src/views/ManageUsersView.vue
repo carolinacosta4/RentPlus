@@ -65,7 +65,9 @@
       </table>
     </div>
     <div id="tools">
-      <router-link :to="{ name: 'profile', params: {id: owner.username} }"><button id="back" class="button-green inter-bold font-size-14">Go
+      <router-link :to="{ name: 'profile', params: {id: 'alice_smith'} }">
+        <!-- <router-link :to="{ name: 'profile', params: {id: 'alice_smith'} }"> -->
+        <button id="back" class="button-green inter-bold font-size-14">Go
           back</button></router-link>
       <div id="pagination" class="inter-medium">
         <ArrowLeft @click="previousPage" :disabled="currentPage === 1"></ArrowLeft>

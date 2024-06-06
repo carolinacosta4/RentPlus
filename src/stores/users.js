@@ -9,14 +9,16 @@ export const useUsersStore = defineStore('user', {
     user: "",
     reviews: [],
     token: null,
-    loggedUser: "alice"
+    loggedUser: localStorage.getItem("user"),
+    loggedUserInfo: []
   }),
   getters: {
     getUsers: (state) => state.users,
     getUser: (state) => state.user,
     getOwnerReviews: (state) => state.reviews,
     getToken: (state) => state.token,
-    getUserLogged: (state) => state.loggedUser
+    getUserLogged: (state) => state.loggedUser,
+    getUserLoggedInfo: (state) => state.loggedUserInfo,
   },
   actions: {
     async fetchUsers() {
@@ -30,9 +32,19 @@ export const useUsersStore = defineStore('user', {
 
     async fetchUser(username) {
       try {
-        this.users = []
+        this.user = ""
         const response = await api.get(API_BASE_URL, `users/${username}`)
         this.user = response.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async fetchUserLogged(username) {
+      try {
+        this.loggedUserInfo = []
+        const response = await api.get(API_BASE_URL, `users/${username}`)
+        this.loggedUserInfo = response.data
       } catch (error) {
         console.error(error)
       }
@@ -76,8 +88,9 @@ export const useUsersStore = defineStore('user', {
         if (response.success) {
           this.token = response.accessToken;
           this.loggedUser = username
-          console.log(this.loggedUser);
-          sessionStorage.setItem("authToken", this.token);
+          localStorage.setItem("authToken", this.token);
+          localStorage.setItem("user", this.loggedUser)
+          // sessionStorage.setItem("authToken", this.token);
         }
 
       } catch (error) {
@@ -87,12 +100,13 @@ export const useUsersStore = defineStore('user', {
 
     async logout(){
       this.token = null
-      this.loggedUser = ""
-      sessionStorage.removeItem("authToken");
+      this.loggedUser = null
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user")
+      // sessionStorage.removeItem("authToken");
     },
 
     async editProfile(data, username){
-      console.log(data);
       const response = await api.patch(API_BASE_URL, `users/${username}`, data);
       console.log("User edited successfully:", response);
 
