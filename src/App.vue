@@ -1,6 +1,11 @@
-<script setup>
+<script>
 import { RouterView } from "vue-router";
 import NavbarVue from "./components/Navbar.vue";
+export default{
+  components: {
+    NavbarVue,
+  },
+}
 </script>
 
 <template>
