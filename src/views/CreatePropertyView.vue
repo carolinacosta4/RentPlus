@@ -100,10 +100,10 @@
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="pictures">Property pictures</label>
+              <label for="photos">Property photos</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-file-input name="pictures" class="input height10 inter-light" prepend-icon="" v-model="pictures"
+            <v-file-input name="photos" class="input height10 inter-light" prepend-icon="" v-model="photos"
               :rules="[rules.fileInputRules]" multiple>
               <template #prepend>
                 <img src="../assets/images/cloud-computing.png" alt="Label Image" style="width: 2.2em; height: 2em" />
@@ -120,7 +120,7 @@
             <p class="font-color-red inter-medium">*</p>
           </div>
 
-          <v-autocomplete id="selectAmenities" v-model="amenitiesData" :items="amenitiesList.sort()"
+          <v-autocomplete id="selectAmenities" v-model="amenitiesData" :items="amenities.sort()"
             class="input select inter-light" label="Select an option" density="comfortable"
             :rules="[rules.fileInputRules]" multiple>
             <template v-slot:selection="{ item, index }">
@@ -152,7 +152,7 @@
             <p class="font-color-red inter-medium">*</p>
           </div>
 
-          <v-autocomplete id="selectType" v-model="type" class="input select inter-light" :items="optionTypes.sort()"
+          <v-autocomplete id="selectType" v-model="type" class="input select inter-light" :items="propertyTypes.sort()"
             label="Select an option" density="comfortable" :rules="[rules.required]"></v-autocomplete>
         </div>
 
@@ -226,10 +226,8 @@
                     <button class="inter-medium button-border-green" @click="isActive.value = false">
                       No
                     </button>
-                    <button
-                      class="inter-medium button-green"
-                      @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
-                    >
+                    <button class="inter-medium button-green"
+                      @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
                       Yes, cancel
                     </button>
                   </div>
@@ -273,10 +271,8 @@
           </v-card-text>
 
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
-            <button
-              class="inter-medium button-white"
-              @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
-            >
+            <button class="inter-medium button-white"
+              @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
               Continue
             </button>
           </v-card-actions>
@@ -289,6 +285,10 @@
 <script>
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import { usePropertiesStore } from "@/stores/properties";
+import { useAmenitiesStore } from "@/stores/amenities";
+import { usePropertyTypesStore } from "@/stores/propertyTypes";
+
 
 export default {
   data() {
@@ -296,6 +296,11 @@ export default {
       showStepOne: true,
       showStepTwo: false,
       showStepThree: false,
+     
+
+      stepOneDone: false,
+      stepTwoDone: false,
+      stepThreeDone: false,
       checkbox: false,
       showModal: false,
       title: "",
@@ -311,15 +316,14 @@ export default {
       bathrooms: null,
       guests: null,
       amenitiesData: [],
-      pictures: [],
-      optionTypes: ["Igloo", "Pent-house", "Mansion", "Beach house"],
+      photos: [],
       newProperty: {
         title: "",
         type: "",
         mapUrl: "",
         location: "",
         description: "",
-        pictures: [],
+        photos: [],
         amenities: [],
         price: null,
         beds: null,
@@ -327,7 +331,6 @@ export default {
         bathrooms: null,
         guests: null,
       },
-      amenitiesList: ["TV", "Swimming pool", "Fridge", "Pets allowed", "Wifi"],
       countries: [
         {
           name: "Portugal",
@@ -368,14 +371,31 @@ export default {
         checkboxRequired: (value) =>
           value || "Please consent on sharing your information online.",
       },
+      propertiesStore: usePropertiesStore(),
+      amenitiesStore: useAmenitiesStore(),
+      propertyTypesStore: usePropertyTypesStore()
     };
   },
   components: {
     ArrowRight,
     ArrowLeft,
   },
+  computed: {
+    amenities() {
+      console.log("amenitites " + this.amenitiesStore.getAmenities);
+      return this.amenitiesStore.getAmenities;
+    },
+    propertyTypes() {
+      console.log("property types " + this.propertyTypesStore.getPropertyTypes);
+      return this.propertyTypesStore.getPropertyTypes;
+    }
+  },
+  async created() {
+    await this.amenitiesStore.fetchAmenities()
+    await this.propertyTypesStore.fetchPropertyTypes()
+  },
   methods: {
-    sendInfo() {
+    async sendInfo() {
       if (this.showStepOne) {
         let selectedCountry = this.countries.find(
           (country) => country.name === this.country
@@ -388,7 +408,7 @@ export default {
           !this.country ||
           !this.city ||
           !this.description ||
-          this.pictures.length == 0
+          this.photos.length == 0
         ) {
           throw new Error("Missing information");
         } else if (!selectedCountry) {
@@ -401,7 +421,7 @@ export default {
           this.newProperty.mapUrl = this.mapUrl;
           this.newProperty.location = `${this.city}, ${countryShort}`;
           this.newProperty.description = this.description;
-          this.newProperty.pictures = this.pictures;
+          this.newProperty.photos = this.photos;
 
           console.log(this.newProperty);
           this.showStepOne = false;
@@ -409,13 +429,10 @@ export default {
         }
       }
       if (this.showStepTwo) {
-        // pra não passar pra frente pode limpar a lista sempre que vem pra cá, mas não é muito user friendly
         if (this.amenitiesData.length == 0) {
-          throw new Error("Missing information");
+          this.showStepThree = false;
         } else {
           this.newProperty.amenities = this.amenitiesData;
-
-          console.log(this.newProperty);
           this.showStepTwo = false;
           this.showStepThree = true;
         }
@@ -433,10 +450,13 @@ export default {
           !this.rules.isInteger(this.guests)
         ) {
           throw new Error("Invalid number format");
+          console.log("Invalid number format");
         } else if (!this.type) {
-          throw new Error("Missing information");
+          // throw new Error("Missing type");
+          console.log("Missing type");
         } else if (!this.checkbox) {
-          throw new Error("Must agree to the Privacy Policy");
+          // throw new Error("Must agree to the Privacy Policy");
+          console.log("Must agree to the Privacy Policy");
         } else {
           this.newProperty.type = this.type;
           this.newProperty.beds = this.beds;
@@ -444,9 +464,11 @@ export default {
           this.newProperty.bathrooms = this.bathrooms;
           this.newProperty.guests = this.guests;
           this.showModal = true;
-          console.log(`NOVA PROPRIEDADE: ${this.newProperty}`);
-
-          //   create property in the bd
+          try {
+            await this.propertiesStore.create(this.newProperty)
+          } catch (error) {
+            console.log(error.message);
+          }
         }
       }
     },

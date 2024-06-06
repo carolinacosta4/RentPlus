@@ -58,7 +58,7 @@
             >
             <router-link
               @click="toggleDropdown"
-              :to="{ name: 'profile', params: {id: 'alice'} }"
+              :to="{ name: 'profile', params: {id: 'beatriz'} }"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Account</router-link
             >
@@ -90,7 +90,7 @@
         </div>
 
         <!-- PROFILE PICTURE -->
-        <router-link :to="{ name: 'profile', params: {id: 'alice'} }">
+        <router-link :to="{ name: 'profile', params: {id: 'beatriz'} }">
           <img
             class="w-8 h-8 rounded-full"
             src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"

@@ -77,7 +77,7 @@ export const useUsersStore = defineStore('user', {
           this.token = response.accessToken;
           this.loggedUser = username
           console.log(this.loggedUser);
-          sessionStorage.setItem("authToken", this.token);
+          localStorage.setItem("authToken", this.token);
         }
 
       } catch (error) {
@@ -88,7 +88,7 @@ export const useUsersStore = defineStore('user', {
     async logout(){
       this.token = null
       this.loggedUser = ""
-      sessionStorage.removeItem("authToken");
+      localStorage.removeItem("authToken");
     },
 
     async editProfile(data, username){

@@ -35,19 +35,20 @@ export const usePropertiesStore = defineStore("property", {
     async create(newProperty){
       try {
         const response = await api.post(API_BASE_URL, 'properties', {
-          username: newUser.username,
-          email: newUser.email,
-          user_role: "guest",
-          password: newUser.password,
-          first_name: newUser.firstName,
-          last_name: newUser.lastName
+          property_type: newProperty.property_type,
+          title: newProperty.title,
+          description: newProperty.description,
+          location: newProperty.location,
+          map_url: newProperty.map_url,
+          daily_price: newProperty.daily_price,
+          guest_number: newProperty.guest_number,
+          bathrooms: newProperty.bathrooms,
+          bedrooms: newProperty.bedrooms,
+          beds: newProperty.beds,
+          amenities: newProperty.amenities,
+          photos: newProperty.photos
         });
 
-        if (response.success) {
-          await this.login(newUser.username, newUser.password);
-        } else {
-          throw new Error('Registration failed');
-        }
       } catch (error) {
         throw error.message
       }
