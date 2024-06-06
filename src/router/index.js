@@ -74,7 +74,7 @@ const router = createRouter({
       component: ManagePropertiesView,
     },
     {
-      path: "/messages",
+      path: "/messages/:id?",
       name: "messages",
       component: MessagesView,
     },

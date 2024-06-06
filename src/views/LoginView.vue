@@ -40,9 +40,9 @@ export default {
     }
   },
 
-  created() {
-    this.$router;
-  },
+  // created() {
+  //   this.$router;
+  // },
   methods: {
     async submit() {
       if (!this.username || !this.password) {

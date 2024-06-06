@@ -43,6 +43,12 @@
       <div id="photoBtn">
         <button class="font-color-green inter-bold button-white" @click="triggerFileInput"
           v-if="user.username == loggedUser">Change photo</button>
+
+        <button class="font-color-green inter-bold button-white"
+          v-if="user.username != loggedUser && user.user_role == 'owner'">
+          <router-link :to="{ name: 'messages', params: { id: user.username } }"><button class="button-green"
+              id="msgBtn">Message {{ user.username
+              }}</button></router-link></button>
         <!-- AQUI -->
         <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none" />
       </div>
@@ -83,7 +89,7 @@
 
                 <v-card-actions>
                   <div class="btnsModal">
-                    <button class="inter-medium button-green">Save changes</button>
+                    <button class="inter-medium button-green" @click="isActive.value = false">Save changes</button>
                     <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
                   </div>
                 </v-card-actions>
@@ -170,9 +176,9 @@ export default {
       if (this.newPhone != "") fields.phone_number = this.newPhone
 
       this.usersStore.editProfile(fields, this.loggedUser)
-      .then(() => {
-        this.fetchUserData();
-      });
+        .then(() => {
+          this.fetchUserData();
+        });
     }
   },
 
