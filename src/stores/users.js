@@ -8,7 +8,7 @@ export const useUsersStore = defineStore('user', {
     users: [],
     user: "",
     reviews: [],
-    token: null,
+    token: localStorage.getItem("authToken"),
     loggedUser: localStorage.getItem("user"),
     loggedUserInfo: []
   }),
@@ -107,7 +107,7 @@ export const useUsersStore = defineStore('user', {
     },
 
     async editProfile(data, username){
-      const response = await api.patch(API_BASE_URL, `users/${username}`, data);
+      const response = await api.patch(API_BASE_URL, `users/${username}`, data, this.token);
       console.log("User edited successfully:", response);
 
     },

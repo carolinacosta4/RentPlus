@@ -32,13 +32,14 @@ export async function get(apiBaseUrl, endpoint){
 
 
 // Buscar aqui a parte dos tokens
-export async function post(apiBaseUrl, endpoint, data){
+export async function post(apiBaseUrl, endpoint, data, token){
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`,
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body:JSON.stringify(data)
         })
@@ -55,12 +56,13 @@ export async function post(apiBaseUrl, endpoint, data){
  * @param {object} data - the data that will be sent to the server
  * @returns a promise object with the response
  */
-export async function patch(apiBaseUrl, endpoint, data) {
+export async function patch(apiBaseUrl, endpoint, data, token) {
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });
@@ -77,12 +79,13 @@ export async function patch(apiBaseUrl, endpoint, data) {
  * @param {string} endpoint - this is the endpoint of the API
  * @returns a promise object with the response
  */
-export async function remove(apiBaseUrl, endpoint){
+export async function remove(apiBaseUrl, endpoint, token){
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             }
         });
         return handleResponse(response);
