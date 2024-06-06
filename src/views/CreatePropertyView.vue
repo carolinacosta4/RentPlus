@@ -44,21 +44,21 @@
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="price">Price/night</label>
+              <label for="daily_price">Price/night</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field name="price" class="input inter-light" v-model="price" density="comfortable"
+            <v-text-field name="daily_price" class="input inter-light" v-model="daily_price" density="comfortable"
               placeholder="Ex.: 1200,00" :rules="[rules.required, rules.isANumber]"></v-text-field>
           </div>
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="mapUrl">Map URL</label>
+              <label for="map_url">Map URL</label>
 
               <p class="font-color-red inter-medium">*</p>
             </div>
 
-            <v-text-field name="mapUrl" class="input inter-light" v-model="mapUrl" density="comfortable"
+            <v-text-field name="map_url" class="input inter-light" v-model="map_url" density="comfortable"
               :rules="[rules.required]"></v-text-field>
           </div>
 
@@ -152,17 +152,18 @@
             <p class="font-color-red inter-medium">*</p>
           </div>
 
-          <v-autocomplete id="selectType" v-model="type" class="input select inter-light" :items="propertyTypes.sort()"
-            label="Select an option" density="comfortable" :rules="[rules.required]"></v-autocomplete>
+          <v-autocomplete id="selectType" v-model="property_type" class="input select inter-light"
+            :items="propertyTypes.sort()" label="Select an option" density="comfortable"
+            :rules="[rules.required]"></v-autocomplete>
         </div>
 
         <div id="right" class="groupInputs">
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="guests">Number of Guests</label>
+              <label for="guest_number">Number of Guests</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field name="guests" class="input inter-light" v-model="guests" density="comfortable"
+            <v-text-field name="guest_number" class="input inter-light" v-model="guest_number" density="comfortable"
               :rules="[rules.required, rules.isANumber, rules.isInteger]"></v-text-field>
           </div>
 
@@ -246,7 +247,7 @@
             v-if="!this.showStepThree">
             Next step<ArrowRight class="font-color-green"> </ArrowRight>
           </button>
-          <button type="submit" @click="this.sendInfo()" class="button-green btnNextStepFinal inter-bold"
+          <button type="submit" @click="this.createProperty()" class="button-green btnNextStepFinal inter-bold"
             v-if="this.showStepThree">
             Create porperty
           </button>
@@ -296,41 +297,36 @@ export default {
       showStepOne: true,
       showStepTwo: false,
       showStepThree: false,
-     
-
-      stepOneDone: false,
-      stepTwoDone: false,
-      stepThreeDone: false,
       checkbox: false,
       showModal: false,
       title: "",
-      type: "",
-      mapUrl: "",
+      property_type: "",
+      map_url: "",
       location: "",
       description: "",
       country: "",
       city: "",
-      price: null,
+      daily_price: null,
       beds: null,
       bedrooms: null,
       bathrooms: null,
-      guests: null,
+      guest_number: null,
       amenitiesData: [],
       photos: [],
       newProperty: {
         owner_username: "",
         title: "",
-        type: "",
-        mapUrl: "",
+        property_type: "",
+        map_url: "",
         location: "",
         description: "",
         photos: [],
         amenities: [],
-        price: null,
+        daily_price: null,
         beds: null,
         bedrooms: null,
         bathrooms: null,
-        guests: null,
+        guest_number: null,
       },
       countries: [
         {
@@ -389,41 +385,44 @@ export default {
     propertyTypes() {
       return this.propertyTypesStore.getPropertyTypes;
     },
-    loggedUser(){
+    loggedUser() {
       return this.usersStore.getUserLogged;
+    },
+    loggedUserInfo(){
+      return this.usersStore.getUserLoggedInfo
     }
   },
   async created() {
+    // localStorage.clear()
     await this.amenitiesStore.fetchAmenities()
     await this.propertyTypesStore.fetchPropertyTypes()
+    this.usersStore.fetchUserLogged(this.loggedUser)
   },
   methods: {
     async sendInfo() {
+      console.log(this.loggedUserInfo);
       if (this.showStepOne) {
-        console.log(this.loggedUser);
+        console.log(this.loggedUserInfo);
         let selectedCountry = this.countries.find(
           (country) => country.name === this.country
         );
 
         if (
           !this.title ||
-          !this.rules.isANumber(this.price) ||
-          !this.mapUrl ||
+          !this.rules.isANumber(this.daily_price) ||
+          !this.map_url ||
           !this.country ||
           !this.city ||
           !this.description ||
           this.photos.length == 0
         ) {
           throw new Error("Missing information");
-        } else if (!selectedCountry) {
-          throw new Error("Invalid country selected");
         } else {
           let countryShort = selectedCountry.short;
-
-          this.owner_username = this.loggedUser;
+          this.newProperty.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
-          this.newProperty.price = this.price;
-          this.newProperty.mapUrl = this.mapUrl;
+          this.newProperty.daily_price = this.daily_price;
+          this.newProperty.map_url = this.map_url;
           this.newProperty.location = `${this.city}, ${countryShort}`;
           this.newProperty.description = this.description;
           this.newProperty.photos = this.photos;
@@ -433,10 +432,11 @@ export default {
         }
       }
       if (this.showStepTwo) {
+        const amenitiesMap = this.amenitiesStore.getAmenitiesMap;
         if (this.amenitiesData.length == 0) {
           this.showStepThree = false;
         } else {
-          this.newProperty.amenities = this.amenitiesData;
+          this.newProperty.amenities = this.amenitiesData.map(amenity => amenitiesMap[amenity]);
           this.showStepTwo = false;
           this.showStepThree = true;
         }
@@ -450,35 +450,16 @@ export default {
           !this.rules.isInteger(this.bedrooms) ||
           !this.rules.isANumber(this.bathrooms) ||
           !this.rules.isInteger(this.bathrooms) ||
-          !this.rules.isANumber(this.guests) ||
-          !this.rules.isInteger(this.guests)
+          !this.rules.isANumber(this.guest_number) ||
+          !this.rules.isInteger(this.guest_number)
         ) {
           throw new Error("Invalid number format");
-          console.log("Invalid number format");
-        } else if (!this.type) {
-          
-          // throw new Error("Missing type");
-          console.log("Missing type");
-        } else if (!this.checkbox) {
-          // throw new Error("Must agree to the Privacy Policy");
-          console.log("Must agree to the Privacy Policy");
         } else {
-
-          this.newProperty.type = this.type;
+          this.newProperty.property_type = this.property_type;
           this.newProperty.beds = this.beds;
           this.newProperty.bedrooms = this.bedrooms;
           this.newProperty.bathrooms = this.bathrooms;
-          this.newProperty.guests = this.guests;
-          console.log(this.type);
-          console.log(this.newProperty);
-          try {
-            console.log(this.newProperty);
-            await this.propertiesStore.create(this.newProperty)
-            this.showModal = true;
-            console.log("here");
-          } catch (error) {
-            console.log(error);
-          }
+          this.newProperty.guest_number = this.guest_number;
         }
       }
     },
@@ -493,6 +474,15 @@ export default {
         this.showStepTwo = true;
       }
     },
+    async createProperty() {
+      try {
+        await this.propertiesStore.create(this.newProperty)
+        this.showModal = true;
+        console.log("here");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
 };
 </script>

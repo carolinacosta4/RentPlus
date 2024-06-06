@@ -33,28 +33,24 @@ export const usePropertiesStore = defineStore("property", {
       }
     },
     async create(newProperty){
-      console.log(localStorage.getItem("authToken"));
       try {
         const response = await api.post(API_BASE_URL, 'properties', {
           owner_username: newProperty.owner_username,
-          property_type: newProperty.type,
+          property_type: newProperty.property_type,
           title: newProperty.title,
           description: newProperty.description,
           location: newProperty.location,
-          map_url: newProperty.mapUrl,
-          daily_price: newProperty.price,
-          guest_number: newProperty.guests,
+          map_url: newProperty.map_url,
+          daily_price: newProperty.daily_price,
+          guest_number: newProperty.guest_number,
           bathrooms: newProperty.bathrooms,
           bedrooms: newProperty.bedrooms,
           beds: newProperty.beds,
           amenities: newProperty.amenities,
-          photos: newProperty.photos,
-
+          // photos: newProperty.photos,
         },
         localStorage.getItem("authToken")
       );
-
-
       } catch (error) {
         throw error.message
       }
