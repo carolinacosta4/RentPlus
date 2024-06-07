@@ -173,7 +173,7 @@
               <p class="font-color-red inter-medium">*</p>
             </div>
             <v-text-field name="beds" class="input inter-light" v-model="beds" density="comfortable"
-              :rules="[rules.required, rules.isANumber, rules.isInteger]"></v-text-field>
+              :rules="[rules.required, rules.isANumber]"></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -455,13 +455,13 @@ export default {
       if (this.showStepThree) {
         if (
           !this.rules.isANumber(this.beds) ||
-          !this.rules.isInteger(this.beds) ||
+          // !this.rules.isInteger(this.beds) ||
           !this.rules.isANumber(this.bedrooms) ||
-          !this.rules.isInteger(this.bedrooms) ||
+          // !this.rules.isInteger(this.bedrooms) ||
           !this.rules.isANumber(this.bathrooms) ||
-          !this.rules.isInteger(this.bathrooms) ||
-          !this.rules.isANumber(this.guest_number) ||
-          !this.rules.isInteger(this.guest_number)
+          // !this.rules.isInteger(this.bathrooms) ||
+          !this.rules.isANumber(this.guest_number)
+          // !this.rules.isInteger(this.guest_number)
         ) {
           throw new Error("Invalid number format");
         } else {
@@ -471,10 +471,10 @@ export default {
             this.newProperty.property_type = this.newType;
           }
 
-          this.newProperty.beds = parseInt(this.beds);
-          this.newProperty.bedrooms = parseInt(this.bedrooms);
-          this.newProperty.bathrooms = parseInt(this.bathrooms);
-          this.newProperty.guest_number = parseInt(this.guest_number);
+          this.newProperty.beds = parseInt(this.beds, 10);
+          this.newProperty.bedrooms = parseInt(this.bedrooms, 10);
+          this.newProperty.bathrooms = parseInt(this.bathrooms, 10);
+          this.newProperty.guest_number = parseInt(this.guest_number, 10);
         }
       }
     },
