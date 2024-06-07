@@ -9,12 +9,7 @@
         Step 1 - Main Information
       </p>
 
-      <v-progress-linear
-        id="progressBar"
-        color="#133E1A"
-        model-value="33"
-        :height="8"
-      ></v-progress-linear>
+      <v-progress-linear id="progressBar" color="#133E1A" model-value="33" :height="8"></v-progress-linear>
     </div>
 
     <div v-if="this.showStepTwo">
@@ -22,12 +17,7 @@
         Step 2 - Amenities
       </p>
 
-      <v-progress-linear
-        id="progressBar"
-        color="#133E1A"
-        model-value="66"
-        :height="8"
-      ></v-progress-linear>
+      <v-progress-linear id="progressBar" color="#133E1A" model-value="66" :height="8"></v-progress-linear>
     </div>
 
     <div v-if="this.showStepThree">
@@ -35,12 +25,7 @@
         Step 3 - Price and divsions
       </p>
 
-      <v-progress-linear
-        id="progressBar"
-        color="#133E1A"
-        model-value="100"
-        :height="8"
-      ></v-progress-linear>
+      <v-progress-linear id="progressBar" color="#133E1A" model-value="100" :height="8"></v-progress-linear>
     </div>
 
     <v-form id="form" @submit.prevent="this.sendInfo">
@@ -53,46 +38,28 @@
               <p class="font-color-red inter-medium">*</p>
             </div>
 
-            <v-text-field
-              name="title"
-              class="input inter-light"
-              v-model="title"
-              density="comfortable"
-              :rules="[rules.required, rules.max50]"
-              maxlength="50"
-              counter
-            ></v-text-field>
+            <v-text-field name="title" class="input inter-light" v-model="title" density="comfortable"
+              :rules="[rules.required, rules.max50]" maxlength="50" counter></v-text-field>
           </div>
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="price">Price/night</label>
+              <label for="daily_price">Price/night</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field
-              name="price"
-              class="input inter-light"
-              v-model="price"
-              density="comfortable"
-              placeholder="Ex.: 1200,00"
-              :rules="[rules.required, rules.isANumber]"
-            ></v-text-field>
+            <v-text-field name="daily_price" class="input inter-light" v-model="daily_price" density="comfortable"
+              placeholder="Ex.: 1200,00" :rules="[rules.required, rules.isANumber]"></v-text-field>
           </div>
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="mapUrl">Map URL</label>
+              <label for="map_url">Map URL</label>
 
               <p class="font-color-red inter-medium">*</p>
             </div>
 
-            <v-text-field
-              name="mapUrl"
-              class="input inter-light"
-              v-model="mapUrl"
-              density="comfortable"
-              :rules="[rules.required]"
-            ></v-text-field>
+            <v-text-field name="map_url" class="input inter-light" v-model="map_url" density="comfortable"
+              :rules="[rules.required]"></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -102,15 +69,8 @@
               <p class="font-color-red inter-medium">*</p>
             </div>
 
-            <v-text-field
-              name="city"
-              class="input inter-light"
-              v-model="city"
-              density="comfortable"
-              :rules="[rules.required, rules.max50]"
-              maxlength="50"
-              counter
-            ></v-text-field>
+            <v-text-field name="city" class="input inter-light" v-model="city" density="comfortable"
+              :rules="[rules.required, rules.max50]" maxlength="50" counter></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -120,13 +80,8 @@
               <p class="font-color-red inter-medium">*</p>
             </div>
 
-            <v-autocomplete
-              v-model="country"
-              :items="countries"
-              item-title="name"
-              :rules="[rules.required]"
-              label="Select an option"
-            >
+            <v-autocomplete v-model="country" :items="countries" item-title="name" :rules="[rules.required]"
+              label="Select an option">
               <template v-slot:item="{ props, item }">
                 <v-list-item v-bind="props"></v-list-item>
               </template>
@@ -139,36 +94,19 @@
               <label for="description">Description</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-textarea
-              type="text"
-              name="description"
-              class="input height10 inter-light"
-              density="comfortable"
-              v-model="description"
-              :rules="[rules.required]"
-              auto-grow
-            ></v-textarea>
+            <v-textarea type="text" name="description" class="input height10 inter-light" density="comfortable"
+              v-model="description" :rules="[rules.required]" auto-grow></v-textarea>
           </div>
 
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="pictures">Property pictures</label>
+              <label for="photos">Property photos</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-file-input
-              name="pictures"
-              class="input height10 inter-light"
-              prepend-icon=""
-              v-model="pictures"
-              :rules="[rules.fileInputRules]"
-              multiple
-            >
+            <v-file-input name="photos" class="input height10 inter-light" prepend-icon="" v-model="photos"
+              :rules="[rules.fileInputRules]" multiple>
               <template #prepend>
-                <img
-                  src="../assets/images/cloud-computing.png"
-                  alt="Label Image"
-                  style="width: 2.2em; height: 2em"
-                />
+                <img src="../assets/images/cloud-computing.png" alt="Label Image" style="width: 2.2em; height: 2em" />
               </template>
             </v-file-input>
           </div>
@@ -182,16 +120,9 @@
             <p class="font-color-red inter-medium">*</p>
           </div>
 
-          <v-autocomplete
-            id="selectAmenities"
-            v-model="amenitiesData"
-            :items="amenitiesList.sort()"
-            class="input select inter-light"
-            label="Select an option"
-            density="comfortable"
-            :rules="[rules.fileInputRules]"
-            multiple
-          >
+          <v-autocomplete id="selectAmenities" v-model="amenitiesData" :items="amenitiesName.sort()"
+            class="input select inter-light" label="Select an option" density="comfortable"
+            :rules="[rules.fileInputRules]" multiple>
             <template v-slot:selection="{ item, index }">
               <v-chip v-if="index < 2">
                 <span>{{ item.title }}</span>
@@ -207,10 +138,7 @@
           <p class="label inter-medium font-size-14 font-color-black">
             Amenities chosen:
           </p>
-          <li
-            v-for="item in amenitiesData"
-            class="inter-light font-color-green font-size-14"
-          >
+          <li v-for="item in amenitiesData" class="inter-light font-color-green font-size-14">
             {{ item }}
           </li>
         </div>
@@ -224,30 +152,19 @@
             <p class="font-color-red inter-medium">*</p>
           </div>
 
-          <v-autocomplete
-            id="selectType"
-            v-model="type"
-            class="input select inter-light"
-            :items="optionTypes.sort()"
-            label="Select an option"
-            density="comfortable"
-            :rules="[rules.required]"
-          ></v-autocomplete>
+          <v-autocomplete id="selectType" v-model="property_type" class="input select inter-light"
+            :items="propertyTypesName.sort()" label="Select an option" density="comfortable"
+            :rules="[rules.required]"></v-autocomplete>
         </div>
 
         <div id="right" class="groupInputs">
           <div class="singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
-              <label for="guests">Number of Guests</label>
+              <label for="guest_number">Number of Guests</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field
-              name="guests"
-              class="input inter-light"
-              v-model="guests"
-              density="comfortable"
-              :rules="[rules.required, rules.isANumber, rules.isInteger]"
-            ></v-text-field>
+            <v-text-field name="guest_number" class="input inter-light" v-model="guest_number" density="comfortable"
+              :rules="[rules.required, rules.isANumber, rules.isInteger]"></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -255,13 +172,8 @@
               <label for="beds">Number of Beds</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field
-              name="beds"
-              class="input inter-light"
-              v-model="beds"
-              density="comfortable"
-              :rules="[rules.required, rules.isANumber, rules.isInteger]"
-            ></v-text-field>
+            <v-text-field name="beds" class="input inter-light" v-model="beds" density="comfortable"
+              :rules="[rules.required, rules.isANumber]"></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -269,13 +181,8 @@
               <label for="bedrooms">Number of Bedrooms</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field
-              name="bedrooms"
-              class="input inter-light"
-              v-model="bedrooms"
-              density="comfortable"
-              :rules="[rules.required, rules.isANumber, rules.isInteger]"
-            ></v-text-field>
+            <v-text-field name="bedrooms" class="input inter-light" v-model="bedrooms" density="comfortable"
+              :rules="[rules.required, rules.isANumber, rules.isInteger]"></v-text-field>
           </div>
 
           <div class="singleInput">
@@ -283,34 +190,23 @@
               <label for="bathrooms">Number of Bathrooms</label>
               <p class="font-color-red inter-medium">*</p>
             </div>
-            <v-text-field
-              name="bathrooms"
-              class="input inter-light"
-              v-model="bathrooms"
-              density="comfortable"
-              :rules="[rules.required, rules.isANumber, rules.isInteger]"
-            ></v-text-field>
+            <v-text-field name="bathrooms" class="input inter-light" v-model="bathrooms" density="comfortable"
+              :rules="[rules.required, rules.isANumber, rules.isInteger]"></v-text-field>
           </div>
         </div>
       </div>
 
       <div v-if="showStepThree" class="inter-light" id="checkbox">
-        <v-checkbox
-          v-model="checkbox"
+        <v-checkbox v-model="checkbox"
           label="I consent on sharing my information online and I have read the Privacy Policy"
-          :rules="[rules.checkboxRequired]"
-        ></v-checkbox>
+          :rules="[rules.checkboxRequired]"></v-checkbox>
       </div>
 
       <div class="buttons">
         <div>
           <v-dialog max-width="500">
             <template v-slot:activator="{ props: activatorProps }">
-              <button
-                type="button"
-                class="inter-medium font-color-green font-size-14"
-                v-bind="activatorProps"
-              >
+              <button type="button" class="inter-medium font-color-green font-size-14" v-bind="activatorProps">
                 Cancelar
               </button>
             </template>
@@ -328,16 +224,11 @@
 
                 <v-card-actions id="containerBtn">
                   <div class="btnsModal">
-                    <button
-                      class="inter-medium button-border-green"
-                      @click="isActive.value = false"
-                    >
+                    <button class="inter-medium button-border-green" @click="isActive.value = false">
                       No
                     </button>
-                    <button
-                      class="inter-medium button-green"
-                      @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
-                    >
+                    <button class="inter-medium button-green"
+                      @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
                       Yes, cancel
                     </button>
                   </div>
@@ -348,28 +239,16 @@
         </div>
 
         <div class="pagination">
-          <button
-            type="button"
-            @click="this.paginationBack()"
-            class="btnNextStep font-color-green inter-medium font-size-14"
-            v-if="!showStepOne"
-          >
+          <button type="button" @click="this.paginationBack()"
+            class="btnNextStep font-color-green inter-medium font-size-14" v-if="!showStepOne">
             <ArrowLeft class="font-color-green"></ArrowLeft>Previous step
           </button>
-          <button
-            type="submit"
-            @click="this.sendInfo()"
-            class="btnNextStep font-color-green inter-bold font-size-14"
-            v-if="!this.showStepThree"
-          >
+          <button type="submit" @click="this.sendInfo()" class="btnNextStep font-color-green inter-bold font-size-14"
+            v-if="!this.showStepThree">
             Next step<ArrowRight class="font-color-green"> </ArrowRight>
           </button>
-          <button
-            type="submit"
-            @click="this.sendInfo()"
-            class="button-green btnNextStepFinal inter-bold"
-            v-if="this.showStepThree"
-          >
+          <button type="submit" @click="createProperty" class="button-green btnNextStepFinal inter-bold"
+            v-if="this.showStepThree">
             Create porperty
           </button>
         </div>
@@ -393,10 +272,8 @@
           </v-card-text>
 
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
-            <button
-              class="inter-medium button-white"
-              @click="this.$router.push({ name: 'profile', params: {id: owner.username} })"
-            >
+            <button class="inter-medium button-white"
+              @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
               Continue
             </button>
           </v-card-actions>
@@ -409,6 +286,10 @@
 <script>
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import { usePropertiesStore } from "@/stores/properties";
+import { useAmenitiesStore } from "@/stores/amenities";
+import { usePropertyTypesStore } from "@/stores/propertyTypes";
+import { useUsersStore } from "@/stores/users";
 
 export default {
   data() {
@@ -419,35 +300,36 @@ export default {
       checkbox: false,
       showModal: false,
       title: "",
-      type: "",
-      mapUrl: "",
+      property_type: "",
+      map_url: "",
       location: "",
       description: "",
       country: "",
       city: "",
-      price: null,
-      beds: null,
-      bedrooms: null,
-      bathrooms: null,
-      guests: null,
+      daily_price: 0,
+      beds: 0,
+      bedrooms: 0,
+      bathrooms: 0,
+      guest_number: 0,
       amenitiesData: [],
-      pictures: [],
-      optionTypes: ["Igloo", "Pent-house", "Mansion", "Beach house"],
-      newProperty: {
-        title: "",
-        type: "",
-        mapUrl: "",
-        location: "",
-        description: "",
-        pictures: [],
-        amenities: [],
-        price: null,
-        beds: null,
-        bedrooms: null,
-        bathrooms: null,
-        guests: null,
-      },
-      amenitiesList: ["TV", "Swimming pool", "Fridge", "Pets allowed", "Wifi"],
+      photos: [],
+      newProperty: {},
+      newType: 0,
+      // newProperty: {
+      //   owner_username: "",
+      //   title: "",
+      //   property_type: "",
+      //   map_url: "",
+      //   location: "",
+      //   description: "",
+      //   photos: [],
+      //   amenities: [],
+      //   daily_price: 0,
+      //   beds: 0,
+      //   bedrooms: 0,
+      //   bathrooms: 0,
+      //   guest_number: 0,
+      // },
       countries: [
         {
           name: "Portugal",
@@ -488,14 +370,46 @@ export default {
         checkboxRequired: (value) =>
           value || "Please consent on sharing your information online.",
       },
+      propertiesStore: usePropertiesStore(),
+      amenitiesStore: useAmenitiesStore(),
+      propertyTypesStore: usePropertyTypesStore(),
+      usersStore: useUsersStore()
     };
   },
   components: {
     ArrowRight,
     ArrowLeft,
   },
+  computed: {
+    amenitiesName() {
+      return this.amenitiesStore.getAmenitiesName;
+    },
+    propertyTypes() {
+      return this.propertyTypesStore.getPropertyTypes;
+    },
+    propertyTypesName() {
+      return this.propertyTypesStore.getPropertyTypesName;
+    },
+    loggedUser() {
+      return this.usersStore.getUserLogged;
+    },
+    loggedUserInfo(){
+      return this.usersStore.getUserLoggedInfo
+    },
+    amenities(){
+      return this.amenitiesStore.getAmenities
+    }
+  },
+  async created() {
+    // localStorage.clear()
+    await this.amenitiesStore.fetchAmenitiesName()
+    await this.amenitiesStore.fetchAmenities()
+    await this.propertyTypesStore.fetchPropertyTypes()
+    await this.propertyTypesStore.fetchPropertyTypesName()
+    await this.usersStore.fetchUserLogged(this.loggedUser)
+  },
   methods: {
-    sendInfo() {
+    async sendInfo() {
       if (this.showStepOne) {
         let selectedCountry = this.countries.find(
           (country) => country.name === this.country
@@ -503,39 +417,36 @@ export default {
 
         if (
           !this.title ||
-          !this.rules.isANumber(this.price) ||
-          !this.mapUrl ||
+          !this.rules.isANumber(this.daily_price) ||
+          !this.map_url ||
           !this.country ||
           !this.city ||
           !this.description ||
-          this.pictures.length == 0
+          this.photos.length == 0
         ) {
           throw new Error("Missing information");
-        } else if (!selectedCountry) {
-          throw new Error("Invalid country selected");
         } else {
           let countryShort = selectedCountry.short;
-
+          this.newProperty.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
-          this.newProperty.price = this.price;
-          this.newProperty.mapUrl = this.mapUrl;
+          this.newProperty.daily_price = parseInt(this.daily_price, 10);
+          this.newProperty.map_url = this.map_url;
           this.newProperty.location = `${this.city}, ${countryShort}`;
           this.newProperty.description = this.description;
-          this.newProperty.pictures = this.pictures;
+          this.newProperty.photos = this.photos;
 
-          console.log(this.newProperty);
           this.showStepOne = false;
           this.showStepTwo = true;
         }
       }
       if (this.showStepTwo) {
-        // pra não passar pra frente pode limpar a lista sempre que vem pra cá, mas não é muito user friendly
         if (this.amenitiesData.length == 0) {
-          throw new Error("Missing information");
+          this.showStepThree = false;
         } else {
-          this.newProperty.amenities = this.amenitiesData;
-
-          console.log(this.newProperty);
+          let newAmenities = this.amenities
+            .filter((a) => this.amenitiesData.includes(a.amenity_name))
+            .map((a) => a.ID);
+          this.newProperty.amenities = newAmenities;
           this.showStepTwo = false;
           this.showStepThree = true;
         }
@@ -544,29 +455,26 @@ export default {
       if (this.showStepThree) {
         if (
           !this.rules.isANumber(this.beds) ||
-          !this.rules.isInteger(this.beds) ||
+          // !this.rules.isInteger(this.beds) ||
           !this.rules.isANumber(this.bedrooms) ||
-          !this.rules.isInteger(this.bedrooms) ||
+          // !this.rules.isInteger(this.bedrooms) ||
           !this.rules.isANumber(this.bathrooms) ||
-          !this.rules.isInteger(this.bathrooms) ||
-          !this.rules.isANumber(this.guests) ||
-          !this.rules.isInteger(this.guests)
+          // !this.rules.isInteger(this.bathrooms) ||
+          !this.rules.isANumber(this.guest_number)
+          // !this.rules.isInteger(this.guest_number)
         ) {
           throw new Error("Invalid number format");
-        } else if (!this.type) {
-          throw new Error("Missing information");
-        } else if (!this.checkbox) {
-          throw new Error("Must agree to the Privacy Policy");
         } else {
-          this.newProperty.type = this.type;
-          this.newProperty.beds = this.beds;
-          this.newProperty.bedrooms = this.bedrooms;
-          this.newProperty.bathrooms = this.bathrooms;
-          this.newProperty.guests = this.guests;
-          this.showModal = true;
-          console.log(`NOVA PROPRIEDADE: ${this.newProperty}`);
+          if(this.property_type != ""){
+            this.newType = this.propertyTypes.find((t) => this.property_type.includes(t.type_name)).ID
+            console.log(this.newType);
+            this.newProperty.property_type = this.newType;
+          }
 
-          //   create property in the bd
+          this.newProperty.beds = parseInt(this.beds, 10);
+          this.newProperty.bedrooms = parseInt(this.bedrooms, 10);
+          this.newProperty.bathrooms = parseInt(this.bathrooms, 10);
+          this.newProperty.guest_number = parseInt(this.guest_number, 10);
         }
       }
     },
@@ -581,6 +489,16 @@ export default {
         this.showStepTwo = true;
       }
     },
+    async createProperty() {
+      try {
+        console.log(this.newProperty);
+        await this.propertiesStore.create(this.newProperty)
+        this.showModal = true;
+        console.log("here");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
 };
 </script>
