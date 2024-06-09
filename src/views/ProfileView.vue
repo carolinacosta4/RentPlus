@@ -28,6 +28,8 @@
                   <label class="inter-medium">Phone Number</label>
                   <input class="inter-medium" type="text" v-model="newPhone" :placeholder="user.phone_number" />
                 </div>
+                <p id="sucessMessage">{{ sucessMessage }}</p>
+                <p id="errorMessage">{{ errorMessage }}</p>
               </v-card-text>
 
               <v-card-actions>
@@ -83,14 +85,16 @@
                   <div id="inputs">
                     <label class="inter-medium">Description</label>
                     <textarea name="newDescription" class="inter-medium" cols="30" rows="10" id="newDescription"
-                      v-model="newDescription"></textarea>
+                      v-model="newDescription" :placeholder="user.owner_description"></textarea>
                   </div>
                 </v-card-text>
 
                 <v-card-actions>
                   <div class="btnsModal">
-                    <button class="inter-medium button-green" @click="isActive.value = false">Save changes</button>
+                    <button class="inter-medium button-green" @click="editProfile">Save changes</button>
                     <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
+                    <p>{{ errorMessage }}</p>
+                    <p>{{ sucessMessage }}</p>
                   </div>
                 </v-card-actions>
               </v-card>
@@ -150,7 +154,10 @@ export default {
       newName: "",
       newSurname: "",
       newUsername: "",
-      newPhone: ""
+      newPhone: "",
+      newDescription: "",
+      sucessMessage: "",
+      errorMessage: ""
     }
   },
   components: {
@@ -174,10 +181,25 @@ export default {
       if (this.newSurname != "") fields.last_name = this.newSurname
       if (this.newUsername != "") fields.username = this.newUsername
       if (this.newPhone != "") fields.phone_number = this.newPhone
+      if (this.newDescription != "") fields.owner_description = this.newDescription
 
       this.usersStore.editProfile(fields, this.loggedUser)
         .then(() => {
-          this.fetchUserData();
+          if (this.newUsername != "") {
+            this.$router.push({ name: 'profile', params: { id: this.newUsername } })
+          }else{
+            this.fetchUserData()
+          }
+
+          this.sucessMessage = 'Changes successful'
+        })
+        .catch((error) => {
+          if (error == 'Error: API request failed with status 400: {"success":false,"msg":["PRIMARY must be unique"]}') {
+            this.errorMessage = 'Username unavailable'
+          } else {
+            console.error('Error:', error);
+            this.errorMessage = 'An error occurred. Please try again later.';
+          }
         });
     }
   },
@@ -313,5 +335,13 @@ input:focus {
   flex-direction: row;
   padding: 0.5rem 1rem 0.13rem;
   column-gap: 1rem;
+}
+
+#sucessMessage {
+  color: green;
+}
+
+#errorMessage {
+  color: red;
 }
 </style>

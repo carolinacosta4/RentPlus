@@ -1,7 +1,9 @@
 <template>
   <main class="py-8 px-4">
     <h1 class="inter-medium font-color-green font-size-24 page-title">Users list</h1>
-    <h2 class="inter-medium font-color-green font-size-18">Total users: {{ users.length }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-if="filterFlag != 'search'">Total users: {{ filters.length
+      }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-else>Total users: {{ users.length }}</h2>
     <div id="filters">
       <div id="searchInput" @click="changeFilterFlag('search')">
         <input type="text" placeholder="Search for username" class="inter-medium font-size-14" v-model="searchUsers">
@@ -30,7 +32,7 @@
           <th>Joined on</th>
           <th>Actions</th>
         </tr>
-        <tr v-for="user in filters" :key="user.username" class="inter-light font-color-black font-size-18">
+        <tr v-for="user in paginatedFilteredUsers" :key="user.username" class="inter-light font-color-black font-size-18">
           <td>{{ capitalize(user.user_role) }}</td>
           <td>{{ user.username }}</td>
           <td>{{ formatDate(user.created_at) }}</td>
@@ -65,8 +67,7 @@
       </table>
     </div>
     <div id="tools">
-      <router-link :to="{ name: 'profile', params: {id: 'alice_smith'} }">
-        <!-- <router-link :to="{ name: 'profile', params: {id: 'alice_smith'} }"> -->
+      <router-link :to="{ name: 'profile', params: { id: 'alice_smith' } }">
         <button id="back" class="button-green inter-bold font-size-14">Go
           back</button></router-link>
       <div id="pagination" class="inter-medium">
@@ -111,10 +112,17 @@ export default {
 
   computed: {
     filters() {
-      if (this.filterFlag == "search") return this.paginatedUsers.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
-      if (this.filterFlag == "admin") return this.users.filter((user) => user.user_role == 'admin');
-      if (this.filterFlag == "guest") return this.users.filter((user) => user.user_role == 'guest');
+      if (this.filterFlag == "search") { return this.users.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase())) }
+      if (this.filterFlag == "admin") { return this.users.filter((user) => user.user_role == 'admin') };
+      if (this.filterFlag == "guest") { return this.users.filter((user) => user.user_role == 'guest') };
       if (this.filterFlag == "owner") return this.users.filter((user) => user.user_role == 'owner');
+      return this.users
+    },
+
+    paginatedFilteredUsers() {
+      const startIndex = (this.currentPage - 1) * this.userPerPage
+      const endIndex = startIndex + this.userPerPage
+      return this.filters.slice(startIndex, endIndex)
     },
 
     sortUsername() {
@@ -127,13 +135,7 @@ export default {
     },
 
     numberPages() {
-      return Math.ceil(this.users.length / this.userPerPage)
-    },
-
-    paginatedUsers() {
-      const startIndex = (this.currentPage - 1) * this.userPerPage
-      const endIndex = startIndex + this.userPerPage
-      return this.users.slice(startIndex, endIndex)
+      return Math.ceil(this.filters.length / this.userPerPage)
     },
 
     users() {
@@ -153,6 +155,7 @@ export default {
 
     changeFilterFlag(change) {
       this.filterFlag = change
+      this.currentPage = 1
     },
 
     async deleteUser(username) {
