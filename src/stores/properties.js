@@ -33,12 +33,10 @@ export const usePropertiesStore = defineStore("property", {
       }
     },
     async create(newProperty){
-      console.log(newProperty);
       try {
         const response = await api.post(API_BASE_URL, 'properties', {
           owner_username: newProperty.owner_username,
-          // property_type: newProperty.property_type,
-          property_type: 3,
+          property_type: newProperty.property_type,
           title: newProperty.title,
           description: newProperty.description,
           location: newProperty.location,

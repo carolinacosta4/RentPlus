@@ -28,7 +28,7 @@
       <v-progress-linear id="progressBar" color="#133E1A" model-value="100" :height="8"></v-progress-linear>
     </div>
 
-    <v-form id="form" @submit.prevent="this.sendInfo">
+    <v-form id="form" @submit.prevent="sendInfo">
       <div id="inputs1" class="inputPage" v-if="this.showStepOne">
         <div id="left" class="groupInputs">
           <div class="singleInput">
@@ -228,7 +228,7 @@
                       No
                     </button>
                     <button class="inter-medium button-green"
-                      @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
+                      @click="$router.push({ name: 'profile', params: { id: loggedUser } })">
                       Yes, cancel
                     </button>
                   </div>
@@ -239,16 +239,16 @@
         </div>
 
         <div class="pagination">
-          <button type="button" @click="this.paginationBack()"
-            class="btnNextStep font-color-green inter-medium font-size-14" v-if="!showStepOne">
+          <button type="button" @click="paginationBack" class="btnNextStep font-color-green inter-medium font-size-14"
+            v-if="!showStepOne">
             <ArrowLeft class="font-color-green"></ArrowLeft>Previous step
           </button>
-          <button type="submit" @click="this.sendInfo()" class="btnNextStep font-color-green inter-bold font-size-14"
-            v-if="!this.showStepThree">
+          <button type="submit" @click="sendInfo" class="btnNextStep font-color-green inter-bold font-size-14"
+            v-if="!showStepThree">
             Next step<ArrowRight class="font-color-green"> </ArrowRight>
           </button>
           <button type="submit" @click="createProperty" class="button-green btnNextStepFinal inter-bold"
-            v-if="this.showStepThree">
+            v-if="showStepThree">
             Create porperty
           </button>
         </div>
@@ -273,7 +273,7 @@
 
           <v-card-actions id="containerBtn" class="btnsModalCongratulations">
             <button class="inter-medium button-white"
-              @click="this.$router.push({ name: 'profile', params: { id: owner.username } })">
+              @click="$router.push({ name: 'profile', params: { id: loggedUser } })">
               Continue
             </button>
           </v-card-actions>
@@ -315,21 +315,7 @@ export default {
       photos: [],
       newProperty: {},
       newType: 0,
-      // newProperty: {
-      //   owner_username: "",
-      //   title: "",
-      //   property_type: "",
-      //   map_url: "",
-      //   location: "",
-      //   description: "",
-      //   photos: [],
-      //   amenities: [],
-      //   daily_price: 0,
-      //   beds: 0,
-      //   bedrooms: 0,
-      //   bathrooms: 0,
-      //   guest_number: 0,
-      // },
+      photosArray: [],
       countries: [
         {
           name: "Portugal",
@@ -393,10 +379,10 @@ export default {
     loggedUser() {
       return this.usersStore.getUserLogged;
     },
-    loggedUserInfo(){
+    loggedUserInfo() {
       return this.usersStore.getUserLoggedInfo
     },
-    amenities(){
+    amenities() {
       return this.amenitiesStore.getAmenities
     }
   },
@@ -426,6 +412,10 @@ export default {
         ) {
           throw new Error("Missing information");
         } else {
+          this.photos.forEach(photo => {
+            this.photosArray.push(photo.name)
+          });
+          this.newProperty.photos = this.photosArray;
           let countryShort = selectedCountry.short;
           this.newProperty.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
@@ -433,7 +423,6 @@ export default {
           this.newProperty.map_url = this.map_url;
           this.newProperty.location = `${this.city}, ${countryShort}`;
           this.newProperty.description = this.description;
-          this.newProperty.photos = this.photos;
 
           this.showStepOne = false;
           this.showStepTwo = true;
@@ -455,26 +444,24 @@ export default {
       if (this.showStepThree) {
         if (
           !this.rules.isANumber(this.beds) ||
-          // !this.rules.isInteger(this.beds) ||
           !this.rules.isANumber(this.bedrooms) ||
-          // !this.rules.isInteger(this.bedrooms) ||
           !this.rules.isANumber(this.bathrooms) ||
-          // !this.rules.isInteger(this.bathrooms) ||
           !this.rules.isANumber(this.guest_number)
-          // !this.rules.isInteger(this.guest_number)
         ) {
           throw new Error("Invalid number format");
-        } else {
-          if(this.property_type != ""){
+        }
+        else if (!this.checkbox) {
+          new Error("Consent to our privacy policy is required");
+        }
+        else {
+          if (this.property_type != "") {
             this.newType = this.propertyTypes.find((t) => this.property_type.includes(t.type_name)).ID
-            console.log(this.newType);
             this.newProperty.property_type = this.newType;
           }
-
-          this.newProperty.beds = parseInt(this.beds, 10);
-          this.newProperty.bedrooms = parseInt(this.bedrooms, 10);
-          this.newProperty.bathrooms = parseInt(this.bathrooms, 10);
-          this.newProperty.guest_number = parseInt(this.guest_number, 10);
+          this.newProperty.beds = this.beds;
+          this.newProperty.bedrooms = this.bedrooms;
+          this.newProperty.bathrooms = this.bathrooms;
+          this.newProperty.guest_number = this.guest_number;
         }
       }
     },
@@ -491,10 +478,14 @@ export default {
     },
     async createProperty() {
       try {
-        console.log(this.newProperty);
-        await this.propertiesStore.create(this.newProperty)
-        this.showModal = true;
-        console.log("here");
+        // await this.sendInfo()
+        if (this.checkbox) {
+          await this.propertiesStore.create(this.newProperty)
+          this.showModal = true;
+        }
+        else {
+          new Error("Consent not given");
+        }
       } catch (error) {
         console.log(error);
       }
