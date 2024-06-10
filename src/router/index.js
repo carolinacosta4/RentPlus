@@ -89,7 +89,7 @@ const router = createRouter({
       component: CreatePropertyView,
     },
     {
-      path: "/edit-property",
+      path: "/edit-property/:id",
       name: "edit-property",
       component: EditPropertyView,
     },

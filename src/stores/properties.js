@@ -28,6 +28,7 @@ export const usePropertiesStore = defineStore("property", {
         this.properties = ""
         const response = await api.get(API_BASE_URL, `properties/${id}`)
         this.property = response.data
+        return response.data
       } catch (error) {
         console.error(error)
       }
@@ -47,7 +48,7 @@ export const usePropertiesStore = defineStore("property", {
           bedrooms: newProperty.bedrooms,
           beds: newProperty.beds,
           amenities: newProperty.amenities,
-          photos:  ['a'],
+          photos: newProperty.photos,
         },
         localStorage.getItem("authToken")
       );
