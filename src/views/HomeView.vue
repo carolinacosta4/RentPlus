@@ -9,13 +9,14 @@
         <div class="flex gap-8 mb-6 border px-6 py-2 rounded-lg w-fit">
           <!-- Location input -->
           <input class="w-4/12 focus:outline-none inter-light font-color-green" type="text" placeholder="Location"
-            v-model="location" @click="changeFilterFlag('searchLocation')" />
+            v-model="location" />
 
           <!-- Guests input -->
           <input class="w-3/12 focus:outline-none inter-light font-color-green" type="text" placeholder="Guests"
-            v-model="guests" @click="changeFilterFlag('searchGuests')" />
+            v-model="guests" />
 
-          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg" @click="changeFilterFlag('searchBoth')">
+          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg"
+            @click="changeFilterFlag('searchBoth')">
             <SearchIcon />
           </button>
 
@@ -42,10 +43,11 @@
       </div>
     </div>
 
-    <div id="pagination" class="inter-medium" v-if="pagination.total > 20 && pagination.limit != null">
-      <ArrowLeft @click="propertiesStore.fetchProperties(pagination.current-1)" :disabled="pagination.current === 1"></ArrowLeft>
+    <div id="pagination" class="inter-medium" v-if="pagination.total > 2 && pagination.limit != null">
+      <ArrowLeft @click="propertiesStore.fetchProperties(pagination.current - 1)" v-if="pagination.current != 1">
+      </ArrowLeft>
       <span>{{ pagination.current }}</span> of <span>{{ pagination.totalPages }}</span>
-      <ArrowRight @click="propertiesStore.fetchProperties(pagination.current+1)" :disabled="pagination.current === pagination.totalPages"></ArrowRight>
+      <ArrowRight @click="propertiesStore.fetchProperties(pagination.current + 1)" v-if="pagination.current != pagination.totalPages"></ArrowRight>
     </div>
   </main>
 </template>
@@ -80,24 +82,27 @@ export default {
   },
 
   created() {
-    this.propertiesStore.fetchProperties();
+    this.propertiesStore.fetchProperties(1);
   },
 
   computed: {
     properties() {
-      return this.propertiesStore.getProperties.reverse()
+      return this.propertiesStore.getProperties
     },
 
-    pagination(){
+    pagination() {
       return this.propertiesStore.getPagination
     },
 
     filters() {
-      if (this.filterFlag == "search" || (this.guests == "" && this.filterFlag != "searchLocation" && this.filterFlag != "searchTitle")) { return this.properties }
-      if (this.filterFlag === "searchLocation") { return this.properties.filter((property) => property.location.toLowerCase().startsWith(this.location.toLowerCase())) }
-      if (this.filterFlag === "searchGuests" & this.guests >= 0) { return this.properties.filter((property) => property.guest_number == this.guests) }
-      if (this.filterFlag === "searchTitle") { return this.properties.filter((property) => property.title.toLowerCase().includes(this.title.toLowerCase())) }
-      if (this.filterFlag === "searchBoth") { return this.properties.filter((property) => property.location.toLowerCase().includes(this.location.toLowerCase()) && property.guest_number == this.guests) }
+      if (this.filterFlag == "search") { return this.properties }
+      if (this.filterFlag == 'searchBoth') {
+        if (this.location == "" && this.guests == "") { return this.properties }
+        if (this.location == "") { return this.properties.filter((property) => property.guest_number == this.guests) }
+        if (this.guests == "") { return this.properties.filter((property) => property.location.toLowerCase().startsWith(this.location.toLowerCase())) }
+        if (this.location != "" && this.guests != "") { return this.properties.filter((property) => property.location.toLowerCase().includes(this.location.toLowerCase()) && property.guest_number == this.guests) }
+      }
+      if (this.filterFlag == "searchTitle") { return this.properties.filter((property) => property.title.toLowerCase().includes(this.title.toLowerCase())) }
     },
 
     sortPrice() {
@@ -113,6 +118,9 @@ export default {
   methods: {
     changeFilterFlag(change) {
       this.filterFlag = change
+      if (change !== 'search') {
+        this.propertiesStore.fetchProperties(1);
+      }
     },
 
     sort() {

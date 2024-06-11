@@ -26,7 +26,7 @@ export const usePropertiesStore = defineStore("property", {
         } else {
           response = await api.get(API_BASE_URL, `properties`)
         }
-        this.properties = response.data
+        this.properties = response.data.reverse()
         this.pagination = response.pagination[0]
       } catch (error) {
         console.error(error)
