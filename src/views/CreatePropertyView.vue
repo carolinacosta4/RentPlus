@@ -95,7 +95,7 @@
               <p class="font-color-red inter-medium">*</p>
             </div>
             <v-textarea type="text" name="description" class="input height10 inter-light" density="comfortable"
-              v-model="description" :rules="[rules.required]" auto-grow></v-textarea>
+              v-model="description" :rules="[rules.required]"></v-textarea>
           </div>
 
           <div class="singleInput">
@@ -478,7 +478,7 @@ export default {
     },
     async createProperty() {
       try {
-        // await this.sendInfo()
+        await this.sendInfo()
         if (this.checkbox) {
           await this.propertiesStore.create(this.newProperty)
           this.showModal = true;

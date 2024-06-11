@@ -1,6 +1,5 @@
 <template>
   <main class="py-8 px-4" 
-  <!-- v-if="this.loggedUser.username == this.property.owner_username" -->
   >
     <h1 class="inter-medium font-color-green font-size-24 page-title">
       Edit property {{ property.title }}
@@ -249,7 +248,7 @@ export default {
       rules: {
         required: (value) => !!value || "Required.",
         max50: (value) => value.length <= 50 || "Max. 50 characters",
-        // fileInputRules: (value) => value.length > 0 || "Please select at least one file.",   // VOLTAR AQUI
+        fileInputRules: (value) => value.length > 0 || "Please select at least one file.",   // VOLTAR AQUI
         isANumber: (value) => !isNaN(value) || "Please enter a valid number.",
         isInteger: (value) =>
           Number.isInteger(Number(value)) || "Please enter an integer number.",
@@ -326,7 +325,6 @@ export default {
         !property.country ||
         !property.city ||
         !property.description ||
-        //  ||
         property.amenities.length == 0 ||
         !property.property_type
       ) {
