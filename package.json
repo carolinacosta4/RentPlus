@@ -15,6 +15,7 @@
     "axios": "^1.6.8",
     "pinia": "^2.1.7",
     "v-calendar": "^3.1.2",
+    "v-checkbox": "^0.0.1",
     "vue": "^3.4.21",
     "vue-material-design-icons": "^5.3.0",
     "vue-router": "^4.3.0",

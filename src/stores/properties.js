@@ -55,6 +55,29 @@ export const usePropertiesStore = defineStore("property", {
       } catch (error) {
         throw error.message
       }
+    },
+
+    async editProperty(property){
+      try {
+        const response = await api.patch(API_BASE_URL, `properties/${property.id}`, {
+          property_type: property.property_type,
+          title: property.title,
+          description: property.description,
+          location: property.location,
+          map_url: property.map_url,
+          daily_price: property.daily_price,
+          guest_number: property.guest_number,
+          bathrooms: property.bathrooms,
+          bedrooms: property.bedrooms,
+          beds: property.beds,
+          amenities: property.amenities,
+          photos: property.photos,
+        },
+        localStorage.getItem("authToken")
+      );
+      } catch (error) {
+        throw error.message
+      }
     }
   },
 });
