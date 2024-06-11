@@ -366,11 +366,4 @@ td {
   margin-top: 2rem;
   justify-content: space-between;
 }
-
-#pagination {
-  display: flex;
-  flex-direction: row;
-  column-gap: 0.5rem;
-  color: #133E1A50;
-}
 </style>

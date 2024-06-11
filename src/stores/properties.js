@@ -7,18 +7,27 @@ export const usePropertiesStore = defineStore("property", {
   state: () => ({
     properties: [],
     property: "",
+    pagination: null,
+    pagination: "",
     token: localStorage.getItem("authToken") || null,
   }),
   getters: {
     getProperties: (state) => state.properties,
     getProperty: (state) => state.property,
+    getPagination: (state) => state.pagination,
   },
   actions: {
-    async fetchProperties() {
+    async fetchProperties(page) {
       try {
         this.properties = []
-        const response = await api.get(API_BASE_URL, "properties")
+        let response
+        if (page) {
+          response = await api.get(API_BASE_URL, `properties?page=${page}&limit=20`)
+        } else {
+          response = await api.get(API_BASE_URL, `properties`)
+        }
         this.properties = response.data
+        this.pagination = response.pagination[0]
       } catch (error) {
         console.error(error)
       }
@@ -33,7 +42,7 @@ export const usePropertiesStore = defineStore("property", {
         console.error(error)
       }
     },
-    async create(newProperty){
+    async create(newProperty) {
       console.log(newProperty);
       try {
         const response = await api.post(API_BASE_URL, 'properties', {
@@ -50,16 +59,16 @@ export const usePropertiesStore = defineStore("property", {
           bedrooms: newProperty.bedrooms,
           beds: newProperty.beds,
           amenities: newProperty.amenities,
-          photos:  ['a'],
+          photos: ['a'],
         },
-        localStorage.getItem("authToken")
-      );
+          localStorage.getItem("authToken")
+        );
       } catch (error) {
         throw error.message
       }
     },
 
-    async delete(id){
+    async delete(id) {
       try {
         const response = await api.remove(API_BASE_URL, `properties/${id}`, this.token)
         console.log(response.msg);

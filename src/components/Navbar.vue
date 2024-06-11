@@ -1,6 +1,6 @@
 <template>
   <nav class="bg-white fixed w-full z-20 top-0 border-b">
-    <div class="z-10000 max-w-screen-3xl flex items-center justify-between mx-auto p-4">
+    <div class="max-w-screen-3xl flex items-center justify-between mx-auto p-4">
       <!-- LOGO -->
       <router-link :to="{ name: 'home' }" @click="toggleDropdown">
         <img

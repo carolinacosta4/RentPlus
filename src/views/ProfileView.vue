@@ -1,5 +1,5 @@
 <template>
-  <main class="py-8 px-4 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-8">
+  <main class="px-4 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-8">
     <div id="normalProfile">
       <div id="pictureProfile">
         <img class="w-40 h-40 rounded-full object-cover" :src="user.profile_image" alt="user profile picture" />
@@ -60,7 +60,7 @@
         <h3 class="inter-medium font-size-20 font-color-green">Last name</h3>
         <p class="inter-light font-size-20">{{ user.last_name }}</p>
         <h3 class="inter-medium font-size-20 font-color-green">Phone number</h3>
-        <p class="inter-light font-size-20">+{{ user?.phone_number }}</p>
+        <p class="inter-light font-size-20">{{ user?.phone_number }}</p>
         <h3 class="inter-medium font-size-20 font-color-green">Email</h3>
         <p class="inter-light font-size-20">{{ user.email }}</p>
       </div>
