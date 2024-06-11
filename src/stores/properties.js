@@ -28,17 +28,16 @@ export const usePropertiesStore = defineStore("property", {
         this.properties = ""
         const response = await api.get(API_BASE_URL, `properties/${id}`)
         this.property = response.data
+        return response.data
       } catch (error) {
         console.error(error)
       }
     },
     async create(newProperty){
-      console.log(newProperty);
       try {
         const response = await api.post(API_BASE_URL, 'properties', {
           owner_username: newProperty.owner_username,
-          // property_type: newProperty.property_type,
-          property_type: 3,
+          property_type: newProperty.property_type,
           title: newProperty.title,
           description: newProperty.description,
           location: newProperty.location,
@@ -49,7 +48,7 @@ export const usePropertiesStore = defineStore("property", {
           bedrooms: newProperty.bedrooms,
           beds: newProperty.beds,
           amenities: newProperty.amenities,
-          photos:  ['a'],
+          photos: newProperty.photos,
         },
         localStorage.getItem("authToken")
       );
