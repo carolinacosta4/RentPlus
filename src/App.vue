@@ -1,6 +1,11 @@
-<script setup>
+<script>
 import { RouterView } from "vue-router";
 import NavbarVue from "./components/Navbar.vue";
+export default{
+  components: {
+    NavbarVue,
+  },
+}
 </script>
 
 <template>
@@ -66,6 +71,10 @@ import NavbarVue from "./components/Navbar.vue";
   font-weight: 700;
   font-style: normal;
   font-variation-settings: "slnt" 0;
+}
+
+.font-size-13 {
+  font-size: 13px;
 }
 
 .font-size-14 {

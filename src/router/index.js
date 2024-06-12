@@ -44,7 +44,7 @@ const router = createRouter({
       component: ReservationsView,
     },
     {
-      path: "/profile",
+      path: "/profile/:id",
       name: "profile",
       component: ProfileView,
     },
@@ -74,7 +74,7 @@ const router = createRouter({
       component: ManagePropertiesView,
     },
     {
-      path: "/messages",
+      path: "/messages/:id?",
       name: "messages",
       component: MessagesView,
     },
@@ -89,7 +89,7 @@ const router = createRouter({
       component: CreatePropertyView,
     },
     {
-      path: "/edit-property",
+      path: "/edit-property/:id",
       name: "edit-property",
       component: EditPropertyView,
     },

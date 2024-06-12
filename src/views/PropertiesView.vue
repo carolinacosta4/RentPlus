@@ -1,33 +1,12 @@
 <template>
   <main class="py-8 px-4">
-    <h1 class="inter-medium font-color-green font-size-24 page-title">
-      Your Properties
-    </h1>
-    <div v-if="properties && properties.length > 0">
-      <nav
-        id="Properties"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
-      >
-        <div v-for="property in properties" :key="property.ID">
-          <PropertyContainer
-            :id="property.ID"
-            :image="getPropertyImage(property)"
-            :name="property.title"
-            :location="property.location"
-            :price="property.daily_price"
-          />
-        </div>
-      </nav>
-    </div>
-    <div v-else>
-      <p>No properties to rent.</p>
-      <!-- MUDAR NO FUTURO PARA LINK DE CRIAÇÃO DE PROPERTY -->
-      <router-link :to="{ name: 'home' }">
-        <button class="py-3 px-4 bg-gray-800 text-white mt-4 rounded-lg">
-          Create One
-        </button> </router-link
-      >"
-    </div>
+    <h1 class="inter-medium font-color-green font-size-24 page-title">Your properties</h1>
+    <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+      <div v-for="property in properties" :key="property.ID">
+        <PropertyContainer :id="property.ID" :image="getPropertyImage(property)" :name="property.title"
+          :location="property.location" :price="property.daily_price" />
+      </div>
+    </nav>
   </main>
 </template>
 

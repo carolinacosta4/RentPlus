@@ -10,8 +10,11 @@
     "test:unit": "vitest"
   },
   "dependencies": {
+    "@fawmi/vue-google-maps": "^0.9.79",
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.6.8",
     "pinia": "^2.1.7",
+    "v-calendar": "^3.1.2",
     "vue": "^3.4.21",
     "vue-material-design-icons": "^5.3.0",
     "vue-router": "^4.3.0",

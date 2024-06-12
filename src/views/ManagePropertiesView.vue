@@ -1,7 +1,9 @@
 <template>
   <main class="py-8 px-4">
     <h1 class="inter-medium font-color-green font-size-24 page-title">Properties list</h1>
-    <h2 class="inter-medium font-color-green font-size-18">Total properties: {{ properties.length }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-if="filterFlag != 'search'">Total properties: {{
+      filters.length }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-else>Total properties: {{ properties.length }}</h2>
     <div id="filters">
       <div id="searchInput" @click="changeFilterFlag('search')">
         <input type="text" placeholder="Search for property title" class="inter-medium font-size-14"
@@ -14,8 +16,9 @@
           <p class="inter-light font-color-green font-size-15">Filter</p>
         </div>
         <div v-if="isDropdownOpen" class="dropdownContent">
-          <p v-for="property in properties" @click="changeFilterFlag(property.type)" class="inter-light font-size-14">{{
-            property.type }}</p>
+          <p v-for="propertyType in propertyTypes" @click="changeFilterFlag(propertyType.type_name)"
+            class="inter-light font-size-14">{{
+              propertyType.type_name }}</p>
         </div>
       </div>
     </div>
@@ -38,13 +41,14 @@
           <th>Created at</th>
           <th>Actions</th>
         </tr>
-        <tr v-for="property in filters" :key="property.username" class="inter-light font-color-black font-size-18">
-          <td>{{ property.id }}</td>
-          <td>{{ property.type }}</td>
+        <tr v-for="property in paginatedFilteredProperties" :key="property.ID" class="inter-light font-color-black font-size-18">
+          <td>{{ property.ID }}</td>
+          <td>{{ property['type_of_prop.type_name'] }}</td>
           <td>{{ property.title }}</td>
-          <td>{{ property.created }}</td>
+          <td>{{ formatDate(property.created_at) }}</td>
           <td id="buttons">
-            <button id="blockBtn" class="inter-bold">Block</button>
+            <button id="blockBtn" class="inter-bold" v-if="!property.is_blocked" @click="blockProperty(property.ID)">Block</button>
+            <button id="blockBtn" class="inter-bold" v-else @click="blockProperty(property.ID)">Unblock</button>
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
                 <button id="deleteBtn" class="inter-bold" v-bind="activatorProps">Delete</button>
@@ -61,7 +65,7 @@
                   <v-card-actions id="containerBtn">
                     <div class="btnsModal">
                       <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
-                      <button class="inter-medium button-green" @click="deleteUser(property.id)">Continue</button>
+                      <button class="inter-medium button-green" @click="deleteProperty(property.ID)">Continue</button>
                     </div>
                   </v-card-actions>
                 </v-card>
@@ -72,7 +76,8 @@
       </table>
     </div>
     <div id="tools">
-      <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
+      <router-link :to="{ name: 'profile', params: { id: loggedUser } }">
+        <button id="back" class="button-green inter-bold font-size-14">Go
           back</button></router-link>
       <div id="pagination" class="inter-medium">
         <ArrowLeft @click="previousPage" :disabled="currentPage === 1"></ArrowLeft>
@@ -89,47 +94,12 @@ import Sort from "vue-material-design-icons/Sort.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
+import { usePropertiesStore } from "@/stores/properties";
+import { usePropertyTypesStore } from "@/stores/propertyTypes";
 
 export default {
   data() {
     return {
-      properties: [{
-        id: 1,
-        type: "Pent-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 2,
-        type: "Beach-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 3,
-        type: "Igloo",
-        title: "Aeautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 4,
-        type: "Pent-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 5,
-        type: "Beach-house",
-        title: "Beautiful pent house",
-        created: "16-7-2024"
-      },
-      {
-        id: 6,
-        type: "Igloo",
-        title: "Aeautiful pent house",
-        created: "16-7-2024"
-      },
-      ],
       searchProperties: "",
       isVisible: false,
       isDropdownOpen: false,
@@ -138,6 +108,8 @@ export default {
       sortText: "A-Z",
       currentPage: 1,
       propPerPage: 5,
+      propertiesStore: usePropertiesStore(),
+      propertyTypesStore: usePropertyTypesStore()
     }
   },
 
@@ -151,16 +123,23 @@ export default {
 
   computed: {
     filters() {
-      if (this.filterFlag == "search") return this.paginatedProperties.filter((property) => property.title.toLowerCase().startsWith(this.searchProperties.toLowerCase()))
-      if (this.filterFlag) return this.properties.filter((property) => property.type == this.filterFlag)
+      if (this.filterFlag == "search") { return this.properties.filter((property) => property.title.toLowerCase().startsWith(this.searchProperties.toLowerCase())) }
+      if (this.filterFlag) { return this.properties.filter((property) => property['type_of_prop.type_name'] == this.filterFlag) }
+      return this.properties
+    },
+
+    paginatedFilteredProperties() {
+      const startIndex = (this.currentPage - 1) * this.propPerPage
+      const endIndex = startIndex + this.propPerPage
+      return this.filters.slice(startIndex, endIndex)
     },
 
     sortType() {
       this.properties.sort(
         (c1, c2) => {
-          if (c1.type > c2.type) return 1 * this.sortFlag
-          if (c1.type < c2.type) return -1 * this.sortFlag
-          if (c1.type == c2.type) return 0
+          if (c1['type_of_prop.type_name'] > c2['type_of_prop.type_name']) return 1 * this.sortFlag
+          if (c1['type_of_prop.type_name'] < c2['type_of_prop.type_name']) return -1 * this.sortFlag
+          if (c1['type_of_prop.type_name'] == c2['type_of_prop.type_name']) return 0
         })
     },
 
@@ -174,14 +153,20 @@ export default {
     },
 
     numberPages() {
-      return Math.ceil(this.properties.length / this.propPerPage)
+      return Math.ceil(this.filters.length / this.propPerPage)
     },
 
-    paginatedProperties() {
-      const startIndex = (this.currentPage - 1) * this.propPerPage
-      const endIndex = startIndex + this.propPerPage
-      return this.properties.slice(startIndex, endIndex)
+    properties() {
+      return this.propertiesStore.getProperties
     },
+
+    loggedUser() {
+      return localStorage.getItem('user')
+    },
+
+    propertyTypes() {
+      return this.propertyTypesStore.getPropertyTypes
+    }
   },
 
   methods: {
@@ -196,11 +181,17 @@ export default {
 
     changeFilterFlag(change) {
       this.filterFlag = change
+      this.currentPage = 1
     },
 
-    deleteUser(id) {
-      let index = this.properties.findIndex((property) => property.id == id)
-      this.properties.splice(index, 1)
+    async deleteProperty(id) {
+      await this.propertiesStore.delete(id)
+      this.propertiesStore.fetchProperties()
+    },
+
+    async blockProperty(id) {
+      await this.propertiesStore.block(id)
+      this.propertiesStore.fetchProperties()
     },
 
     sort(number) {
@@ -229,6 +220,18 @@ export default {
       }
     },
 
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+  },
+
+  async created() {
+    await this.propertiesStore.fetchProperties();
+    await this.propertyTypesStore.fetchPropertyTypes()
   },
 }
 </script>

@@ -1,7 +1,9 @@
 <template>
   <main class="py-8 px-4">
     <h1 class="inter-medium font-color-green font-size-24 page-title">Users list</h1>
-    <h2 class="inter-medium font-color-green font-size-18">Total users: {{ users.length }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-if="filterFlag != 'search'">Total users: {{ filters.length
+      }}</h2>
+    <h2 class="inter-medium font-color-green font-size-18" v-else>Total users: {{ users.length }}</h2>
     <div id="filters">
       <div id="searchInput" @click="changeFilterFlag('search')">
         <input type="text" placeholder="Search for username" class="inter-medium font-size-14" v-model="searchUsers">
@@ -30,12 +32,14 @@
           <th>Joined on</th>
           <th>Actions</th>
         </tr>
-        <tr v-for="user in filters" :key="user.username" class="inter-light font-color-black font-size-18">
-          <td>{{ user.type }}</td>
+        <tr v-for="user in paginatedFilteredUsers" :key="user.username" class="inter-light font-color-black font-size-18">
+          <td>{{ capitalize(user.user_role) }}</td>
           <td>{{ user.username }}</td>
-          <td>{{ user.joined }}</td>
+          <td>{{ formatDate(user.created_at) }}</td>
           <td id="buttons">
-            <button id="blockBtn" class="inter-bold">Block</button>
+            <button id="blockBtn" class="inter-bold" v-if="!user.is_blocked"
+              @click="blockUser(user.username)">Block</button>
+            <button id="blockBtn" class="inter-bold" v-else @click="blockUser(user.username)">Unblock</button>
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
                 <button id="deleteBtn" class="inter-bold" v-bind="activatorProps">Delete</button>
@@ -63,7 +67,8 @@
       </table>
     </div>
     <div id="tools">
-      <router-link :to="{ name: 'profile' }"><button id="back" class="button-green inter-bold font-size-14">Go
+      <router-link :to="{ name: 'profile', params: { id: 'alice_smith' } }">
+        <button id="back" class="button-green inter-bold font-size-14">Go
           back</button></router-link>
       <div id="pagination" class="inter-medium">
         <ArrowLeft @click="previousPage" :disabled="currentPage === 1"></ArrowLeft>
@@ -80,41 +85,12 @@ import Sort from "vue-material-design-icons/Sort.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
+import { useUsersStore } from "@/stores/users";
 
 export default {
   data() {
     return {
-      users: [{
-        type: "Guest",
-        username: "carolina4",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Admin",
-        username: "alberto",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Owner",
-        username: "joaquim",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Guest",
-        username: "carolina5",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Admin",
-        username: "albertina",
-        joined: "16-7-2024"
-      },
-      {
-        type: "Owner",
-        username: "joaquina",
-        joined: "16-7-2024"
-      },
-      ],
+      usersStore: useUsersStore(),
       searchUsers: "",
       isVisible: false,
       isDropdownOpen: false,
@@ -136,10 +112,17 @@ export default {
 
   computed: {
     filters() {
-      if (this.filterFlag == "search") return this.paginatedUsers.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase()))
-      if (this.filterFlag == "admin") return this.users.filter((user) => user.type == 'Admin');
-      if (this.filterFlag == "guest") return this.users.filter((user) => user.type == 'Guest');
-      if (this.filterFlag == "owner") return this.users.filter((user) => user.type == 'Owner');
+      if (this.filterFlag == "search") { return this.users.filter((user) => user.username.toLowerCase().startsWith(this.searchUsers.toLowerCase())) }
+      if (this.filterFlag == "admin") { return this.users.filter((user) => user.user_role == 'admin') };
+      if (this.filterFlag == "guest") { return this.users.filter((user) => user.user_role == 'guest') };
+      if (this.filterFlag == "owner") return this.users.filter((user) => user.user_role == 'owner');
+      return this.users
+    },
+
+    paginatedFilteredUsers() {
+      const startIndex = (this.currentPage - 1) * this.userPerPage
+      const endIndex = startIndex + this.userPerPage
+      return this.filters.slice(startIndex, endIndex)
     },
 
     sortUsername() {
@@ -152,14 +135,12 @@ export default {
     },
 
     numberPages() {
-      return Math.ceil(this.users.length / this.userPerPage)
+      return Math.ceil(this.filters.length / this.userPerPage)
     },
 
-    paginatedUsers() {
-      const startIndex = (this.currentPage - 1) * this.userPerPage
-      const endIndex = startIndex + this.userPerPage
-      return this.users.slice(startIndex, endIndex)
-    },
+    users() {
+      return this.usersStore.getUsers
+    }
   },
 
   methods: {
@@ -174,11 +155,17 @@ export default {
 
     changeFilterFlag(change) {
       this.filterFlag = change
+      this.currentPage = 1
     },
 
-    deleteUser(username) {
-      let index = this.users.findIndex((user) => user.username == username)
-      this.users.splice(index, 1)
+    async deleteUser(username) {
+      await this.usersStore.delete(username)
+      this.usersStore.fetchUsers()
+    },
+
+    async blockUser(username) {
+      await this.usersStore.block(username)
+      this.usersStore.fetchUsers()
     },
 
     sort() {
@@ -201,6 +188,23 @@ export default {
         this.currentPage++
       }
     },
+
+    capitalize(string) {
+      if (!string) return string;
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+  },
+
+  created() {
+    this.usersStore.fetchUsers()
   },
 }
 </script>
@@ -361,12 +365,5 @@ td {
   align-items: center;
   margin-top: 2rem;
   justify-content: space-between;
-}
-
-#pagination {
-  display: flex;
-  flex-direction: row;
-  column-gap: 0.5rem;
-  color: #133E1A50;
 }
 </style>
