@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://127.0.0.1:3000",
-  headers: {
-    "Content-type": "application/json"
-  }
+    baseURL: "http://127.0.0.1:3000",
+    headers: {
+        "Content-type": "application/json"
+    }
 });
 
 /**
@@ -14,9 +14,14 @@ export default axios.create({
  * @returns a promise object with the response
  */
 
-export async function get(apiBaseUrl, endpoint){
+export async function get(apiBaseUrl, endpoint, token) {
     try {
-        const response = await fetch(`${apiBaseUrl}/${endpoint}`)
+        const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         return handleResponse(response)
     } catch (error) {
         throw Error
@@ -32,17 +37,17 @@ export async function get(apiBaseUrl, endpoint){
 
 
 // Buscar aqui a parte dos tokens
-export async function post(apiBaseUrl, endpoint, data, token){
+export async function post(apiBaseUrl, endpoint, data, token) {
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body:JSON.stringify(data)
-        })
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            })
         return handleResponse(response)
     } catch (error) {
         throw error
@@ -79,7 +84,7 @@ export async function patch(apiBaseUrl, endpoint, data, token) {
  * @param {string} endpoint - this is the endpoint of the API
  * @returns a promise object with the response
  */
-export async function remove(apiBaseUrl, endpoint, token){
+export async function remove(apiBaseUrl, endpoint, token) {
     try {
         const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
             method: "DELETE",
@@ -101,8 +106,8 @@ export async function remove(apiBaseUrl, endpoint, token){
  * @returns the response from the server 
  */
 
-async function handleResponse(response){
-    if(!response.ok){
+async function handleResponse(response) {
+    if (!response.ok) {
         const errorMessage = await response.text()
         throw new Error(`API request failed with status ${response.status}: ${errorMessage}`)
     }
