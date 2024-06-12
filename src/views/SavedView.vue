@@ -22,8 +22,8 @@
       <router-link :to="{ name: 'home' }">
         <button class="py-3 px-4 bg-gray-800 text-white mt-4 rounded-lg">
           Check Some Properties
-        </button> </router-link
-      >"
+        </button>
+      </router-link>
     </div>
   </main>
 </template>
