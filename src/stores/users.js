@@ -8,8 +8,8 @@ export const useUsersStore = defineStore('user', {
     users: [],
     user: "",
     reviews: [],
-    token: localStorage.getItem("authToken"),
-    loggedUser: localStorage.getItem("user"),
+    token: localStorage.getItem("authToken") || null,
+    loggedUser: localStorage.getItem("user") || null,
     loggedUserInfo: []
   }),
   getters: {
@@ -62,8 +62,8 @@ export const useUsersStore = defineStore('user', {
 
     async delete(username) {
       try {
-        const response = await api.remove(API_BASE_URL, `users/${username}`)
-        console.log("User deleted successfully:", response.data);
+        const response = await api.remove(API_BASE_URL, `users/${username}`, this.token)
+        console.log(response.msg);
       } catch (error) {
         console.error(error)
       }
@@ -84,7 +84,7 @@ export const useUsersStore = defineStore('user', {
           username: username,
           password: password
         });
-    
+
         if (response.success) {
           this.token = response.accessToken;
           this.loggedUser = username
@@ -94,11 +94,11 @@ export const useUsersStore = defineStore('user', {
         }
 
       } catch (error) {
-        throw error.message 
+        throw error.message
       }
     },
 
-    async logout(){
+    async logout() {
       this.token = null
       this.loggedUser = null
       localStorage.removeItem("authToken");
@@ -106,12 +106,19 @@ export const useUsersStore = defineStore('user', {
       // sessionStorage.removeItem("authToken");
     },
 
-    async editProfile(data, username){
+    async editProfile(data, username) {
       const response = await api.patch(API_BASE_URL, `users/${username}`, data, this.token);
       console.log("User edited successfully:", response);
-
+      if (data.username != undefined) {
+        localStorage.setItem("user", data.username)
+        this.loggedUser = data.username
+        if (response.success) {
+          this.token = response.newToken;
+          localStorage.setItem("authToken", this.token);
+        }
+      }
     },
-    async register(newUser){
+    async register(newUser) {
       try {
         const response = await api.post(API_BASE_URL, 'users', {
           username: newUser.username,

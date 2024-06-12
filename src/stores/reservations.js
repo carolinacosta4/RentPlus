@@ -13,10 +13,14 @@ export const useReservationsStore = defineStore("reservation", {
   },
   actions: {
     async fetchReservationsPerProperty(id){
-      this.reservationsProperty = []
-      const response = await api.get(API_BASE_URL, "reservations")
-      const propertyReservations = response.filter((reservation) => reservation.property_ID == id)
-      this.reservationsProperty = propertyReservations
+      try {
+        this.reservationsProperty = []
+        const response = await api.get(API_BASE_URL, "reservations")
+        const propertyReservations = response.filter((reservation) => reservation.property_ID == id)
+        this.reservationsProperty = propertyReservations
+      } catch (error) {
+        throw error
+      }
     },
 
     async createReservation(data) {
