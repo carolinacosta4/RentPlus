@@ -15,13 +15,13 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in cards"
+          v-for="(card, index) in currentTrips"
           :key="index"
           :city="card.city"
           :country="card.country"
           :host="card.host"
-          :startDate="card.startDate"
-          :endDate="card.endDate"
+          :startDate="formatDate(card.dateIn)"
+          :endDate="formatDate(card.dateOut)"
         />
       </div>
     </div>
@@ -38,13 +38,13 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in cards"
+          v-for="(card, index) in futureTrips"
           :key="index"
           :city="card.city"
           :country="card.country"
           :host="card.host"
-          :startDate="card.startDate"
-          :endDate="card.endDate"
+          :startDate="formatDate(card.dateIn)"
+          :endDate="formatDate(card.dateOut)"
         />
       </div>
     </div>
@@ -61,13 +61,13 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in cards"
+          v-for="(card, index) in previousTrips"
           :key="index"
           :city="card.city"
           :country="card.country"
           :host="card.host"
-          :startDate="card.startDate"
-          :endDate="card.endDate"
+          :startDate="formatDate(card.dateIn)"
+          :endDate="formatDate(card.dateOut)"
         />
       </div>
     </div>
@@ -76,6 +76,8 @@
 
 <script>
 import CardTrips from "@/components/CardTrips.vue";
+import { useReservationsStore } from "@/stores/reservations";
+import { usePropertiesStore } from "@/stores/properties";
 
 export default {
   components: {
@@ -83,44 +85,59 @@ export default {
   },
   data() {
     return {
-      cards: [
-        {
-          city: "Paris",
-          country: "FR",
-          host: "John",
-          startDate: "2024-04-01",
-          endDate: "2024-04-05",
-        },
-        {
-          city: "Porto",
-          country: "PT",
-          host: "Maria",
-          startDate: "2024-05-10",
-          endDate: "2024-05-15",
-        },
-        {
-          city: "Tokyo",
-          country: "JP",
-          host: "David",
-          startDate: "2024-06-20",
-          endDate: "2024-06-25",
-        },
-        {
-          city: "New York",
-          country: "US",
-          host: "Emily",
-          startDate: "2024-07-15",
-          endDate: "2024-07-20",
-        },
-        {
-          city: "London",
-          country: "UK",
-          host: "Michael",
-          startDate: "2024-08-05",
-          endDate: "2024-08-10",
-        },
-      ],
+      reservationsStore: useReservationsStore(),
+      propertiesStore: usePropertiesStore(),
+      allTrips: [],
+      currentTrips: [],
+      futureTrips: [],
+      previousTrips: [],
     };
+  },
+
+  async created() {
+    await this.reservationsStore.getUserTrips(localStorage.getItem("user"));
+    this.allTrips = this.reservationsStore.userTrips;
+    await this.fetchPropertyDetails();
+    this.filterTripsByDate();
+  },
+
+  methods: {
+    async fetchPropertyDetails() {
+      for (const trip of this.allTrips) {
+        const propertyDetails = await this.propertiesStore.fetchProperty(
+          trip.property_ID
+        );
+        // Extract city, country, and host from property details and update trip object
+        trip.city = propertyDetails.location.split(",")[0].trim();
+        trip.country = propertyDetails.location.split(",")[1].trim();
+        trip.host = propertyDetails.owner_username;
+      }
+    },
+
+    filterTripsByDate() {
+      const currentDate = new Date();
+      this.currentTrips = this.allTrips.filter((trip) => {
+        const startDate = new Date(trip.dateIn);
+        const endDate = new Date(trip.dateOut);
+        return endDate >= currentDate && startDate <= currentDate;
+      });
+
+      this.futureTrips = this.allTrips.filter((trip) => {
+        const startDate = new Date(trip.dateIn);
+        return startDate > currentDate;
+      });
+
+      this.previousTrips = this.allTrips.filter((trip) => {
+        const endDate = new Date(trip.dateOut);
+        return endDate < currentDate;
+      });
+    },
+
+    formatDate(dateString) {
+      const options = { day: "numeric", month: "long", year: "numeric" };
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-EN", options);
+    },
   },
 };
 </script>
