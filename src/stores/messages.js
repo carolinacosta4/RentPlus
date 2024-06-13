@@ -16,23 +16,20 @@ export const useMessagesStore = defineStore("messages", {
         this.messages = [];
         const response = await api.get(API_BASE_URL, `messages/${id}`);
         this.messages = response.data;
-        console.log(this.messages);
       } catch (error) {
         console.error(error);
       }
     },
 
-    async createMessage(newProperty) {
+    async createMessage(newMessage) {
       try {
-        console.log(newProperty);
         const response = await api.post(API_BASE_URL, 'messages', {
-          receiver_username: newProperty.receiver_username,
-          sender_username: newProperty.sender_username,
-          content: newProperty.content
+          receiver_username: newMessage.receiver_username,
+          sender_username: newMessage.sender_username,
+          content: newMessage.content
         },
           localStorage.getItem("authToken")
         );
-        console.log(response);
       } catch (error) {
         throw error.message
       }
