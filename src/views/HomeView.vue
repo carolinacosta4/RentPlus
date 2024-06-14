@@ -6,23 +6,21 @@
         <p class="mb-4 inter-semiBold font-color-green">
           Find the perfect spot for your holidays
         </p>
-        <div class="flex gap-4 mb-6 border px-6 py-2 rounded-lg w-fit">
+        <div class="flex gap-8 mb-6 border px-6 py-2 rounded-lg w-fit">
           <!-- Location input -->
-          <input class="w-4/12 focus:outline-none inter-light font-color-green" type="text" placeholder="Location" />
-
-          <!-- Date input -->
-          <input class="w-3/12 border-x px-4 inter-light font-color-green" type="date"
-            :value="new Date().toISOString().slice(0, 10)" />
+          <input class="w-4/12 focus:outline-none inter-light font-color-green" type="text" placeholder="Location"
+            v-model="location" />
 
           <!-- Guests input -->
-          <input class="w-3/12 focus:outline-none inter-light font-color-green" type="number" placeholder="Guests"
-            max="100" />
+          <input class="w-3/12 focus:outline-none inter-light font-color-green" type="text" placeholder="Guests"
+            v-model="guests" />
 
-          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg">
+          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg"
+            @click="changeFilterFlag('searchBoth')">
             <SearchIcon />
           </button>
 
-          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg">
+          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg" @click="sort">
             <FilterIcon />
           </button>
         </div>
@@ -32,20 +30,24 @@
         <p class="mb-4 inter-semiBold font-color-green">Find specifics</p>
         <div class="relative mb-16 flex items-center gap-3">
           <input class="focus:outline-none border px-6 py-3 rounded-lg inter-light font-color-green" type="text"
-            placeholder="Search" />
-          <button class="flex justify-center items-center w-8 h-8 p-5 bg-gray-200 rounded-lg">
-            <SearchIcon />
-          </button>
+            placeholder="Search" v-model="title" @click="changeFilterFlag('searchTitle')" />
         </div>
       </div>
     </div>
 
     <!-- CARDS -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      <div v-for="property in properties" :key="property.ID">
+      <div v-for="property in filters" :key="property.ID">
         <PropertyContainer image="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg"
           :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID" />
       </div>
+    </div>
+
+    <div id="pagination" class="inter-medium" v-if="pagination.total > 2 && pagination.limit != null">
+      <ArrowLeft @click="propertiesStore.fetchProperties(pagination.current - 1)" v-if="pagination.current != 1">
+      </ArrowLeft>
+      <span>{{ pagination.current }}</span> of <span>{{ pagination.totalPages }}</span>
+      <ArrowRight @click="propertiesStore.fetchProperties(pagination.current + 1)" v-if="pagination.current != pagination.totalPages"></ArrowRight>
     </div>
   </main>
 </template>
@@ -55,6 +57,8 @@
 import FilterIcon from "vue-material-design-icons/Filter.vue";
 import SearchIcon from "vue-material-design-icons/Magnify.vue";
 import PropertyContainer from "../components/PropertyContainer.vue";
+import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
+import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import { usePropertiesStore } from "@/stores/properties";
 
 export default {
@@ -62,21 +66,79 @@ export default {
     FilterIcon,
     SearchIcon,
     PropertyContainer,
+    ArrowLeft,
+    ArrowRight,
   },
   data() {
     return {
       propertiesStore: usePropertiesStore(),
+      location: "",
+      guests: "",
+      title: "",
+      selectedDate: "",
+      filterFlag: "search",
+      sortFlag: -1,
     };
   },
 
   created() {
-    this.propertiesStore.fetchProperties();
+    this.propertiesStore.fetchProperties(1);
   },
 
   computed: {
     properties() {
       return this.propertiesStore.getProperties
-    }
+    },
+
+    pagination() {
+      return this.propertiesStore.getPagination
+    },
+
+    filters() {
+      if (this.filterFlag == "search") { return this.properties }
+      if (this.filterFlag == 'searchBoth') {
+        if (this.location == "" && this.guests == "") { return this.properties }
+        if (this.location == "") { return this.properties.filter((property) => property.guest_number == this.guests) }
+        if (this.guests == "") { return this.properties.filter((property) => property.location.toLowerCase().startsWith(this.location.toLowerCase())) }
+        if (this.location != "" && this.guests != "") { return this.properties.filter((property) => property.location.toLowerCase().includes(this.location.toLowerCase()) && property.guest_number == this.guests) }
+      }
+      if (this.filterFlag == "searchTitle") { return this.properties.filter((property) => property.title.toLowerCase().includes(this.title.toLowerCase())) }
+    },
+
+    sortPrice() {
+      this.properties.sort(
+        (c1, c2) => {
+          if (c1.daily_price > c2.daily_price) return 1 * this.sortFlag
+          if (c1.daily_price < c2.daily_price) return -1 * this.sortFlag
+          if (c1.daily_price == c2.daily_price) return 0
+        })
+    },
   },
-};
+
+  methods: {
+    changeFilterFlag(change) {
+      this.filterFlag = change
+      if (change !== 'search') {
+        this.propertiesStore.fetchProperties(1);
+      }
+    },
+
+    sort() {
+      this.sortFlag *= -1
+      this.sortPrice
+    },
+
+  },
+}
 </script>
+
+<style scoped>
+#pagination {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 0.5rem;
+  color: #133E1A50;
+  margin-top: 1em;
+}
+</style>

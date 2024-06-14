@@ -10,20 +10,39 @@
   </main>
 </template>
 
+
+
 <script>
-import { usePropertiesStore } from "@/stores/properties";
 import PropertyContainer from "../components/PropertyContainer.vue";
+import { useUsersStore } from "@/stores/users";
+import { usePropertiesStore } from "@/stores/properties";
+
 export default {
   data() {
     return {
+      usersStore: useUsersStore(),
       propertiesStore: usePropertiesStore(),
+      favProperties: [],
     };
   },
 
   created() {
-    this.propertiesStore.fetchProperties().then(() => {
-      console.log(this.propertiesStore.getProperties);
+    this.usersStore.fetchUser("Beatriz").then(() => {
+      this.usersStore.getUser.properties.forEach((property) => {
+        this.propertiesStore
+          /* MUDAR NA BD NO FUTURO GUARDAR POR IDS E NAO NOMES */
+          .fetchProperty(26 /* property.property_ID */)
+          .then(() => {
+            this.favProperties.push(this.propertiesStore.getProperty);
+          });
+      });
     });
+  },
+
+  computed: {
+    properties() {
+      return this.favProperties;
+    },
   },
 
   methods: {
@@ -35,14 +54,14 @@ export default {
     },
   },
 
-  computed: {
-    properties() {
-      return this.propertiesStore.getProperties;
-    },
-  },
-
   components: {
     PropertyContainer,
   },
 };
 </script>
+
+<style scoped>
+#Properties {
+  row-gap: 2em;
+}
+</style>

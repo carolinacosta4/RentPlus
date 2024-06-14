@@ -7,17 +7,27 @@ export const usePropertiesStore = defineStore("property", {
   state: () => ({
     properties: [],
     property: "",
+    pagination: null,
+    pagination: "",
+    token: localStorage.getItem("authToken") || null,
   }),
   getters: {
     getProperties: (state) => state.properties,
     getProperty: (state) => state.property,
+    getPagination: (state) => state.pagination,
   },
   actions: {
-    async fetchProperties() {
+    async fetchProperties(page) {
       try {
         this.properties = []
-        const response = await api.get(API_BASE_URL, "properties")
-        this.properties = response.data
+        let response
+        if (page) {
+          response = await api.get(API_BASE_URL, `properties?page=${page}&limit=20`)
+        } else {
+          response = await api.get(API_BASE_URL, `properties`)
+        }
+        this.properties = response.data.reverse()
+        this.pagination = response.pagination[0]
       } catch (error) {
         console.error(error)
       }
@@ -50,8 +60,8 @@ export const usePropertiesStore = defineStore("property", {
           amenities: newProperty.amenities,
           photos: newProperty.photos,
         },
-        localStorage.getItem("authToken")
-      );
+          localStorage.getItem("authToken")
+        );
       } catch (error) {
         throw error.message
       }
@@ -78,6 +88,25 @@ export const usePropertiesStore = defineStore("property", {
       } catch (error) {
         throw error.message
       }
-    }
+    },
+
+    async delete(id) {
+      try {
+        const response = await api.remove(API_BASE_URL, `properties/${id}`, this.token)
+        console.log(response.msg);
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async block(id) {
+      console.log(id);
+      try {
+        const response = await api.patch(API_BASE_URL, `properties/block/${id}`)
+        console.log("Property updated successfully:", response.msg);
+      } catch (error) {
+        console.error(error)
+      }
+    },
   },
 });
