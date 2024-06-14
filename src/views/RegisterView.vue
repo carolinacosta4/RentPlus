@@ -128,8 +128,12 @@ export default {
         this.showError = false
       } catch (error) {
         this.showError = true
+        console.log(error);
         if (error === 'API request failed with status 409: {"success":false,"msg":"The username is already taken. Please choose another one."}') {
           this.errorMessage = 'The username is already taken.';
+        }
+        if (error === 'API request failed with status 400: {"success":false,"msg":["email_UNIQUE must be unique"]}') {
+          this.errorMessage = 'The email is already in use.';
         }
       }
     }
