@@ -14,7 +14,7 @@ export const useMessagesStore = defineStore("messages", {
     async fetchMessage(id) {
       try {
         this.messages = [];
-        const response = await api.get(API_BASE_URL, `messages/${id}`);
+        const response = await api.get(API_BASE_URL, `messages/${id}`, localStorage.getItem("authToken"));
         this.messages = response.data;
       } catch (error) {
         console.error(error);

@@ -79,7 +79,7 @@ export const usePropertiesStore = defineStore("property", {
     async block(id) {
       console.log(id);
       try {
-        const response = await api.patch(API_BASE_URL, `properties/block/${id}`)
+        const response = await api.patch(API_BASE_URL, `properties/${id}/block`)
         console.log("Property updated successfully:", response.msg);
       } catch (error) {
         console.error(error)

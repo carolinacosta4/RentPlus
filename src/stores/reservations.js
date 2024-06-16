@@ -15,21 +15,19 @@ export const useReservationsStore = defineStore("reservation", {
   actions: {
     async fetchReservationsPerProperty(id) {
       try {
-        this.reservationsProperty = [];
-        const response = await api.get(API_BASE_URL, "reservations");
-        const propertyReservations = response.filter(
-          (reservation) => reservation.property_ID == id
-        );
-        this.reservationsProperty = propertyReservations;
+        this.reservationsProperty = []
+        const response = await api.get(API_BASE_URL, "reservations")
+        const propertyReservations = response.filter((reservation) => reservation.property_ID == id)
+        this.reservationsProperty = propertyReservations
       } catch (error) {
-        throw error;
+        throw error
       }
     },
 
     async createReservation(data) {
       try {
-        const response = await api.post(API_BASE_URL, "reservations", data);
-        return response;
+        const response = await api.post(API_BASE_URL, "reservations", data, localStorage.getItem('authToken'))
+        return response
       } catch (error) {
         throw error;
       }
