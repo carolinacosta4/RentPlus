@@ -68,9 +68,66 @@
           :host="card.host"
           :startDate="formatDate(card.dateIn)"
           :endDate="formatDate(card.dateOut)"
+          :isButton="true"
+          @leave-review="showModal"
         />
       </div>
     </div>
+
+    <!--  -->
+    <!-- MODAL -->
+    <!--  -->
+    <v-dialog v-model="isModalVisible" max-width="500px">
+      <v-card>
+        <v-card-text>
+          <h1 class="page-title font-size-14 modalTitle inter-bold">
+            Leave a Review
+          </h1>
+
+          <!-- Star Rating -->
+          <div>
+            <h1 class="pb-1 font-size-14 inter-medium">Rate this property</h1>
+            <div class="flex items-center space-x-1">
+              <Star
+                v-for="n in 5"
+                :key="n"
+                class="cursor-pointer"
+                :class="{
+                  'text-gray-400': n > selectedRating,
+                  'text-yellow-500': n <= selectedRating,
+                }"
+                @click="selectedRating = n"
+              />
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <h1 class="py-2 font-size-14 inter-medium">Write a Comment</h1>
+          <textarea
+            v-model="reviewText"
+            placeholder="Write your review here..."
+            class="w-full p-2 border border-gray-300 rounded"
+          ></textarea>
+        </v-card-text>
+        <v-card-actions>
+          <div class="flex gap-2 justify-end w-full">
+            <button
+              class="inter-medium button-border-green"
+              @click="
+                isModalVisible = false;
+                selectedRating = 0;
+                reviewText = '';
+              "
+            >
+              Close
+            </button>
+            <button class="inter-medium button-green" @click="submitReview">
+              Submit Review
+            </button>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </main>
 </template>
 
@@ -78,19 +135,26 @@
 import CardTrips from "@/components/CardTrips.vue";
 import { useReservationsStore } from "@/stores/reservations";
 import { usePropertiesStore } from "@/stores/properties";
+import { useReviewsStore } from "@/stores/reviews";
+import Star from "vue-material-design-icons/Star.vue";
 
 export default {
   components: {
     CardTrips,
+    Star,
   },
   data() {
     return {
       reservationsStore: useReservationsStore(),
       propertiesStore: usePropertiesStore(),
+      reviewsStore: useReviewsStore(),
       allTrips: [],
       currentTrips: [],
       futureTrips: [],
       previousTrips: [],
+      isModalVisible: false,
+      reviewText: "",
+      selectedRating: 0,
     };
   },
 
@@ -137,6 +201,37 @@ export default {
       const options = { day: "numeric", month: "long", year: "numeric" };
       const date = new Date(dateString);
       return date.toLocaleDateString("en-EN", options);
+    },
+
+    showModal() {
+      this.isModalVisible = true;
+    },
+
+    async submitReview() {
+      // RATING
+      if (this.selectedRating === 0) {
+        alert("Please rate the property before submitting your review.");
+        return;
+      }
+      const comment = this.reviewText || "";
+
+      try {
+        await this.reviewsStore.postReview(79, {
+          reservationID: 79,
+          comment: comment,
+          rating: this.selectedRating,
+        });
+
+        // RESET STATE
+        this.isModalVisible = false;
+        this.reviewText = "";
+        this.selectedRating = 0;
+      } catch (error) {
+        console.error("Error submitting review:", error);
+        alert(
+          "An error occurred while submitting your review. Please try again."
+        );
+      }
     },
   },
 };
