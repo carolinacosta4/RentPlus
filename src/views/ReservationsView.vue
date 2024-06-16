@@ -223,8 +223,6 @@ export default {
         const propertyDetails = await this.propertiesStore.fetchProperty(
           reservation.property_ID
         );
-        // Extract city, country, and host from property details and update reservation object
-
         reservation.title = propertyDetails.title;
         reservation.guests = propertyDetails.guest_number;
       }

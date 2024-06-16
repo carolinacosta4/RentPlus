@@ -1,7 +1,7 @@
 <template>
   <div v-if="loggedUser != property.owner_username" id="ohNo">
     <h1 class=" font-color-green font-size-24 inter-semiBold">Oh no...</h1>
-    <h1 class="inter-light font-color-green font-size-18">You have no permition to access this page</h1>
+    <h1 class="inter-light font-color-green font-size-18">You have no permission to access this page</h1>
   </div>
 
   <main v-else class="py-8 px-4">
