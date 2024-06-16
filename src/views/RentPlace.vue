@@ -23,7 +23,7 @@
       <p class="text-white text-base lg:text-lg">
         Start by putting property online!
       </p>
-      <router-link :to="{name: 'create-property'}">
+      <router-link @click="changeRole" :to="{name: 'create-property'}">
         <button
         class="text-green-900 font-bold px-12 py-3 mt-6 bg-white rounded-lg"
       >
@@ -35,4 +35,19 @@
 </template>
 
 <script>
+import { useUsersStore } from '@/stores/users';
+
+export default{
+  data() {
+    return {
+      userStore: useUsersStore()
+    }
+  },
+
+  methods: {
+    changeRole() {
+      this.userStore.editRole({user_role: 'owner'}, localStorage.getItem('user'))
+    }
+  },
+}
 </script>
