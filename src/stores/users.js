@@ -12,6 +12,7 @@ export const useUsersStore = defineStore("user", {
     loggedUser: localStorage.getItem("user") || null,
     loggedUserInfo: [],
     favorites: [],
+    reservations: [],
   }),
   getters: {
     getUsers: (state) => state.users,
@@ -21,6 +22,7 @@ export const useUsersStore = defineStore("user", {
     getUserLogged: (state) => state.loggedUser,
     getUserLoggedInfo: (state) => state.loggedUserInfo,
     getUserFavorites: (state) => state.favorites,
+    getUserReservations: (state) => state.reservations,
   },
   actions: {
     async fetchUsers() {
@@ -134,6 +136,7 @@ export const useUsersStore = defineStore("user", {
         }
       }
     },
+
     async register(newUser) {
       try {
         const response = await api.post(API_BASE_URL, "users", {
@@ -198,6 +201,23 @@ export const useUsersStore = defineStore("user", {
         }
       } catch (error) {
         console.error("Failed to toggle property favorite status:", error);
+        throw error;
+      }
+    },
+
+    async fetchUserReservations(username) {
+      try {
+        const response = await api.get(
+          API_BASE_URL,
+          `reservations/${username}`,
+          this.token
+        );
+        if (response.success) {
+          this.reservations = response.data;
+          console.log(response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch reservations:", error);
         throw error;
       }
     },
