@@ -32,7 +32,10 @@ export default{
       v-if="
         $route.name !== 'register' &&
         $route.name !== 'rent-place' &&
-        $route.name !== 'login'
+        $route.name !== 'login'  &&
+        $route.name !== 'confirmation' &&
+        $route.name !== 'forgot-password' &&
+        $route.name !== 'reset-password'
       "
     />
   </header>

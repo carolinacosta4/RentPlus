@@ -64,7 +64,7 @@
           </p>
           <v-dialog max-width="500" v-model="isActiveDialog">
             <template v-slot:activator="{ props: activatorProps }">
-              <button v-bind="activatorProps" class="button-green" id="rentBtn">Rent</button>
+              <button v-bind="activatorProps" class="button-green" id="rentBtn" v-if="loggedUser">Rent</button>
             </template>
             <template v-slot:default="{ isActive }">
               <v-card>
@@ -84,6 +84,8 @@
               </v-card>
             </template>
           </v-dialog>
+          <router-link :to="{ name: 'login' }"><button class="button-green" id="rentBtn" v-if="!loggedUser">Log in to
+              rent</button></router-link>
         </div>
       </div>
     </div>
@@ -134,7 +136,7 @@
     </div>
     <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
     <iframe :src="property.map_url" height="400" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
     <h3 class="font-size-20 inter-medium font-color-green page-title">What the guests say</h3>
     <div id="reviews">
       <div id="allReviews" v-if="reviews.length > 0">
@@ -190,8 +192,9 @@
             less -</p>
         </div>
         <div v-else style="margin-top: 2em"></div>
-        <router-link v-if="owner.username != loggedUser" :to="{ name: 'messages', params: { id: owner.username } }"><button class="button-green"
-            id="msgBtn">Message {{ owner.username
+        <router-link v-if="owner.username != loggedUser"
+          :to="{ name: 'messages', params: { id: owner.username } }"><button class="button-green" id="msgBtn">Message {{
+            owner.username
             }}</button></router-link>
       </div>
     </div>
@@ -359,7 +362,7 @@ export default {
       return this.paymentTypesStore.getTypes;
     },
 
-    loggedUser(){
+    loggedUser() {
       return this.usersStore.getUserLogged
     }
   },
@@ -430,7 +433,6 @@ export default {
             "dateIn": `${dtIn.getFullYear()}-${dtIn.getMonth() + 1}-${dtIn.getDate()}`,
             "dateOut": `${dtOut.getFullYear()}-${dtOut.getMonth() + 1}-${dtOut.getDate() + 1}`,
             "total_price": this.total,
-            "username": this.loggedUser,
             "payment_type": this.selectedMethod
           })
 

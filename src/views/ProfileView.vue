@@ -45,7 +45,8 @@
       <div id="photoBtn">
         <button class="font-color-green inter-bold button-white" @click="triggerFileInput"
           v-if="user.username == loggedUser">Change photo</button>
-
+        <router-link v-if="user.username == loggedUser" :to="{ name: 'login' }" @click="usersStore.logout"><button
+            class="font-color-green inter-bold button-green">Logout</button></router-link>
         <button class="font-color-green inter-bold button-white"
           v-if="user.username != loggedUser && user.user_role == 'owner'">
           <router-link :to="{ name: 'messages', params: { id: user.username } }"><button class="button-green"
@@ -187,7 +188,7 @@ export default {
         .then(() => {
           if (this.newUsername != "") {
             this.$router.push({ name: 'profile', params: { id: this.newUsername } })
-          }else{
+          } else {
             this.fetchUserData()
           }
 
@@ -249,10 +250,17 @@ export default {
   height: 2.5em;
 }
 
-#photoBtn,
 #pictureProfile {
   display: flex;
   justify-content: center;
+}
+
+#photoBtn {
+  text-align: center;
+}
+
+#photoBtn button {
+  margin-bottom: 0.5em;
 }
 
 h3:not(.firstName) {

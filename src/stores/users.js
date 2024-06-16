@@ -23,7 +23,7 @@ export const useUsersStore = defineStore('user', {
   actions: {
     async fetchUsers() {
       try {
-        const response = await api.get(API_BASE_URL, `users`)
+        const response = await api.get(API_BASE_URL, `users`, this.token)
         this.users = response.data
       } catch (error) {
         console.error(error)
@@ -33,7 +33,7 @@ export const useUsersStore = defineStore('user', {
     async fetchUser(username) {
       try {
         this.user = ""
-        const response = await api.get(API_BASE_URL, `users/${username}`)
+        const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
         this.user = response.data
       } catch (error) {
         console.error(error)
@@ -43,7 +43,7 @@ export const useUsersStore = defineStore('user', {
     async fetchUserLogged(username) {
       try {
         this.loggedUserInfo = []
-        const response = await api.get(API_BASE_URL, `users/${username}`)
+        const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
         this.loggedUserInfo = response.data
       } catch (error) {
         console.error(error)
@@ -53,7 +53,7 @@ export const useUsersStore = defineStore('user', {
     async fetchUserReviews(username) {
       try {
         this.reviews = []
-        const response = await api.get(API_BASE_URL, `users/${username}/reviews`)
+        const response = await api.get(API_BASE_URL, `users/${username}/reviews`, this.token)
         this.reviews = response.data
       } catch (error) {
         console.error(error)
@@ -71,7 +71,7 @@ export const useUsersStore = defineStore('user', {
 
     async block(username) {
       try {
-        const response = await api.patch(API_BASE_URL, `users/block/${username}`)
+        const response = await api.patch(API_BASE_URL, `users/${username}/block`)
         console.log("User updated successfully:", response.data);
       } catch (error) {
         console.error(error)
@@ -118,6 +118,7 @@ export const useUsersStore = defineStore('user', {
         }
       }
     },
+
     async register(newUser) {
       try {
         const response = await api.post(API_BASE_URL, 'users', {
@@ -129,14 +130,48 @@ export const useUsersStore = defineStore('user', {
           last_name: newUser.lastName
         });
 
-        if (response.success) {
-          await this.login(newUser.username, newUser.password);
-        } else {
+        if (!response.success) {
           throw new Error('Registration failed');
         }
       } catch (error) {
         throw error.message
       }
-    }
+    },
+
+    async editRole(data, username) {
+      const response = await api.patch(API_BASE_URL, `users/${username}/role`, data, this.token);
+      console.log("User role edited successfully:", response);
+      if (response.success) {
+        this.token = response.accessToken;
+        localStorage.setItem("authToken", this.token);
+      }
+    },
+
+    async confirmation(username) {
+      try {
+        const response = await api.patch(API_BASE_URL, `users/${username}/confirmation`)
+        console.log("User confirmed:", response.data);
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async forgotPassword(data) {
+      try {
+        const response = await api.post(API_BASE_URL, `users/reset-password-email`, data)
+        return response
+      } catch (error) {
+        throw error.message
+      }
+    },
+
+    async resetPassword(data) {
+      try {
+        const response = await api.patch(API_BASE_URL, `users`, data)
+        return response
+      } catch (error) {
+        throw error.message
+      }
+    },
   },
 })
