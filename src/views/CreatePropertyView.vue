@@ -249,7 +249,7 @@
           </button>
           <button type="submit" @click="createProperty" class="button-green btnNextStepFinal inter-bold"
             v-if="showStepThree">
-            Create porperty
+            Create property
           </button>
         </div>
       </div>
@@ -363,7 +363,8 @@ export default {
       propertiesStore: usePropertiesStore(),
       amenitiesStore: useAmenitiesStore(),
       propertyTypesStore: usePropertyTypesStore(),
-      usersStore: useUsersStore()
+      usersStore: useUsersStore(),
+      images: []
     };
   },
   components: {
@@ -416,10 +417,15 @@ export default {
         ) {
           throw new Error("Missing information");
         } else {
-          this.photos.forEach(photo => {
-            this.photosArray.push(photo.name)
-          });
-          this.newProperty.photos = this.photosArray;
+          try {
+            for (let file of this.photos) {
+              this.images.push(file)
+            }
+          } catch (err) {
+            console.error('Erro:', err);
+          }
+
+          // outros
           let countryShort = selectedCountry.short;
           this.newProperty.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
@@ -440,6 +446,7 @@ export default {
             .filter((a) => this.amenitiesData.includes(a.amenity_name))
             .map((a) => a.ID);
           this.newProperty.amenities = newAmenities;
+
           this.showStepTwo = false;
           this.showStepThree = true;
         }
@@ -462,12 +469,14 @@ export default {
             this.newType = this.propertyTypes.find((t) => this.property_type.includes(t.type_name)).ID
             this.newProperty.property_type = this.newType;
           }
+
           this.newProperty.beds = this.beds;
           this.newProperty.bedrooms = this.bedrooms;
           this.newProperty.bathrooms = this.bathrooms;
           this.newProperty.guest_number = this.guest_number;
         }
       }
+
     },
     paginationBack() {
       if (this.showStepTwo) {
@@ -483,8 +492,28 @@ export default {
     async createProperty() {
       try {
         await this.sendInfo()
+        let formDataImg = new FormData()
+        formDataImg.append("owner_username", this.newProperty.owner_username)
+        formDataImg.append("title", this.newProperty.title)
+        formDataImg.append("daily_price", this.newProperty.daily_price)
+        formDataImg.append("map_url", this.newProperty.map_url)
+        formDataImg.append("location", this.newProperty.location)
+        formDataImg.append("description", this.newProperty.description)
+
+        formDataImg.append("amenities", this.newProperty.amenities)
+        formDataImg.append("property_type", this.newProperty.property_type)
+        formDataImg.append("beds", this.newProperty.beds)
+        formDataImg.append("bedrooms", this.newProperty.bedrooms)
+        formDataImg.append("bathrooms", this.newProperty.bathrooms)
+        formDataImg.append("guest_number", this.newProperty.guest_number)
+
+        for (let img of this.images){
+          formDataImg.append("inputPropertyImages", img)
+        }
+
+        console.log(...formDataImg);
         if (this.checkbox) {
-          await this.propertiesStore.create(this.newProperty)
+          await this.propertiesStore.create(formDataImg)
           this.showModal = true;
         }
         else {

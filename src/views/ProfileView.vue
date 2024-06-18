@@ -45,7 +45,7 @@
         </v-dialog>
       </div>
       <div id="photoBtn">
-        <button class="font-color-green inter-bold button-white" @click="triggerFileInput"
+        <button class="font-color-green inter-bold button-white" @click="triggerFileInput" name="inputProfilePicture"
           v-if="user.username == loggedUser">Change photo</button>
         <router-link v-if="user.username == loggedUser" :to="{ name: 'login' }" @click="usersStore.logout"><button
             class="font-color-green inter-bold button-green">Logout</button></router-link>
@@ -55,7 +55,8 @@
               id="msgBtn">Message {{ user.username
               }}</button></router-link></button>
         <!-- AQUI -->
-        <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none" />
+        <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none"
+          @change="updateProfilePicture" />
       </div>
       <div id="infoProfile">
         <h3 class="inter-medium font-size-20 firstName font-color-green">First name</h3>
@@ -151,6 +152,8 @@ import Edit from "vue-material-design-icons/Pencil.vue";
 import Star from "vue-material-design-icons/Star.vue";
 import { useUsersStore } from "@/stores/users";
 
+const API_BASE_URL = "http://127.0.0.1:3000"
+
 export default {
   data() {
     return {
@@ -174,6 +177,36 @@ export default {
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
+
+    async updateProfilePicture(event) {
+      try {
+
+        const file = event.target.files[0]; // Obtém o arquivo do input
+        if (!file) {
+          console.error('Nenhuma imagem selecionada.');
+          return;
+        }
+        console.log(file);
+
+        let formData = new FormData()
+        formData.append("inputProfilePicture", file)
+        const result = await this.usersStore.updateProfilePicture(formData, this.loggedUser);
+      //   console.log('Profile picture updated successfully:', result);
+
+        if (response.ok) {
+          alert('Foto atualizada com sucesso');
+          // Atualize o estado do usuário com a nova URL do avatar, se necessário
+          this.user.profile_image = result.profile_image;
+        } else {
+          alert('Falha ao atualizar a foto');
+          console.error(result);
+        }
+      } catch (err) {
+        console.error('Erro:', err);
+      }
+    },
+
+    
 
     fetchUserData() {
       this.usersStore.fetchUser(this.$route.params.id)

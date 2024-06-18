@@ -19,7 +19,7 @@
   </button>
   <router-link :to="{ name: 'property', params: { id: id } }">
     <div class="w-52 h-52 rounded-lg mb-3 overflow-hidden">
-      <img
+      <img 
         :src="image"
         class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-110"
       />

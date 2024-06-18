@@ -98,7 +98,7 @@
         <router-link v-if="loggedUser" :to="{ name: 'profile', params: {id: loggedUser} }">
           <img
             class="w-8 h-8 rounded-full"
-            src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"
+            :src="loggedUserInfo.profile_image"
             alt="user photo"
           />
         </router-link>

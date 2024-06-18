@@ -54,6 +54,22 @@ export async function post(apiBaseUrl, endpoint, data, token) {
     }
 }
 
+export async function postForm(apiBaseUrl, endpoint, data, token) {
+    try {
+        const response = await fetch(`${apiBaseUrl}/${endpoint}`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: data
+            })
+        return handleResponse(response)
+    } catch (error) {
+        throw error
+    }
+}
+
 /**
  * PATCH utility function
  * @param {string} apiBaseUrl - the base URL from the API
@@ -70,6 +86,21 @@ export async function patch(apiBaseUrl, endpoint, data, token) {
                 "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(data)
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function patchForm(apiBaseUrl, endpoint, data, token) {
+    try {
+        const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: data
         });
         return handleResponse(response);
     } catch (error) {
