@@ -4,7 +4,7 @@
     <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
       <div v-for="property in properties" :key="property.ID">
         <PropertyContainer :id="property.ID" :image="getPropertyImage(property)" :name="property.title"
-          :location="property.location" :price="property.daily_price" />
+          :location="property.location" :price="property.daily_price" :blocked="property.is_blocked" />
       </div>
     </nav>
   </main>
@@ -22,27 +22,22 @@ export default {
     return {
       usersStore: useUsersStore(),
       propertiesStore: usePropertiesStore(),
-      favProperties: [],
     };
   },
 
   created() {
-    this.usersStore.fetchUser("Beatriz").then(() => {
-      this.usersStore.getUser.properties.forEach((property) => {
-        this.propertiesStore
-          /* MUDAR NA BD NO FUTURO GUARDAR POR IDS E NAO NOMES */
-          .fetchProperty(26 /* property.property_ID */)
-          .then(() => {
-            this.favProperties.push(this.propertiesStore.getProperty);
-          });
-      });
-    });
+    this.usersStore.fetchUser(`${this.loggedUser}?field=properties`)
   },
 
   computed: {
     properties() {
-      return this.favProperties;
+      console.log(this.usersStore.getUser.properties);
+      return this.usersStore.getUser.properties
     },
+
+    loggedUser() {
+      return localStorage.getItem('user')
+    }
   },
 
   methods: {

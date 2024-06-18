@@ -1,202 +1,211 @@
 <template>
   <main class="py-8 px-4">
-    <div class="rating">
-      <h1 class="font-size-24 inter-medium font-color-green">{{ property.title }}</h1>
-      <h2 class="font-size-18 inter-medium font-color-green" style="margin-left: 1rem">{{ rating }}</h2>
-      <Star fillColor="#133E1A" />
-    </div>
-    <h3 class="font-size-20 inter-light font-color-black page-title">{{ property.location }}</h3>
-    <div id="moreInfo">
-      <v-carousel hide-delimiter-background show-arrows class="carrousel">
-        <template v-slot:prev="{ props }">
-          <v-btn @click="props.onClick">
-            <ArrowLeft />
-          </v-btn>
-        </template>
-        <template v-slot:next="{ props }">
-          <v-btn @click="props.onClick">
-            <ArrowRight />
-          </v-btn>
-        </template>
-        <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
-          <v-sheet>
-            <div class="d-flex justify-center align-center">
-              <img :src="image" class="carousel-img" />
-            </div>
-          </v-sheet>
-        </v-carousel-item>
-      </v-carousel>
-      <div id="containerBooking">
-        <div id="bookingInfo">
-          <h2 class="font-size-24 inter-light font-color-black">
-            <span class="inter-medium">{{ property.daily_price }}€</span>/night
-          </h2>
-          <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{
-            property.bathrooms }}
-            bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
-          <div id="book">
-            <div class="calendar">
-              <input type="text" class="w-1/2 border-x px-4 inter-light font-color-green" v-model="formattedDateIn"
-                disabled>
-              <Calendar @click="openCalendarIn" />
-              <div id="datepickIn" v-if="isCalendarIn">
-                <VDatePicker :attributes="attributes" id="calendar" @mouseleave="openCalendarIn" v-model="dateIn" />
+    <div v-if="!property.is_blocked">
+      <div class="rating">
+        <h1 class="font-size-24 inter-medium font-color-green">{{ property.title }}</h1>
+        <h2 class="font-size-18 inter-medium font-color-green" style="margin-left: 1rem">{{ rating }}</h2>
+        <Star fillColor="#133E1A" />
+      </div>
+      <h3 class="font-size-20 inter-light font-color-black page-title">{{ property.location }}</h3>
+      <div id="moreInfo">
+        <v-carousel hide-delimiter-background show-arrows class="carrousel">
+          <template v-slot:prev="{ props }">
+            <v-btn @click="props.onClick">
+              <ArrowLeft />
+            </v-btn>
+          </template>
+          <template v-slot:next="{ props }">
+            <v-btn @click="props.onClick">
+              <ArrowRight />
+            </v-btn>
+          </template>
+          <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
+            <v-sheet>
+              <div class="d-flex justify-center align-center">
+                <img :src="image" class="carousel-img" />
               </div>
-            </div>
-            <div class="calendar">
-              <input class="w-1/2 border-x px-4 inter-light font-color-green" type="text" v-model="formattedDateOut"
-                disabled>
-              <Calendar @click="openCalendarOut" />
-              <div id="datepickOut" v-if="isCalendarOut">
-                <VDatePicker :attributes="attributes" id="calendar" @mouseleave="openCalendarOut" v-model="dateOut" />
-              </div>
-            </div>
-            <div id="guests">
-              <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
-                :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required />
-              <Guests />
-            </div>
-            <h3 id="errorMessage">{{ errorMessage }}</h3>
-            <h3 id="sucessfullMessage">{{ sucessfullMessage }}</h3>
-          </div>
-          <p id="total" class="font-size-18 inter-light font-color-black">
-            <span class="inter-medium">Total</span> {{ total }}€
-          </p>
-          <v-dialog max-width="500" v-model="isActiveDialog">
-            <template v-slot:activator="{ props: activatorProps }">
-              <button v-bind="activatorProps" class="button-green" id="rentBtn" v-if="loggedUser">Rent</button>
-            </template>
-            <template v-slot:default="{ isActive }">
-              <v-card>
-                <v-card-text>
-                  <h1 class="page-title font-size-14 modalTitle inter-light">Choose the payment method</h1>
-                  <select id="paymentTypes" v-model="selectedMethod">
-                    <option value="0">Select a method</option>
-                    <option v-for="paymentType in paymentTypes" :value="paymentType.ID">{{ paymentType.type }}</option>
-                  </select>
-                </v-card-text>
-                <v-card-actions>
-                  <div class="btnsModal">
-                    <button class="inter-medium button-green" @click="rentProperty">Rent!</button>
-                    <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
-                  </div>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-dialog>
-          <router-link :to="{ name: 'login' }"><button class="button-green" id="rentBtn" v-if="!loggedUser">Log in to
-              rent</button></router-link>
-        </div>
-      </div>
-    </div>
-    <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="infoOwner">
-      <img id="photoOwner"
-        src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
-      <div id="info">
-        <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
-        <div class="rating">
-          <div class="name">
-            <p class="font-size-16 inter-medium font-color-black"> {{ owner.first_name }} </p>
-            <p class="font-size-16 inter-medium font-color-black"> {{ owner.last_name }} </p>
-          </div>
-          <h2 class="font-size-16 inter-medium font-color-green" style="margin-left: 0.5rem"> {{ ownerRating }} </h2>
-          <Star fillColor="#133E1A" />
-        </div>
-      </div>
-    </router-link>
-    <hr />
-    <div id="propertyInfo">
-      <div id="description">
-        <h3 class="font-size-20 inter-medium font-color-green page-title">Description</h3>
-        <p class="font-size-18 inter-light font-color-green"> {{ descriptionProperty }}</p>
-        <p @click="readMore = true"
-          v-if="!readMore && property.description && property.description.split('').length > 240"
-          class="font-size-16 inter-medium font-color-green read">Read more +</p>
-        <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">Read less -
-        </p>
-      </div>
-      <div id="extras">
-        <h3 class="font-size-20 inter-medium font-color-green page-title">What this place has to offer</h3>
-        <div id="extraContainer">
-          <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
-            @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
-          <div id="extrasGrid" v-if="property.amenities?.length > 0">
-            <div v-for="(extra, index) in paginatedExtras" :key="index">
-              <Television fillColor="#133E1A" />
-              <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
-            </div>
-          </div>
-          <div v-else>No amenities found.</div>
-          <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
-            @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
-        </div>
-        <p v-if="property.amenities && property.amenities.length > 6" class="font-size-14 inter-light font-color-green">
-          {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
-      </div>
-    </div>
-    <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
-    <iframe :src="property.map_url" height="400" style="border:0;" allowfullscreen="" loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"></iframe>
-    <h3 class="font-size-20 inter-medium font-color-green page-title">What the guests say</h3>
-    <div id="reviews">
-      <div id="allReviews" v-if="reviews.length > 0">
-        <ArrowLeft v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="prevPage('reviews')" />
-        <div id="reviewsContainer">
-          <div v-for="review in paginatedReviews" id="review" :key="review.id">
-            <div id="mainInfo">
-              <img id="reviewsPhoto"
-                src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
-              <div id="infoUser">
-                <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
-                <div class="rating">
-                  <h2 class="font-size-16 inter-medium font-color-green">{{ review.rating }}</h2>
-                  <Star fillColor="#133E1A" />
+            </v-sheet>
+          </v-carousel-item>
+        </v-carousel>
+        <div id="containerBooking">
+          <div id="bookingInfo">
+            <h2 class="font-size-24 inter-light font-color-black">
+              <span class="inter-medium">{{ property.daily_price }}€</span>/night
+            </h2>
+            <p class="font-size-18 inter-light font-color-black">{{ property.bathrooms }} bathrooms | {{
+              property.bathrooms }}
+              bedrooms | {{ property.beds }} beds | {{ property.guest_number }} guests</p>
+            <div id="book">
+              <div class="calendar">
+                <input type="text" class="w-1/2 border-x px-4 inter-light font-color-green" v-model="formattedDateIn"
+                  disabled>
+                <Calendar @click="openCalendarIn" />
+                <div id="datepickIn" v-if="isCalendarIn">
+                  <VDatePicker :attributes="attributes" id="calendar" @mouseleave="openCalendarIn" v-model="dateIn" />
                 </div>
               </div>
+              <div class="calendar">
+                <input class="w-1/2 border-x px-4 inter-light font-color-green" type="text" v-model="formattedDateOut"
+                  disabled>
+                <Calendar @click="openCalendarOut" />
+                <div id="datepickOut" v-if="isCalendarOut">
+                  <VDatePicker :attributes="attributes" id="calendar" @mouseleave="openCalendarOut" v-model="dateOut" />
+                </div>
+              </div>
+              <div id="guests">
+                <input class="w-5/12 border-x px-4 inter-light font-color-green" type="number"
+                  :max="this.property.guest_number" min="1" placeholder="Guests" v-model="nrGuests" required />
+                <Guests />
+              </div>
+              <h3 id="errorMessage">{{ errorMessage }}</h3>
+              <h3 id="sucessfullMessage">{{ sucessfullMessage }}</h3>
             </div>
-            <p class="font-size-16 inter-light font-color-black">{{ review.comment }}</p>
+            <p id="total" class="font-size-18 inter-light font-color-black">
+              <span class="inter-medium">Total</span> {{ total }}€
+            </p>
+            <v-dialog max-width="500" v-model="isActiveDialog">
+              <template v-slot:activator="{ props: activatorProps }">
+                <button v-bind="activatorProps" class="button-green" id="rentBtn" v-if="loggedUser">Rent</button>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <v-card>
+                  <v-card-text>
+                    <h1 class="page-title font-size-14 modalTitle inter-light">Choose the payment method</h1>
+                    <select id="paymentTypes" v-model="selectedMethod">
+                      <option value="0">Select a method</option>
+                      <option v-for="paymentType in paymentTypes" :value="paymentType.ID">{{ paymentType.type }}
+                      </option>
+                    </select>
+                  </v-card-text>
+                  <v-card-actions>
+                    <div class="btnsModal">
+                      <button class="inter-medium button-green" @click="rentProperty">Rent!</button>
+                      <button class="inter-medium button-border-green" @click="isActive.value = false">Cancel</button>
+                    </div>
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
+            <router-link :to="{ name: 'login' }"><button class="button-green" id="rentBtn" v-if="!loggedUser">Log in to
+                rent</button></router-link>
           </div>
         </div>
-        <ArrowRight v-if="reviews && reviews.length > 4" fillColor="#133E1A" @click="nextPage('reviews')"
-          :disabled="currentPageReviews == totalPagesReviews - 1" />
       </div>
-      <div v-else>No reviews found.</div>
-      <p v-if="reviews && reviews.length > 4" class="font-size-14 inter-light font-color-green"
-        style="text-align: center">
-        {{ currentPageReviews + 1 }} of {{ totalPagesReviews }}</p>
-    </div>
-    <hr />
-    <h3 class="font-size-20 inter-medium font-color-green page-title">Meet your host</h3>
-    <div id="hostInfo">
-      <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="meetInfoOwner">
-        <img id="meetPhotoOwner"
+      <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="infoOwner">
+        <img id="photoOwner"
           src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
         <div id="info">
-          <div class="name">
-            <h2 class="font-size-24 inter-medium font-color-green">{{ owner.first_name }}</h2>
-            <h2 class="font-size-24 inter-medium font-color-green">{{ owner.last_name }}</h2>
-          </div>
+          <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
           <div class="rating">
-            <h2 class="font-size-32 inter-medium font-color-green">{{ ownerRating }}</h2>
+            <div class="name">
+              <p class="font-size-16 inter-medium font-color-black"> {{ owner.first_name }} </p>
+              <p class="font-size-16 inter-medium font-color-black"> {{ owner.last_name }} </p>
+            </div>
+            <h2 class="font-size-16 inter-medium font-color-green" style="margin-left: 0.5rem"> {{ ownerRating }} </h2>
             <Star fillColor="#133E1A" />
           </div>
         </div>
       </router-link>
-      <div id="moreOwnerInfo">
-        <div v-if="owner && owner.owner_description != null">
-          <p class="font-size-18 inter-light font-color-green">{{ owner.owner_description }}</p>
-          <p @click="readMoreMeet = true" v-if="!readMoreMeet & (owner.owner_description.split('').length > 240)"
+      <hr />
+      <div id="propertyInfo">
+        <div id="description">
+          <h3 class="font-size-20 inter-medium font-color-green page-title">Description</h3>
+          <p class="font-size-18 inter-light font-color-green"> {{ descriptionProperty }}</p>
+          <p @click="readMore = true"
+            v-if="!readMore && property.description && property.description.split('').length > 240"
             class="font-size-16 inter-medium font-color-green read">Read more +</p>
-          <p @click="readMoreMeet = false" v-if="readMoreMeet" class="font-size-16 inter-medium font-color-green read">
-            Read
-            less -</p>
+          <p @click="readMore = false" v-if="readMore" class="font-size-16 inter-medium font-color-green read">Read less
+            -
+          </p>
         </div>
-        <div v-else style="margin-top: 2em"></div>
-        <router-link v-if="owner.username != loggedUser"
-          :to="{ name: 'messages', params: { id: owner.username } }"><button class="button-green" id="msgBtn">Message {{
-            owner.username
-            }}</button></router-link>
+        <div id="extras">
+          <h3 class="font-size-20 inter-medium font-color-green page-title">What this place has to offer</h3>
+          <div id="extraContainer">
+            <ArrowLeft v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+              @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
+            <div id="extrasGrid" v-if="property.amenities?.length > 0">
+              <div v-for="(extra, index) in paginatedExtras" :key="index">
+                <Television fillColor="#133E1A" />
+                <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
+              </div>
+            </div>
+            <div v-else>No amenities found.</div>
+            <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
+              @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
+          </div>
+          <p v-if="property.amenities && property.amenities.length > 6"
+            class="font-size-14 inter-light font-color-green">
+            {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
+        </div>
       </div>
+      <h3 class="font-size-20 inter-medium font-color-green page-title">Where you will be</h3>
+      <iframe :src="property.map_url" height="400" style="border:0;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <h3 class="font-size-20 inter-medium font-color-green page-title">What the guests say</h3>
+      <div id="reviews">
+        <div id="allReviews" v-if="reviews?.length > 0">
+          <ArrowLeft v-if="reviews && reviews?.length > 4" fillColor="#133E1A" @click="prevPage('reviews')" />
+          <div id="reviewsContainer">
+            <div v-for="review in paginatedReviews" id="review" :key="review.id">
+              <div id="mainInfo">
+                <img id="reviewsPhoto"
+                  src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+                <div id="infoUser">
+                  <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
+                  <div class="rating">
+                    <h2 class="font-size-16 inter-medium font-color-green">{{ review.rating }}</h2>
+                    <Star fillColor="#133E1A" />
+                  </div>
+                </div>
+              </div>
+              <p class="font-size-16 inter-light font-color-black">{{ review.comment }}</p>
+            </div>
+          </div>
+          <ArrowRight v-if="reviews && reviews?.length > 4" fillColor="#133E1A" @click="nextPage('reviews')"
+            :disabled="currentPageReviews == totalPagesReviews - 1" />
+        </div>
+        <div v-else>No reviews found.</div>
+        <p v-if="reviews && reviews?.length > 4" class="font-size-14 inter-light font-color-green"
+          style="text-align: center">
+          {{ currentPageReviews + 1 }} of {{ totalPagesReviews }}</p>
+      </div>
+      <hr />
+      <h3 class="font-size-20 inter-medium font-color-green page-title">Meet your host</h3>
+      <div id="hostInfo">
+        <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="meetInfoOwner">
+          <img id="meetPhotoOwner"
+            src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+          <div id="info">
+            <div class="name">
+              <h2 class="font-size-24 inter-medium font-color-green">{{ owner.first_name }}</h2>
+              <h2 class="font-size-24 inter-medium font-color-green">{{ owner.last_name }}</h2>
+            </div>
+            <div class="rating">
+              <h2 class="font-size-32 inter-medium font-color-green">{{ ownerRating }}</h2>
+              <Star fillColor="#133E1A" />
+            </div>
+          </div>
+        </router-link>
+        <div id="moreOwnerInfo">
+          <div v-if="owner && owner.owner_description != null">
+            <p class="font-size-18 inter-light font-color-green">{{ owner.owner_description }}</p>
+            <p @click="readMoreMeet = true" v-if="!readMoreMeet & (owner.owner_description.split('').length > 240)"
+              class="font-size-16 inter-medium font-color-green read">Read more +</p>
+            <p @click="readMoreMeet = false" v-if="readMoreMeet"
+              class="font-size-16 inter-medium font-color-green read">
+              Read
+              less -</p>
+          </div>
+          <div v-else style="margin-top: 2em"></div>
+          <router-link v-if="owner.username != loggedUser"
+            :to="{ name: 'messages', params: { id: owner.username } }"><button class="button-green" id="msgBtn">Message
+              {{ owner.username }}</button></router-link>
+        </div>
+      </div>
+    </div>
+    <div id="blocked" v-else>
+      <h1 class="font-size-24">This property is blocked. Contact us for more information.</h1>
+      <SadFaceIcon size="64px" />
     </div>
   </main>
 </template>
@@ -207,6 +216,7 @@ import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import Guests from "vue-material-design-icons/AccountPlusOutline.vue";
 import Star from "vue-material-design-icons/Star.vue";
 import Television from "vue-material-design-icons/Television.vue";
+import SadFaceIcon from "vue-material-design-icons/EmoticonSadOutline.vue";
 import Calendar from "vue-material-design-icons/Calendar.vue";
 import { usePropertiesStore } from "@/stores/properties";
 import { useReviewsStore } from "@/stores/reviews";
@@ -225,8 +235,8 @@ export default {
       ],
       dateOut: "",
       dateIn: "",
-      formattedDateOut: "00/00/0000",
-      formattedDateIn: "00/00/0000",
+      formattedDateOut: "Select a date out",
+      formattedDateIn: "Select a date in",
       selectedMethod: 0,
       nrGuests: 1,
       readMore: false,
@@ -258,7 +268,8 @@ export default {
     Guests,
     Star,
     Television,
-    Calendar
+    Calendar,
+    SadFaceIcon
   },
 
   async created() {
@@ -317,7 +328,7 @@ export default {
     },
 
     totalPagesReviews() {
-      return Math.ceil(this.reviews.length / this.pageSizeReviews);
+      return Math.ceil(this.reviews?.length / this.pageSizeReviews);
     },
 
     property() {
@@ -330,13 +341,13 @@ export default {
 
     rating() {
       let total = 0;
-      this.reviews.forEach((review) => {
+      this.reviews?.forEach((review) => {
         total += review.rating;
       });
       if (total == 0) {
         return 0;
       } else {
-        const rating = total / this.reviews.length;
+        const rating = total / this.reviews?.length;
         return rating;
       }
     },
@@ -738,5 +749,12 @@ iframe {
   padding: 0.5em;
   padding-left: 0.5em;
   border-radius: 5px;
+}
+
+#blocked{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 2em;
 }
 </style>

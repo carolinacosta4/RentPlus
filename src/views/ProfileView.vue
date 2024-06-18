@@ -6,6 +6,8 @@
       </div>
       <div id="usernameProfile">
         <h1 class="inter-medium font-size-32 font-color-green">{{ user.username }}</h1>
+        <h2 class="font-size-32 inter-medium font-color-green" style="margin-left: 1.5rem; margin-right: 0.2rem"> {{ ownerRating }} </h2>
+        <Star fillColor="#133E1A" size="30px" v-if="user.user_role == 'owner'"/>
         <v-dialog max-width="500">
           <template v-slot:activator="{ props: activatorProps }">
             <Edit fillColor="#133E1A" v-bind="activatorProps" v-if="user.username == loggedUser"></Edit>
@@ -146,6 +148,7 @@
 import Home from "vue-material-design-icons/Home.vue";
 import Users from "vue-material-design-icons/AccountMultiple.vue";
 import Edit from "vue-material-design-icons/Pencil.vue";
+import Star from "vue-material-design-icons/Star.vue";
 import { useUsersStore } from "@/stores/users";
 
 export default {
@@ -165,6 +168,7 @@ export default {
     Home,
     Users,
     Edit,
+    Star
   },
   methods: {
     triggerFileInput() {
@@ -173,7 +177,6 @@ export default {
 
     fetchUserData() {
       this.usersStore.fetchUser(this.$route.params.id)
-      this.user = this.usersStore.getUser;
     },
 
     editProfile() {
@@ -202,6 +205,12 @@ export default {
             this.errorMessage = 'An error occurred. Please try again later.';
           }
         });
+
+      this.newName = ""
+      this.newSurname = ""
+      this.newUsername = ""
+      this.newPhone = ""
+      this.newDescription = ""
     }
   },
 
@@ -221,7 +230,26 @@ export default {
 
     loggedUser() {
       return this.usersStore.getUserLogged
-    }
+    },
+
+    ownerRating() {
+      let total = 0;
+      if (this.user.user_role == 'owner') {
+        this.usersStore.getOwnerReviews.forEach((review) => {
+          total += review.rating;
+        });
+
+        if (total > 0) {
+          return total / this.usersStore.getOwnerReviews.length;
+        } else {
+          return 0;
+        }
+      }
+    },
+  },
+
+  async created() {
+    await this.usersStore.fetchUserReviews(this.$route.params.id);
   },
 }
 </script>
@@ -240,7 +268,6 @@ export default {
 #editDescription {
   display: flex;
   align-items: center;
-  column-gap: 2em;
 }
 
 #editPhoto {

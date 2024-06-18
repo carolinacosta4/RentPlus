@@ -46,7 +46,6 @@ export const useReservationsStore = defineStore("reservation", {
         );
 
         this.userTrips = response.data;
-        console.log(response);
       } catch (error) {
         throw error;
       }
