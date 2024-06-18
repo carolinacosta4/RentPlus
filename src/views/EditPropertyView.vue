@@ -1,6 +1,10 @@
 <template>
-  <main class="py-8 px-4" 
-  >
+  <div v-if="loggedUser != property.owner_username" id="ohNo">
+    <h1 class=" font-color-green font-size-24 inter-semiBold">Oh no...</h1>
+    <h1 class="inter-light font-color-green font-size-18">You have no permission to access this page</h1>
+  </div>
+
+  <main v-else class="py-8 px-4">
     <h1 class="inter-medium font-color-green font-size-24 page-title">
       Edit property {{ property.title }}
     </h1>
@@ -89,14 +93,6 @@
                 <img src="../assets/images/cloud-computing.png" alt="Label Image" style="width: 2.2em; height: 2em" />
               </template>
             </v-file-input>
-            <!-- <div>
-              <p class="label inter-medium font-size-14 font-color-black">
-                Property photos:
-              </p>
-              <li v-for="photo in property.photos" class="inter-light font-color-green font-size-14">
-                {{ photo.photo }}
-              </li>
-            </div> -->
           </div>
           <div class="singleInputAmenity singleInput">
             <div class="label inter-medium font-size-14 font-color-black">
@@ -182,13 +178,13 @@
             <button type="cancel" class="font-color-green" @click="this.$router.push({ name: 'properties' })">
               <u>Cancel</u>
             </button>
-            <button type="submit" class="button-green">Save property</button>
+            <button type="submit" class="button-green" @click="editProperty">Save property</button>
           </div>
         </div>
       </div>
     </v-form>
   </main>
-  <!-- <h1 v-else>You heve no permition to access this page</h1> -->
+
 </template>
 
 <script>
@@ -215,36 +211,41 @@ export default {
         bedrooms: '',
         bathrooms: ''
       },
+      editedProperty: {},
       countries: [
-        {
-          name: "Portugal",
-          short: "PT",
-        },
-        {
-          name: "Brazil",
-          short: "BRA",
-        },
-        {
-          name: "United States of America",
-          short: "USA",
-        },
-        {
-          name: "United Kingdom",
-          short: "UK",
-        },
-        {
-          name: "Italy",
-          short: "ITA",
-        },
-        {
-          name: "France",
-          short: "FRA",
-        },
-        {
-          name: "Spain",
-          short: "SPA",
-        },
-      ],
+        { name: "Argentina", short: "ARG" },
+        { name: "Australia", short: "AUS" },
+        { name: "Austria", short: "AUT" },
+        { name: "Belgium", short: "BEL" },
+        { name: "Brazil", short: "BRA" },
+        { name: "Canada", short: "CAN" },
+        { name: "China", short: "CHN" },
+        { name: "Denmark", short: "DNK" },
+        { name: "Egypt", short: "EGY" },
+        { name: "Finland", short: "FIN" },
+        { name: "France", short: "FRA" },
+        { name: "Germany", short: "DEU" },
+        { name: "Greece", short: "GRC" },
+        { name: "India", short: "IND" },
+        { name: "Ireland", short: "IRL" },
+        { name: "Italy", short: "ITA" },
+        { name: "Japan", short: "JPN" },
+        { name: "Mexico", short: "MEX" },
+        { name: "Netherlands", short: "NLD" },
+        { name: "New Zealand", short: "NZL" },
+        { name: "Norway", short: "NOR" },
+        { name: "Portugal", short: "PT" },
+        { name: "Russia", short: "RUS" },
+        { name: "South Africa", short: "ZAF" },
+        { name: "South Korea", short: "KOR" },
+        { name: "Spain", short: "ESP" },
+        { name: "Sweden", short: "SWE" },
+        { name: "Switzerland", short: "CHE" },
+        { name: "Turkey", short: "TUR" },
+        { name: "United Kingdom", short: "UK" },
+        { name: "United States of America", short: "USA" }
+      ].sort((a, b) => a.name.localeCompare(b.name)),
+
       rules: {
         required: (value) => !!value || "Required.",
         max50: (value) => value.length <= 50 || "Max. 50 characters",
@@ -291,7 +292,6 @@ export default {
   methods: {
     async loadProperty() {
       const property = await this.propertiesStore.fetchProperty(this.$route.params.id);
-      console.log(property);
       this.property = property;
 
       this.property.city = property.location.split(', ')[0]
@@ -313,19 +313,17 @@ export default {
       let type = this.propertyTypes.find(item => item.ID === property.property_type);
       this.property.property_type = type.type_name
     },
-    editProperty() {
-      let selectedCountry = this.countries.find(
-        (country) => country.short === property.country
-      );
+    async editProperty() {
 
+      const property = await this.propertiesStore.fetchProperty(this.$route.params.id);
+
+      let countryShort = property.location.split(', ')[1]
+      let selectedCountry = this.countries.find((c) => c.short == countryShort)
       if (
         !property.title ||
-        !this.rules.isANumber(property.property_type) ||
         !property.map_url ||
-        !property.country ||
-        !property.city ||
         !property.description ||
-        property.amenities.length == 0 ||
+        // property.amenities.length == 0 ||
         !property.property_type
       ) {
         throw new Error("Missing information");
@@ -342,22 +340,36 @@ export default {
         !this.rules.isInteger(property.guest_number)
       ) {
         throw new Error("Invalid number format");
-      } else if (!selectedCountry) {
+      } else if (selectedCountry == "") {
         throw new Error("Invalid country selected");
       } else {
         let countryShort = selectedCountry.short;
-        property.title = property.title;
-        property.daily_price = property.daily_price;
-        property.map_url = property.map_url;
-        property.location = `${property.city}, ${countryShort}`;
-        property.description = property.description;
-        property.photos = property.photos;
-        property.amenities = property.amenities;
-        property.property_type = property.property_type;
-        property.beds = property.beds;
-        property.bedrooms = property.bedrooms;
-        property.bathrooms = property.bathrooms;
-        property.guest_number = property.guest_number;
+
+        let amenitiesInfo = []
+        this.property.amenities.map(name => {
+          let amenity = this.amenities.find(item => item.amenity_name === name);
+          amenitiesInfo.push(amenity.ID)
+        });
+
+
+        let type = this.propertyTypes.find(item => item.type_name === this.property.property_type);
+
+        let editedProperty = {
+          id: this.$route.params.id,
+          title: this.property.title,
+          daily_price: this.property.daily_price,
+          map_url: this.property.map_url,
+          location: `${this.property.city}, ${countryShort}`,
+          description: this.property.description,
+          // photos: this.property.photos,
+          amenities: amenitiesInfo,
+          property_type: type.ID,
+          beds: this.property.beds,
+          bedrooms: this.property.bedrooms,
+          bathrooms: this.property.bathrooms,
+          guest_number: this.property.guest_number
+        };
+        await this.propertiesStore.editProperty(editedProperty);
       }
     },
   },
@@ -365,6 +377,15 @@ export default {
 </script>
 
 <style lang="css">
+#ohNo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  row-gap: 1em;
+}
+
 .inputPage {
   display: flex;
   flex-direction: row;

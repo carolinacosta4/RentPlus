@@ -39,10 +39,6 @@ export default {
       errorMessage: ''
     }
   },
-
-  // created() {
-  //   this.$router;
-  // },
   methods: {
     async submit() {
       if (!this.username || !this.password) {
@@ -71,6 +67,9 @@ export default {
           this.errorMessage = 'Username and password are required';
         }else if (error === 'API request failed with status 400: {"success":false,"msg":"Email not confirmed."}'){
           this.errorMessage = 'Email not confirmed.';
+        }
+        else if(error === 'API request failed with status 403: {"success":false,"accessToken":null,"msg":"User blocked"}'){
+          this.errorMessage = 'User is blocked. Contact us for more information.';
         }
         else {
           this.errorMessage = 'Something went wrong. Try again!';
@@ -119,6 +118,7 @@ form {
   background-color: #ffffff !important;
   padding: 3em;
   border-radius: 12px;
+  width: 25rem;
 }
 
 p {
@@ -129,5 +129,6 @@ p {
   color: rgb(168, 6, 6);
   margin-top: -0.5em;
   margin-bottom: 0.2em;
+  text-align: center;
 }
 </style>

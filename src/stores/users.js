@@ -1,16 +1,18 @@
-import { defineStore } from 'pinia'
-import * as api from '../api/api'
+import { defineStore } from "pinia";
+import * as api from "../api/api";
 
-const API_BASE_URL = "http://127.0.0.1:3000"
+const API_BASE_URL = "http://127.0.0.1:3000";
 
-export const useUsersStore = defineStore('user', {
+export const useUsersStore = defineStore("user", {
   state: () => ({
     users: [],
     user: "",
     reviews: [],
     token: localStorage.getItem("authToken") || null,
     loggedUser: localStorage.getItem("user") || null,
-    loggedUserInfo: []
+    loggedUserInfo: [],
+    favorites: [],
+    reservations: [],
   }),
   getters: {
     getUsers: (state) => state.users,
@@ -19,6 +21,8 @@ export const useUsersStore = defineStore('user', {
     getToken: (state) => state.token,
     getUserLogged: (state) => state.loggedUser,
     getUserLoggedInfo: (state) => state.loggedUserInfo,
+    getUserFavorites: (state) => state.favorites,
+    getUserReservations: (state) => state.reservations,
   },
   actions: {
     async fetchUsers() {
@@ -26,7 +30,7 @@ export const useUsersStore = defineStore('user', {
         const response = await api.get(API_BASE_URL, `users`, this.token)
         this.users = response.data
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -36,7 +40,7 @@ export const useUsersStore = defineStore('user', {
         const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
         this.user = response.data
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -46,7 +50,7 @@ export const useUsersStore = defineStore('user', {
         const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
         this.loggedUserInfo = response.data
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -56,16 +60,20 @@ export const useUsersStore = defineStore('user', {
         const response = await api.get(API_BASE_URL, `users/${username}/reviews`, this.token)
         this.reviews = response.data
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
     async delete(username) {
       try {
-        const response = await api.remove(API_BASE_URL, `users/${username}`, this.token)
+        const response = await api.remove(
+          API_BASE_URL,
+          `users/${username}`,
+          this.token
+        );
         console.log(response.msg);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -74,44 +82,48 @@ export const useUsersStore = defineStore('user', {
         const response = await api.patch(API_BASE_URL, `users/${username}/block`)
         console.log("User updated successfully:", response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
     async login(username, password) {
       try {
-        const response = await api.post(API_BASE_URL, 'users/login', {
+        const response = await api.post(API_BASE_URL, "users/login", {
           username: username,
-          password: password
+          password: password,
         });
 
         if (response.success) {
           this.token = response.accessToken;
-          this.loggedUser = username
+          this.loggedUser = username;
           localStorage.setItem("authToken", this.token);
-          localStorage.setItem("user", this.loggedUser)
+          localStorage.setItem("user", this.loggedUser);
           // sessionStorage.setItem("authToken", this.token);
         }
-
       } catch (error) {
-        throw error.message
+        throw error.message;
       }
     },
 
     async logout() {
-      this.token = null
-      this.loggedUser = null
+      this.token = null;
+      this.loggedUser = null;
       localStorage.removeItem("authToken");
-      localStorage.removeItem("user")
+      localStorage.removeItem("user");
       // sessionStorage.removeItem("authToken");
     },
 
     async editProfile(data, username) {
-      const response = await api.patch(API_BASE_URL, `users/${username}`, data, this.token);
+      const response = await api.patch(
+        API_BASE_URL,
+        `users/${username}`,
+        data,
+        this.token
+      );
       console.log("User edited successfully:", response);
       if (data.username != undefined) {
-        localStorage.setItem("user", data.username)
-        this.loggedUser = data.username
+        localStorage.setItem("user", data.username);
+        this.loggedUser = data.username;
         if (response.success) {
           this.token = response.newToken;
           localStorage.setItem("authToken", this.token);
@@ -119,59 +131,90 @@ export const useUsersStore = defineStore('user', {
       }
     },
 
+
     async register(newUser) {
       try {
-        const response = await api.post(API_BASE_URL, 'users', {
+        const response = await api.post(API_BASE_URL, "users", {
           username: newUser.username,
           email: newUser.email,
           user_role: "guest",
           password: newUser.password,
           first_name: newUser.firstName,
-          last_name: newUser.lastName
+          last_name: newUser.lastName,
         });
 
-        if (!response.success) {
-          throw new Error('Registration failed');
+        if (response.success) {
+          await this.login(newUser.username, newUser.password);
+        } else {
+          throw new Error("Registration failed");
         }
       } catch (error) {
-        throw error.message
+        throw error.message;
       }
     },
 
-    async editRole(data, username) {
-      const response = await api.patch(API_BASE_URL, `users/${username}/role`, data, this.token);
-      console.log("User role edited successfully:", response);
-      if (response.success) {
-        this.token = response.accessToken;
-        localStorage.setItem("authToken", this.token);
-      }
-    },
-
-    async confirmation(username) {
+    async toggleFavorite(propertyId) {
       try {
-        const response = await api.patch(API_BASE_URL, `users/${username}/confirmation`)
-        console.log("User confirmed:", response.data);
+        // see if user is logged in
+        const userId = this.loggedUser;
+        if (!userId) {
+          throw new Error("User not logged in");
+        }
+
+        // Check if the property is already in favorites
+        const isFavorite = this.getUserFavorites.some(
+          (fav) => fav.property_ID === propertyId
+        );
+
+        if (isFavorite) {
+          // Remove from favorites
+          const response = await api.remove(
+            API_BASE_URL,
+            `users/${userId}/favorites/${propertyId}`,
+            this.token
+          );
+          if (response.success) {
+            console.log("Property removed from favorites:", response.msg);
+            // Update local state to reflect the change
+            this.favorites = this.favorites.filter(
+              (fav) => fav.property_ID !== propertyId
+            );
+          }
+        } else {
+          // Add to favorites
+          const response = await api.post(
+            API_BASE_URL,
+            `users/${userId}/favorites`,
+            { property_ID: propertyId },
+            this.token
+          );
+          if (response.success) {
+            console.log("Property added to favorites:", response.msg);
+            // Update local state to reflect the change
+            this.favorites.push({ property_ID: propertyId });
+          }
+        }
       } catch (error) {
-        console.error(error)
+        console.error("Failed to toggle property favorite status:", error);
+        throw error;
       }
     },
 
-    async forgotPassword(data) {
+    async fetchUserReservations(username) {
       try {
-        const response = await api.post(API_BASE_URL, `users/reset-password-email`, data)
-        return response
+        const response = await api.get(
+          API_BASE_URL,
+          `reservations/${username}`,
+          this.token
+        );
+        if (response.success) {
+          this.reservations = response.data;
+          console.log(response);
+        }
       } catch (error) {
-        throw error.message
-      }
-    },
-
-    async resetPassword(data) {
-      try {
-        const response = await api.patch(API_BASE_URL, `users`, data)
-        return response
-      } catch (error) {
-        throw error.message
+        console.error("Failed to fetch reservations:", error);
+        throw error;
       }
     },
   },
-})
+});
