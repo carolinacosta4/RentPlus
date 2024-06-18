@@ -199,7 +199,7 @@ export const useUsersStore = defineStore("user", {
       }
     },
 
-    async updateProfilePicture(formData){
+    async updateProfilePicture(formData, username){
       try {
         const response = await api.patchForm(API_BASE_URL, `users/${username}/change-profile-picture`, formData, this.token);
         return response;

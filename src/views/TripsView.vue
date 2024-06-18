@@ -17,6 +17,7 @@
         <CardTrips
           v-for="trip in currentTrips"
           :key="trip.ID"
+          :image="trip.image"
           :id="trip.property_ID"
           :city="trip.city"
           :country="trip.country"
@@ -45,6 +46,7 @@
         <CardTrips
           v-for="trip in futureTrips"
           :key="trip.ID"
+          :image="trip.image"
           :id="trip.property_ID"
           :city="trip.city"
           :country="trip.country"
@@ -73,6 +75,7 @@
         <CardTrips
           v-for="trip in previousTrips"
           :key="trip.ID"
+          :image="trip.image"
           :id="trip.property_ID"
           :city="trip.city"
           :country="trip.country"
@@ -192,12 +195,12 @@ export default {
           trip.property_ID
         );
         await this.reviewsStore.fetchReviews(trip.property_ID);
-        // Extract city, country, and host from property details and update trip object
         trip.city = propertyDetails.location.split(",")[0].trim();
         trip.country = propertyDetails.location.split(",")[1].trim();
         trip.host = propertyDetails.owner_username;
         trip.ID = trip.ID
-        trip.isReviewed = this.reviewsStore.getReviews.find(review => review.reservation_ID === trip.ID);
+        trip.image = propertyDetails.photos[0].photo
+        // trip.isReviewed = this.reviewsStore.getReviews.find(review => review.reservation_ID === trip.ID);
       }
     },
 

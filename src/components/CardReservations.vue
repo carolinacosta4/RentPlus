@@ -2,8 +2,7 @@
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
     <router-link :to="{name: 'property', params: { id: id } }"> <!-- mudar -->
     <img
-      :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
-      :alt="`${city}, ${country}`"
+      :src="image"
       class="rounded-md"
     />
     <div class="flex flex-col gap-1">
@@ -17,19 +16,14 @@
 
 <script>
 export default {
-  data() {
-    return {
-      city: "city",
-      country: "country"
-    }
-  },
   props: {
     guest: String,
     property : String,
     startDate: String,
     endDate: String,
-    id: Number
-  }
+    id: Number,
+    image: String
+  },
 };
 </script>
 

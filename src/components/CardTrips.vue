@@ -3,8 +3,7 @@
     <router-link :to="{ name: 'property', params: { id: id } }">
       <!-- mudar -->
       <img
-        :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
-        :alt="`${city}, ${country}`"
+        :src="image"
         class="rounded-md"
       />
       <div class="flex flex-col gap-1">
@@ -32,7 +31,8 @@ export default {
     startDate: String,
     endDate: String,
     id: Number,
-    isReviewed: Boolean
+    isReviewed: Boolean,
+    image: String
   },
 
   methods: {

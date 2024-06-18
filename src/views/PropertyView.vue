@@ -19,10 +19,10 @@
               <ArrowRight />
             </v-btn>
           </template>
-          <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
+          <v-carousel-item v-for="(image, i) in property.photos" :key="i">
             <v-sheet>
               <div class="d-flex justify-center align-center">
-                <img :src="image" class="carousel-img" />
+                <img :src="image.photo" class="carousel-img" />
               </div>
             </v-sheet>
           </v-carousel-item>
@@ -93,7 +93,7 @@
       </div>
       <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="infoOwner">
         <img id="photoOwner"
-          src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+          :src="owner.profile_image" />
         <div id="info">
           <h2 class="font-size-20 inter-medium font-color-green">Hosted by</h2>
           <div class="rating">
@@ -149,7 +149,7 @@
             <div v-for="review in paginatedReviews" id="review" :key="review.id">
               <div id="mainInfo">
                 <img id="reviewsPhoto"
-                  src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+                :src="owner.profile_image" />
                 <div id="infoUser">
                   <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
                   <div class="rating">
@@ -174,7 +174,7 @@
       <div id="hostInfo">
         <router-link :to="{ name: 'profile', params: { id: owner.username } }" id="meetInfoOwner">
           <img id="meetPhotoOwner"
-            src="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg" />
+          :src="owner.profile_image" />
           <div id="info">
             <div class="name">
               <h2 class="font-size-24 inter-medium font-color-green">{{ owner.first_name }}</h2>

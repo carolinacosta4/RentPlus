@@ -27,6 +27,7 @@
             />
             <CardReservations
               v-for="trip in paginatedCardsCurrent"
+              :image="trip.img"
               :key="trip.id"
               :guest="`Guest: ${trip.username}`"
               :property="trip.title"
@@ -75,6 +76,7 @@
             />
             <CardReservations
               v-for="trip in paginatedCardsFuture"
+              :image="trip.img"
               :key="trip.id"
               :guest="`Guest: ${trip.username}`"
               :property="trip.title"
@@ -123,6 +125,7 @@
             />
             <CardReservations
               v-for="trip in paginatedCardsPrevious"
+              :image="trip.img"
               :key="trip.id"
               :guest="`Guest: ${trip.username}`"
               :property="trip.title"
@@ -216,6 +219,7 @@ export default {
     },
 
     properties (){
+      console.log(this.userStore.getUser.properties)
       return this.userStore.getUser.properties
     },
   },
@@ -279,7 +283,8 @@ export default {
             this.allReservations.push({
               ...reservation,
               title: property.title,
-              id: property.ID
+              id: property.ID,
+              img: property.photos[0].photo
             });
           }
         }

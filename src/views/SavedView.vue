@@ -9,7 +9,7 @@
         <div v-for="property in properties" :key="property.ID">
           <PropertyContainer
             :id="property.ID"
-            :image="getPropertyImage(property)"
+            :image="property.photos[0].photo"
             :name="property.title"
             :location="property.location"
             :price="property.daily_price"
@@ -49,6 +49,7 @@ export default {
     this.usersStore.fetchUser(this.loggedUser).then(() => {
       this.usersStore.getUser.favorites.forEach((fav) => {
         this.propertiesStore.fetchProperty(fav.property_ID).then(() => {
+          console.log(this.propertiesStore.getProperty);
           this.favProperties.push(this.propertiesStore.getProperty);
         });
       });
@@ -63,15 +64,6 @@ export default {
     loggedUser(){
       return localStorage.getItem('user')
     }
-  },
-
-  methods: {
-    getPropertyImage(property) {
-      if (property?.photos?.photo && property.photos.photo.length > 0) {
-        return property.photos.photo[0];
-      }
-      return `https://placehold.co/200x200?text=No%20Image%20for%0A${property.title}`;
-    },
   },
 
   components: {

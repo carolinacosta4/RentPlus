@@ -28,7 +28,6 @@ export const usePropertiesStore = defineStore("property", {
         }
         this.properties = response.data.reverse()
         this.pagination = response.pagination[0]
-        console.log(response);
         return response
       } catch (error) {
         console.error(error);
@@ -58,6 +57,7 @@ export const usePropertiesStore = defineStore("property", {
     async editProperty(id, formData){
       try {
         const response = await api.patchForm(API_BASE_URL, `properties/${id}`, formData, localStorage.getItem("authToken"));
+        return response
       } catch (error) {
         throw error.message;
       }

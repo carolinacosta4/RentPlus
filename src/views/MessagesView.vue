@@ -25,14 +25,14 @@
             <div id="messages-container" ref="messagesContainer">
                 <div id="messages">
                     <div v-for="user in openConvo" id="message">
-                        <img :src="user.profile_image" v-if="user.sender_username != loggedUser" id="imageSent">
+                        <img :src="user.sender.profile_image" v-if="user.sender_username != loggedUser" id="imageSent">
                         <div v-if="user.sender_username == loggedUser" id="sent">
                             <p class="inter-light">{{ user.content }}</p>
                         </div>
                         <div v-else id="received">
                             <p class="inter-light">{{ user.content }}</p>
                         </div>
-                        <img v-if="user.sender_username == loggedUser" :src="user.profile_image" id="imageReceived">
+                        <img v-if="user.sender_username == loggedUser" :src="user.receiver.profile_image" id="imageReceived">
                     </div>
                 </div>
             </div>
@@ -198,6 +198,7 @@ export default {
         users() {
             const users = this.messages.reduce((recentUsers, message) => {
                 if (message.sender_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.sender_username)) {
+                    console.log(message.sender.profile_image);
                     recentUsers.push({
                         sender_username: message.sender.username,
                         image: message.sender.profile_image,
@@ -207,6 +208,7 @@ export default {
                     });
                 }
                 if (message.receiver_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.receiver_username)) {
+                    console.log(message.receiver.profile_image);
                     recentUsers.push({
                         sender_username: message.receiver.username,
                         image: message.receiver.profile_image,
@@ -223,6 +225,7 @@ export default {
         },
 
         openConvo() {
+            console.log(this.messages.filter((user) => user.receiver_username == this.conversation.sender_username || user.sender_username == this.conversation.sender_username));
             return (this.messages.filter((user) => user.receiver_username == this.conversation.sender_username || user.sender_username == this.conversation.sender_username)).reverse()
         },
 

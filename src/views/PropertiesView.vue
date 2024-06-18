@@ -3,7 +3,7 @@
     <h1 class="inter-medium font-color-green font-size-24 page-title">Your properties</h1>
     <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
       <div v-for="property in properties" :key="property.ID">
-        <PropertyContainer :id="property.ID" :image="getPropertyImage(property)" :name="property.title"
+        <PropertyContainer :id="property.ID" :image="property.photos[0].photo" :name="property.title"
           :location="property.location" :price="property.daily_price" :blocked="property.is_blocked" />
       </div>
     </nav>
@@ -38,15 +38,6 @@ export default {
     loggedUser() {
       return localStorage.getItem('user')
     }
-  },
-
-  methods: {
-    getPropertyImage(property) {
-      if (property?.photos?.photo && property.photos.photo.length > 0) {
-        return property.photos.photo[0];
-      }
-      return `https://placehold.co/200x200?text=No%20Image%20for%0A${property.title}`;
-    },
   },
 
   components: {
