@@ -28,6 +28,8 @@ export const usePropertiesStore = defineStore("property", {
         }
         this.properties = response.data.reverse()
         this.pagination = response.pagination[0]
+        console.log(response);
+        return response
       } catch (error) {
         console.error(error)
       }
@@ -43,48 +45,20 @@ export const usePropertiesStore = defineStore("property", {
         console.error(error)
       }
     },
-    async create(newProperty){
+    async create(formData){
       try {
-        const response = await api.post(API_BASE_URL, 'properties', {
-          owner_username: newProperty.owner_username,
-          property_type: newProperty.property_type,
-          title: newProperty.title,
-          description: newProperty.description,
-          location: newProperty.location,
-          map_url: newProperty.map_url,
-          daily_price: newProperty.daily_price,
-          guest_number: newProperty.guest_number,
-          bathrooms: newProperty.bathrooms,
-          bedrooms: newProperty.bedrooms,
-          beds: newProperty.beds,
-          amenities: newProperty.amenities,
-          photos: newProperty.photos,
-        },
+        const response = await api.postForm(API_BASE_URL, 'properties', formData,
           localStorage.getItem("authToken")
         );
       } catch (error) {
+        console.log(error);
         throw error.message
       }
     },
 
-    async editProperty(property){
+    async editProperty(id, formData){
       try {
-        const response = await api.patch(API_BASE_URL, `properties/${property.id}`, {
-          property_type: property.property_type,
-          title: property.title,
-          description: property.description,
-          location: property.location,
-          map_url: property.map_url,
-          daily_price: property.daily_price,
-          guest_number: property.guest_number,
-          bathrooms: property.bathrooms,
-          bedrooms: property.bedrooms,
-          beds: property.beds,
-          amenities: property.amenities,
-          photos: property.photos,
-        },
-        localStorage.getItem("authToken")
-      );
+        const response = await api.patchForm(API_BASE_URL, `properties/${id}`, formData, localStorage.getItem("authToken"));
       } catch (error) {
         throw error.message
       }
@@ -108,5 +82,7 @@ export const usePropertiesStore = defineStore("property", {
         console.error(error)
       }
     },
+
+    
   },
 });

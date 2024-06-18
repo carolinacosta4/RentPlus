@@ -18,10 +18,10 @@
             <ArrowRight />
           </v-btn>
         </template>
-        <v-carousel-item v-for="(image, i) in propertyImages" :key="i">
+        <v-carousel-item v-for="(image, i) in property.photos" :key="i">
           <v-sheet>
             <div class="d-flex justify-center align-center">
-              <img :src="image" class="carousel-img" />
+              <img :src="image.photo" class="carousel-img" />
             </div>
           </v-sheet>
         </v-carousel-item>
@@ -318,6 +318,7 @@ export default {
     },
 
     property() {
+      console.log(this.propertiesStore.getProperty);
       return this.propertiesStore.getProperty;
     },
 

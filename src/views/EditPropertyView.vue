@@ -293,6 +293,7 @@ export default {
     async loadProperty() {
       const property = await this.propertiesStore.fetchProperty(this.$route.params.id);
       this.property = property;
+      console.log(property);
 
       this.property.city = property.location.split(', ')[0]
 
@@ -301,12 +302,12 @@ export default {
       this.property.country = country.name
 
       // VOLTAR AQUI DEPOIS
-      // let photosArray = []
-      // property.photos.forEach(photo => {
-      //       photosArray.push(photo.photo)
-      //     });
-      //     console.log(photosArray);
-      // this.property.photos = photosArray;
+      let photosArray = []
+      property.photos.forEach(photo => {
+            photosArray.push(photo.photo)
+          });
+          console.log(photosArray);
+      this.property.photos = photosArray;
 
       this.property.amenities = property.amenities.map(a => a.amenity_name)
 
@@ -314,7 +315,6 @@ export default {
       this.property.property_type = type.type_name
     },
     async editProperty() {
-
       const property = await this.propertiesStore.fetchProperty(this.$route.params.id);
 
       let countryShort = property.location.split(', ')[1]
@@ -354,22 +354,43 @@ export default {
 
         let type = this.propertyTypes.find(item => item.type_name === this.property.property_type);
 
-        let editedProperty = {
-          id: this.$route.params.id,
-          title: this.property.title,
-          daily_price: this.property.daily_price,
-          map_url: this.property.map_url,
-          location: `${this.property.city}, ${countryShort}`,
-          description: this.property.description,
-          // photos: this.property.photos,
-          amenities: amenitiesInfo,
-          property_type: type.ID,
-          beds: this.property.beds,
-          bedrooms: this.property.bedrooms,
-          bathrooms: this.property.bathrooms,
-          guest_number: this.property.guest_number
-        };
-        await this.propertiesStore.editProperty(editedProperty);
+        // let editedProperty = {
+        //   id: this.,
+        //   title: this.property.title,
+        //   daily_price: this.property.daily_price,
+        //   map_url: this.property.map_url,
+        //   location: `${this.property.city}, ${countryShort}`,
+        //   description: this.property.description,
+        //   // photos: this.property.photos,
+        //   amenities: amenitiesInfo,
+        //   property_type: type.ID,
+        //   beds: this.property.beds,
+        //   bedrooms: this.property.bedrooms,
+        //   bathrooms: this.property.bathrooms,
+        //   guest_number: this.property.guest_number
+        // };
+        let formDataImg = new FormData()
+        formDataImg.append("id", this.$route.params.id)
+        formDataImg.append("title", this.property.title)
+        formDataImg.append("daily_price", this.property.daily_price)
+        formDataImg.append("map_url", this.property.map_url)
+        formDataImg.append("location", `${this.property.city}, ${countryShort}`)
+        formDataImg.append("description", this.property.description)
+
+        formDataImg.append("amenities", amenitiesInfo)
+        formDataImg.append("property_type", type.ID)
+        formDataImg.append("beds", this.property.beds)
+        formDataImg.append("bedrooms", this.property.bedrooms)
+        formDataImg.append("bathrooms", this.property.bathrooms)
+        formDataImg.append("guest_number", this.property.guest_number)
+
+        for (let img of this.property.photos){
+          formDataImg.append("inputPropertyImages", img)
+        }
+
+        console.log(...formDataImg);
+
+        await this.propertiesStore.editProperty(this.$route.params.id, formDataImg);
       }
     },
   },

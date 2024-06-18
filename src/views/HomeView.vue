@@ -38,7 +38,7 @@
     <!-- CARDS -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div v-for="property in filters" :key="property.ID">
-        <PropertyContainer image="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg"
+        <PropertyContainer :image="property.photo"
           :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID" />
       </div>
     </div>
