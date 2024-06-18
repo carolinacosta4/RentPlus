@@ -14,7 +14,7 @@ export const usePaymentTypesStore = defineStore("paymentTypes", {
     async fetchPaymentTypes() {
       try {
         this.paymentTypes = [];
-        const response = await api.get(API_BASE_URL, "paymentTypes");
+        const response = await api.get(API_BASE_URL, "paymentTypes", localStorage.getItem("authToken"));
         this.paymentTypes = response.data;
       } catch (error) {
         console.error(error);

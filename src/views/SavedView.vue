@@ -13,6 +13,7 @@
             :name="property.title"
             :location="property.location"
             :price="property.daily_price"
+            :bookmark = true
           />
         </div>
       </nav>
@@ -44,8 +45,8 @@ export default {
     };
   },
 
-  created() {
-    this.usersStore.fetchUser("Beatriz").then(() => {
+  async created() {
+    this.usersStore.fetchUser(this.loggedUser).then(() => {
       this.usersStore.getUser.favorites.forEach((fav) => {
         this.propertiesStore.fetchProperty(fav.property_ID).then(() => {
           this.favProperties.push(this.propertiesStore.getProperty);
@@ -58,6 +59,10 @@ export default {
     properties() {
       return this.favProperties;
     },
+
+    loggedUser(){
+      return localStorage.getItem('user')
+    }
   },
 
   methods: {

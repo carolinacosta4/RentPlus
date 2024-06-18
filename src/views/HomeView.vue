@@ -39,7 +39,8 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div v-for="property in filters" :key="property.ID">
         <PropertyContainer :image="property.photo"
-          :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID" />
+          :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID"
+          :bookmark="isFavorite(property.ID)" />
       </div>
     </div>
 
@@ -47,7 +48,8 @@
       <ArrowLeft @click="propertiesStore.fetchProperties(pagination.current - 1)" v-if="pagination.current != 1">
       </ArrowLeft>
       <span>{{ pagination.current }}</span> of <span>{{ pagination.totalPages }}</span>
-      <ArrowRight @click="propertiesStore.fetchProperties(pagination.current + 1)" v-if="pagination.current != pagination.totalPages"></ArrowRight>
+      <ArrowRight @click="propertiesStore.fetchProperties(pagination.current + 1)"
+        v-if="pagination.current != pagination.totalPages"></ArrowRight>
     </div>
   </main>
 </template>
@@ -60,6 +62,7 @@ import PropertyContainer from "../components/PropertyContainer.vue";
 import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import { usePropertiesStore } from "@/stores/properties";
+import { useUsersStore } from "@/stores/users";
 
 export default {
   components: {
@@ -72,6 +75,7 @@ export default {
   data() {
     return {
       propertiesStore: usePropertiesStore(),
+      userStore: useUsersStore(),
       location: "",
       guests: "",
       title: "",
@@ -81,7 +85,7 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     this.propertiesStore.fetchProperties(1);
   },
 
@@ -95,14 +99,16 @@ export default {
     },
 
     filters() {
-      if (this.filterFlag == "search") { return this.properties }
+      let filtered = this.properties.filter(property => !property.is_blocked)
+      if (this.filterFlag == "search") { return filtered }
       if (this.filterFlag == 'searchBoth') {
-        if (this.location == "" && this.guests == "") { return this.properties }
-        if (this.location == "") { return this.properties.filter((property) => property.guest_number == this.guests) }
-        if (this.guests == "") { return this.properties.filter((property) => property.location.toLowerCase().startsWith(this.location.toLowerCase())) }
-        if (this.location != "" && this.guests != "") { return this.properties.filter((property) => property.location.toLowerCase().includes(this.location.toLowerCase()) && property.guest_number == this.guests) }
+        if (this.location == "" && this.guests == "") { return filtered }
+        if (this.location == "") { filtered = filtered.filter((property) => property.guest_number == this.guests) }
+        if (this.guests == "") { filtered = filtered.filter((property) => property.location.toLowerCase().startsWith(this.location.toLowerCase())) }
+        if (this.location != "" && this.guests != "") { filtered = filtered.filter((property) => property.location.toLowerCase().includes(this.location.toLowerCase()) && property.guest_number == this.guests) }
       }
-      if (this.filterFlag == "searchTitle") { return this.properties.filter((property) => property.title.toLowerCase().includes(this.title.toLowerCase())) }
+      if (this.filterFlag == "searchTitle") { filtered = filtered.filter((property) => property.title.toLowerCase().includes(this.title.toLowerCase())) }
+      return filtered
     },
 
     sortPrice() {
@@ -113,6 +119,10 @@ export default {
           if (c1.daily_price == c2.daily_price) return 0
         })
     },
+
+    loggedUser() {
+      localStorage.getItem('user')
+    }
   },
 
   methods: {
@@ -128,6 +138,9 @@ export default {
       this.sortPrice
     },
 
+    isFavorite(propertyId) {
+      return this.userStore.getUserLoggedInfo.favorites?.some((fav) => fav.property_ID === propertyId)
+    },
   },
 }
 </script>

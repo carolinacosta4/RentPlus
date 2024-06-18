@@ -1,7 +1,7 @@
-import { defineStore } from "pinia"
-import * as api from "../api/api"
+import { defineStore } from "pinia";
+import * as api from "../api/api";
 
-const API_BASE_URL = "http://127.0.0.1:3000"
+const API_BASE_URL = "http://127.0.0.1:3000";
 
 export const usePropertiesStore = defineStore("property", {
   state: () => ({
@@ -31,7 +31,7 @@ export const usePropertiesStore = defineStore("property", {
         console.log(response);
         return response
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -42,7 +42,7 @@ export const usePropertiesStore = defineStore("property", {
         this.property = response.data
         return response.data
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
     async create(formData){
@@ -51,8 +51,7 @@ export const usePropertiesStore = defineStore("property", {
           localStorage.getItem("authToken")
         );
       } catch (error) {
-        console.log(error);
-        throw error.message
+        throw error.message;
       }
     },
 
@@ -60,26 +59,23 @@ export const usePropertiesStore = defineStore("property", {
       try {
         const response = await api.patchForm(API_BASE_URL, `properties/${id}`, formData, localStorage.getItem("authToken"));
       } catch (error) {
-        throw error.message
+        throw error.message;
       }
     },
 
     async delete(id) {
       try {
-        const response = await api.remove(API_BASE_URL, `properties/${id}`, this.token)
-        console.log(response.msg);
+        const response = await api.remove(API_BASE_URL,`properties/${id}`,this.token);
       } catch (error) {
         console.error(error)
       }
     },
 
     async block(id) {
-      console.log(id);
       try {
-        const response = await api.patch(API_BASE_URL, `properties/block/${id}`)
-        console.log("Property updated successfully:", response.msg);
+        const response = await api.patch(API_BASE_URL, `properties/${id}/block`)
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
 
