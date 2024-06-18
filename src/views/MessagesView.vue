@@ -8,12 +8,9 @@
                 <SearchIcon></SearchIcon>
             </div>
             <div v-for="user in filters" :key="user.sender_username">
-                <button @click=openConversation(user.sender_username) id="user">
-                    <!-- <img :src="user.profile_image" id="pfp"> -->
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
-                        id="pfp">
-                    <!-- <h2 class="inter-light font-size-18">{{ user.first }} {{ user.last }}</h2> -->
-                    <h2 class="inter-light font-size-18">{{ user.sender_username }}</h2>
+                <button @click=openConversation(user) id="user">
+                    <img :src="user.image" id="pfp">
+                    <h2 class="inter-light font-size-18">{{ user.first }} {{ user.last }}</h2>
                 </button>
             </div>
         </div>
@@ -22,25 +19,20 @@
             <p class="inter-light font-color-grey">Select a message to read</p>
         </div>
         <div v-if="openFlag & !inexistentConvo" id="selectedMessage">
-            <!-- <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ openConvo[0].name }} {{
-                openConvo[0].last }}</h1> -->
-            <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ conversation }}</h1>
+            <h1 id="nome" class="inter-medium font-color-green font-size-24">{{ conversation.first }} {{
+                conversation.last }}</h1>
+            <h1 id="username" class="inter-light font-color-green font-size-14">@{{ conversation.sender_username }}</h1>
             <div id="messages-container" ref="messagesContainer">
                 <div id="messages">
                     <div v-for="user in openConvo" id="message">
-                        <!-- <img :src="user.profile_image" v-if="user.sender_username != loggedUser" id="imageSent"> -->
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
-                            v-if="user.sender_username != loggedUser" id="imageSent">
+                        <img :src="user.profile_image" v-if="user.sender_username != loggedUser" id="imageSent">
                         <div v-if="user.sender_username == loggedUser" id="sent">
                             <p class="inter-light">{{ user.content }}</p>
                         </div>
                         <div v-else id="received">
                             <p class="inter-light">{{ user.content }}</p>
                         </div>
-                        <!-- <img v-if="user.sender_username == loggedUser" :src="user.profile_image" id="imageReceived"> -->
-                        <img v-if="user.sender_username == loggedUser"
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
-                            id="imageReceived">
+                        <img v-if="user.sender_username == loggedUser" :src="user.profile_image" id="imageReceived">
                     </div>
                 </div>
             </div>
@@ -51,7 +43,9 @@
             </div>
         </div>
         <div v-if="inexistentConvo" id="selectedMessage">
-            <h1 id="nomeOwner" class="inter-medium font-color-green font-size-24">{{ $route.params.id }}</h1>
+            <h1 id="nome" class="inter-medium font-color-green font-size-24">{{ user.first_name }} {{
+                user.last_name }}</h1>
+            <h1 id="username" class="inter-light font-color-green font-size-14">@{{ $route.params.id }}</h1>
             <div id="messages-container" ref="messagesContainer">
                 <div id="messages">
                     <div v-for="user in openConvo" id="message">
@@ -85,18 +79,15 @@ import { useUsersStore } from "@/stores/users";
 export default {
     data() {
         return {
-            // messages: [
-            //     { name: 'Carolina', last: 'Costa', receiver_username: 'alice', sender_username: 'carolina4', content: 'Hello', image: 'https://via.placeholder.com/70x70' },
-            // ],
             openFlag: false,
-            conversation: "",
+            conversation: [],
             filters: [],
             newMessage: "",
             ownerSearch: "",
             inexistentConvo: false,
             messagesStore: useMessagesStore(),
             usersStore: useUsersStore(),
-            newProperty: []
+            newMessageToAdd: []
         }
     },
 
@@ -112,42 +103,56 @@ export default {
             if (number == 1) return this.openFlag = true
         },
 
-        openConversation(user) {
+        openConversation(userInfo) {
             this.inexistentConvo = false
             this.changeFlag(1)
-            console.log(user);
-            return this.conversation = user
+            this.conversation = { sender_username: userInfo.sender_username, first: userInfo.first, last: userInfo.last }
+            this.$nextTick(() => {
+                this.scrollToBottom();
+            })
         },
 
-        getUser(conversation) {
-            return conversation.find(user => user.sender_username !== this.loggedUser) || {};
-        },
 
         scrollToBottom() {
-            // this.$nextTick(() => {
-                const container = this.$refs.messagesContainer
-                if (container) {
-                    container.scrollTop = container.scrollHeight
-                }
-            // })
+            const container = this.$refs.messagesContainer
+            if (container) {
+                container.scrollTop = container.scrollHeight
+            }
         },
 
-        async addNewMessage(username) {
-            console.log(this.newMessage);
-            console.log(username);
-            this.newProperty.content = this.newMessage;
-            this.newProperty.receiver_username = username;
-            this.newProperty.sender_username = this.loggedUser;
+        async addNewMessage(receiver) {
+            this.newMessageToAdd.content = this.newMessage;
+            const receiverUsername = this.inexistentConvo ? this.$route.params.id : receiver.sender_username
+            this.newMessageToAdd.receiver_username = receiverUsername
+            this.newMessageToAdd.sender_username = this.loggedUser
 
-            console.log(this.newProperty);
-
-            await this.messagesStore.createMessage(this.newProperty)
+            await this.messagesStore.createMessage(this.newMessageToAdd)
             this.newMessage = ""
 
-            this.messagesStore.fetchMessage(this.loggedUser)
-            this.openConversation(username)
+            await this.messagesStore.fetchMessage(this.loggedUser)
 
-            // this.scrollToBottom()
+            const userMessages = this.messagesStore.getMessages
+            const userExists = userMessages.some((message) => message.sender_username === receiverUsername || message.receiver_username === receiverUsername)
+
+            if (userExists) {
+                this.inexistentConvo = false
+                this.openFlag = true
+                const userInfo = userMessages.find((message) => message.sender_username === receiverUsername || message.receiver_username === receiverUsername)
+                const isSender = userInfo.sender_username === this.loggedUser
+
+                this.openConversation({
+                    sender_username: isSender ? userInfo.receiver_username : userInfo.sender_username,
+                    first: isSender ? userInfo.receiver.first_name : userInfo.sender.first_name,
+                    last: isSender ? userInfo.receiver.last_name : userInfo.sender.last_name
+                })
+            } else {
+                this.inexistentConvo = true
+                this.openFlag = false
+            }
+
+            this.$nextTick(() => {
+                this.scrollToBottom()
+            })
         },
     },
 
@@ -156,14 +161,24 @@ export default {
             immediate: true,
             handler(username) {
                 if (username) {
-                    if ((this.messages.filter((message) => message.sender_username == username || message.receiver_username == username)).length == 0) {
-                        this.inexistentConvo = true
-                    } else {
-                        this.openFlag = true
-                        this.openConversation(username)
-                    }
+                    this.messagesStore.fetchMessage(this.loggedUser).then(() => {
+                        const userMessages = this.messagesStore.getMessages
+                        const userExists = userMessages.some((message) => message.sender_username === username || message.receiver_username === username)
+
+                        if (userExists) {
+                            this.inexistentConvo = false;
+                            this.openFlag = true;
+                            const userInfo = userMessages.find((message) => message.sender_username === username || message.receiver_username === username)
+                            this.openConversation({ sender_username: userInfo.receiver_username, first: userInfo.receiver.first_name, last: userInfo.receiver.last_name })
+                        } else {
+                            this.inexistentConvo = true
+                            this.openFlag = false
+                            this.usersStore.fetchUser(this.$route.params.id)
+                        }
+                    })
                 } else {
-                    this.openFlag = false;
+                    this.openFlag = false
+                    this.inexistentConvo = false
                 }
             },
         },
@@ -172,7 +187,7 @@ export default {
             this.$nextTick(() => {
                 this.scrollToBottom()
             });
-        }
+        },
     },
 
     computed: {
@@ -182,7 +197,6 @@ export default {
 
         users() {
             const users = this.messages.reduce((recentUsers, message) => {
-                // console.log(message.sender);
                 if (message.sender_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.sender_username)) {
                     recentUsers.push({
                         sender_username: message.sender.username,
@@ -194,15 +208,14 @@ export default {
                 }
                 if (message.receiver_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.receiver_username)) {
                     recentUsers.push({
-                        // sender_username: message.receiver_username,
                         sender_username: message.receiver.username,
-                        // image: message.receiver.profile_image,
-                        // first: message.receiver.first_name,
-                        // last: message.receiver.last_name
-                        // image: message.profile_image
+                        image: message.receiver.profile_image,
+                        first: message.receiver.first_name,
+                        last: message.receiver.last_name
                         // image: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541'
                     });
                 }
+
                 return recentUsers;
             }, []);
 
@@ -210,29 +223,31 @@ export default {
         },
 
         openConvo() {
-            return (this.messages.filter((user) => user.receiver_username == this.conversation || user.sender_username == this.conversation)).reverse()
+            return (this.messages.filter((user) => user.receiver_username == this.conversation.sender_username || user.sender_username == this.conversation.sender_username)).reverse()
         },
 
         filters() {
-            // return this.users.filter((user) => {
-            //     const fullName = `${user.first_name.toLowerCase()} ${user.last_name.toLowerCase()}`
-            //     return fullName.includes(this.ownerSearch.toLowerCase())
-            // })
             return this.users.filter((user) => {
-                return user.sender_username.startsWith(this.ownerSearch.toLowerCase())
+                const fullName = `${user.first.toLowerCase()} ${user.last.toLowerCase()}`
+                return fullName.includes(this.ownerSearch.toLowerCase())
             })
+
         },
 
         loggedUser() {
             return this.usersStore.getUserLogged
+        },
+
+        user() {
+            return this.usersStore.getUser
         }
     },
 
-    created() {
-        // this.$nextTick(() => {
-        //     this.scrollToBottom()
-        // })
-        this.messagesStore.fetchMessage(this.loggedUser);
+    async created() {
+        await this.messagesStore.fetchMessage(this.loggedUser)
+        if (this.$route.params.id) {
+            await this.usersStore.fetchUser(this.$route.params.id)
+        }
     },
 }
 </script>
@@ -261,10 +276,10 @@ main {
     border: #133E1A20 solid 1px;
     border-radius: 11px;
     padding: 1em;
-    min-height: 45rem;
-    max-height: 45rem;
-    /* min-height: 35rem;
-    max-height: 35rem; */
+    /* min-height: 45rem;
+    max-height: 45rem; */
+    min-height: 35rem;
+    max-height: 35rem;
 }
 
 #selectMessage {
@@ -272,19 +287,19 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 45rem;
-    max-height: 45rem;
-    /* min-height: 35rem;
-    max-height: 35rem; */
+    /* min-height: 45rem;
+    max-height: 45rem; */
+    min-height: 35rem;
+    max-height: 35rem;
 }
 
 #selectedMessage {
     display: flex;
     flex-direction: column;
-    min-height: 45rem;
-    max-height: 45rem;
-    /* min-height: 35rem;
-    max-height: 35rem; */
+    /* min-height: 45rem;
+    max-height: 45rem; */
+    min-height: 35rem;
+    max-height: 35rem;
 }
 
 #received,
@@ -342,10 +357,10 @@ main {
 
 
 #messages-container {
-    /* height: 27.5rem;
-    max-height: 27.5rem; */
-    height: 36.5rem;
-    max-height: 36.5rem;
+    height: 27.5rem;
+    max-height: 27.5rem;
+    /* height: 36.5rem;
+    max-height: 36.5rem; */
     overflow-y: auto;
     padding-right: 2rem;
     box-sizing: content-box;
@@ -390,16 +405,20 @@ main {
     margin-top: 2em;
     position: fixed;
     /* bottom: 0; */
-    /* top: 36.5rem; */
-    top: 46.5rem;
+    top: 36.5rem;
+    /* top: 46.5rem; */
     background-color: #ffffff;
     width: 70%;
     padding: 0.5em;
     z-index: 999;
 }
 
-#nomeOwner {
-    margin-top: 1em;
+#nome {
+    margin-top: 0.5em;
+}
+
+#username {
+    margin-bottom: 0.5em;
 }
 
 .title {

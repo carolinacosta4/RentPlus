@@ -11,7 +11,6 @@ export const useUsersStore = defineStore("user", {
     token: localStorage.getItem("authToken") || null,
     loggedUser: localStorage.getItem("user") || null,
     loggedUserInfo: [],
-    favorites: [],
     reservations: [],
   }),
   getters: {
@@ -21,14 +20,13 @@ export const useUsersStore = defineStore("user", {
     getToken: (state) => state.token,
     getUserLogged: (state) => state.loggedUser,
     getUserLoggedInfo: (state) => state.loggedUserInfo,
-    getUserFavorites: (state) => state.favorites,
     getUserReservations: (state) => state.reservations,
   },
   actions: {
     async fetchUsers() {
       try {
-        const response = await api.get(API_BASE_URL, `users`);
-        this.users = response.data;
+        const response = await api.get(API_BASE_URL, `users`, this.token)
+        this.users = response.data
       } catch (error) {
         console.error(error);
       }
@@ -36,9 +34,9 @@ export const useUsersStore = defineStore("user", {
 
     async fetchUser(username) {
       try {
-        this.user = "";
-        const response = await api.get(API_BASE_URL, `users/${username}`);
-        this.user = response.data;
+        this.user = ""
+        const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
+        this.user = response.data
       } catch (error) {
         console.error(error);
       }
@@ -46,9 +44,9 @@ export const useUsersStore = defineStore("user", {
 
     async fetchUserLogged(username) {
       try {
-        this.loggedUserInfo = [];
-        const response = await api.get(API_BASE_URL, `users/${username}`);
-        this.loggedUserInfo = response.data;
+        this.loggedUserInfo = []
+        const response = await api.get(API_BASE_URL, `users/${username}`, this.token)
+        this.loggedUserInfo = response.data
       } catch (error) {
         console.error(error);
       }
@@ -56,12 +54,9 @@ export const useUsersStore = defineStore("user", {
 
     async fetchUserReviews(username) {
       try {
-        this.reviews = [];
-        const response = await api.get(
-          API_BASE_URL,
-          `users/${username}/reviews`
-        );
-        this.reviews = response.data;
+        this.reviews = []
+        const response = await api.get(API_BASE_URL, `users/${username}/reviews`, this.token)
+        this.reviews = response.data
       } catch (error) {
         console.error(error);
       }
@@ -69,12 +64,7 @@ export const useUsersStore = defineStore("user", {
 
     async delete(username) {
       try {
-        const response = await api.remove(
-          API_BASE_URL,
-          `users/${username}`,
-          this.token
-        );
-        console.log(response.msg);
+        const response = await api.remove(API_BASE_URL, `users/${username}`, this.token);
       } catch (error) {
         console.error(error);
       }
@@ -82,11 +72,7 @@ export const useUsersStore = defineStore("user", {
 
     async block(username) {
       try {
-        const response = await api.patch(
-          API_BASE_URL,
-          `users/block/${username}`
-        );
-        console.log("User updated successfully:", response.data);
+        const response = await api.patch(API_BASE_URL, `users/${username}/block`)
       } catch (error) {
         console.error(error);
       }
@@ -120,16 +106,10 @@ export const useUsersStore = defineStore("user", {
     },
 
     async editProfile(data, username) {
-      const response = await api.patch(
-        API_BASE_URL,
-        `users/${username}`,
-        data,
-        this.token
-      );
-      console.log("User edited successfully:", response);
+      const response = await api.patch(API_BASE_URL, `users/${username}`, data, this.token);
       if (data.username != undefined) {
-        localStorage.setItem("user", data.username);
-        this.loggedUser = data.username;
+        localStorage.setItem("user", data.username)
+        this.loggedUser = data.username
         if (response.success) {
           this.token = response.newToken;
           localStorage.setItem("authToken", this.token);
@@ -148,9 +128,7 @@ export const useUsersStore = defineStore("user", {
           last_name: newUser.lastName,
         });
 
-        if (response.success) {
-          await this.login(newUser.username, newUser.password);
-        } else {
+        if (!response.success) {
           throw new Error("Registration failed");
         }
       } catch (error) {
@@ -158,33 +136,17 @@ export const useUsersStore = defineStore("user", {
       }
     },
 
-    async toggleFavorite(propertyId) {
+    async toggleFavorite(bool, propertyId) {
       try {
-        // see if user is logged in
         const userId = this.loggedUser;
-        if (!userId) {
-          throw new Error("User not logged in");
-        }
 
-        // Check if the property is already in favorites
-        const isFavorite = this.getUserFavorites.some(
-          (fav) => fav.property_ID === propertyId
-        );
-
-        if (isFavorite) {
+        if (bool) {
           // Remove from favorites
           const response = await api.remove(
             API_BASE_URL,
             `users/${userId}/favorites/${propertyId}`,
             this.token
           );
-          if (response.success) {
-            console.log("Property removed from favorites:", response.msg);
-            // Update local state to reflect the change
-            this.favorites = this.favorites.filter(
-              (fav) => fav.property_ID !== propertyId
-            );
-          }
         } else {
           // Add to favorites
           const response = await api.post(
@@ -193,11 +155,6 @@ export const useUsersStore = defineStore("user", {
             { property_ID: propertyId },
             this.token
           );
-          if (response.success) {
-            console.log("Property added to favorites:", response.msg);
-            // Update local state to reflect the change
-            this.favorites.push({ property_ID: propertyId });
-          }
         }
       } catch (error) {
         console.error("Failed to toggle property favorite status:", error);
@@ -207,18 +164,47 @@ export const useUsersStore = defineStore("user", {
 
     async fetchUserReservations(username) {
       try {
-        const response = await api.get(
-          API_BASE_URL,
-          `reservations/${username}`,
-          this.token
-        );
+        const response = await api.get(API_BASE_URL, `reservations/${username}`, this.token);
         if (response.success) {
           this.reservations = response.data;
-          console.log(response);
         }
       } catch (error) {
         console.error("Failed to fetch reservations:", error);
         throw error;
+      }
+    },
+
+    async editRole(data, username) {
+      const response = await api.patch(API_BASE_URL, `users/${username}/role`, data, this.token);
+      if (response.success) {
+        this.token = response.accessToken;
+        localStorage.setItem("authToken", this.token);
+      }
+    },
+
+    async confirmation(username) {
+      try {
+        const response = await api.patch(API_BASE_URL, `users/${username}/confirmation`)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async forgotPassword(data) {
+      try {
+        const response = await api.post(API_BASE_URL, `users/reset-password-email`, data)
+        return response
+      } catch (error) {
+        throw error.message
+      }
+    },
+
+    async resetPassword(data) {
+      try {
+        const response = await api.patch(API_BASE_URL, `users`, data)
+        return response
+      } catch (error) {
+        throw error.message
       }
     },
   },

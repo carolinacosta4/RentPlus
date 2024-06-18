@@ -3,12 +3,17 @@
     class="z-50 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition"
   >
     <BookmarkIcon
-      :class="{ 'text-yellow': isFavorite }"
-      v-if="route != 'properties'"
-      @click="handleFav"
+      fillColor="#133E1A"
+      v-if="route != 'properties' && bookmark"
+      @click="handleFav(true)"
     ></BookmarkIcon>
+    <BookmarkIcon
+      v-if="route != 'properties' && !bookmark"
+      @click="handleFav(false)"
+    ></BookmarkIcon>
+
     <EditIcon
-      v-else
+      v-if="route == 'properties'"
       @click="this.$router.push(`/edit-property/${id}`)"
     ></EditIcon>
   </button>
@@ -24,6 +29,7 @@
     <h2 class="inter-light font-color-green">
       <span class="inter-semiBold">{{ price }}€</span> /night
     </h2>
+    <p class="inter-semiBold font-size-14" v-if="blocked" id="blocked">This property is blocked. Please contact us to know more.</p>
   </router-link>
 </template>
 
@@ -58,6 +64,14 @@ export default {
       type: Number,
       required: true,
     },
+
+    bookmark: {
+      type: Boolean
+    },
+
+    blocked: {
+      type: Boolean
+    }
   },
 
   data() {
@@ -70,17 +84,13 @@ export default {
     route() {
       return this.$route.name;
     },
-    isFavorite() {
-      return this.usersStore.getUserFavorites.some(
-        (fav) => fav.property_ID === this.id
-      );
-    },
   },
 
   methods: {
-    async handleFav() {
+    async handleFav(bool) {
       try {
-        await this.usersStore.toggleFavorite(this.id);
+        await this.usersStore.toggleFavorite(bool, this.id);
+        location.reload()
       } catch (error) {
         console.error("Failed to toggle favorite status:", error);
       }
@@ -93,3 +103,9 @@ export default {
   },
 };
 </script>
+
+<style>
+#blocked{
+  color: red;
+}
+</style>

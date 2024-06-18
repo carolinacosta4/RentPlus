@@ -13,20 +13,17 @@ export const useReviewsStore = defineStore("review", {
   actions: {
     async fetchReviews(id) {
       try {
-        this.reviews = [];
-        const response = await api.get(
-          API_BASE_URL,
-          `properties/${id}/reviews`
-        );
-        this.reviews = response.data;
+        const response = await api.get(API_BASE_URL, `properties/${id}/reviews`)
+        this.reviews = response.data
       } catch (error) {
-        console.error(error);
+        console.error(error)
+        // return []
       }
     },
 
     async postReview(id, review) {
       const data = {
-        reservationID: review.reservationID,
+        reservation_ID: review.reservationID,
         comment: review.comment,
         rating: review.rating,
       };
@@ -38,7 +35,6 @@ export const useReviewsStore = defineStore("review", {
           data,
           localStorage.getItem("authToken")
         );
-        console.log("Review submitted successfully:", response);
       } catch (error) {
         console.error("Error submitting review:", error);
       }

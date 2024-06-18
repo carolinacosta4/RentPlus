@@ -3,9 +3,6 @@
     <h1 class="inter-medium font-color-green font-size-24 page-title">
       Your reservations
     </h1>
-
-    <!--  -->
-    <!--  -->
     <!-- CURRENT -->
     <div>
       <p class="text-xl my-2 inter-light font-color-black font-size-20">
@@ -29,12 +26,13 @@
               v-if="currentReservations.length > pageSizeCards"
             />
             <CardReservations
-              v-for="(card, index) in paginatedCardsCurrent"
-              :key="index"
-              :guest="`Max Guests: ${card.guests}`"
-              :property="card.title"
-              :startDate="card.dateIn"
-              :endDate="card.DateOut"
+              v-for="trip in paginatedCardsCurrent"
+              :key="trip.id"
+              :guest="`Guest: ${trip.username}`"
+              :property="trip.title"
+              :startDate="trip.dateIn"
+              :endDate="trip.dateOut"
+              :id="trip.id"
             />
             <ArrowRight
               fillColor="#133E1A"
@@ -53,8 +51,6 @@
       </div>
     </div>
 
-    <!--  -->
-    <!--  -->
     <!-- FUTURE -->
     <div>
       <p class="text-xl my-2 inter-light font-color-black font-size-20">
@@ -78,12 +74,13 @@
               v-if="futureReservations.length > pageSizeCards"
             />
             <CardReservations
-              v-for="(card, index) in paginatedCardsFuture"
-              :key="index"
-              :guest="`Max Guests: ${card.guests}`"
-              :property="card.title"
-              :startDate="card.dateIn"
-              :endDate="card.dateOut"
+              v-for="trip in paginatedCardsFuture"
+              :key="trip.id"
+              :guest="`Guest: ${trip.username}`"
+              :property="trip.title"
+              :startDate="trip.dateIn"
+              :endDate="trip.dateOut"
+              :id="trip.id"
             />
             <ArrowRight
               fillColor="#133E1A"
@@ -102,8 +99,6 @@
       </div>
     </div>
 
-    <!--  -->
-    <!--  -->
     <!-- Previous -->
     <div>
       <p class="text-xl my-2 inter-light font-color-black font-size-20">
@@ -127,12 +122,13 @@
               v-if="previousReservations.length > pageSizeCards"
             />
             <CardReservations
-              v-for="(card, index) in paginatedCardsPrevious"
-              :key="index"
-              :guest="`Max Guests: ${card.guests}`"
-              :property="card.title"
-              :startDate="card.dateIn"
-              :endDate="card.dateOut"
+              v-for="trip in paginatedCardsPrevious"
+              :key="trip.id"
+              :guest="`Guest: ${trip.username}`"
+              :property="trip.title"
+              :startDate="trip.dateIn"
+              :endDate="trip.dateOut"
+              :id="trip.id"
             />
             <ArrowRight
               fillColor="#133E1A"
@@ -176,7 +172,7 @@ export default {
       currentReservations: [],
       futureReservations: [],
       previousReservations: [],
-      pageSizeCards: 2,
+      pageSizeCards: 4,
       currentPageCurrent: 0,
       currentPagePrevious: 0,
       currentPageFuture: 0,
@@ -184,9 +180,8 @@ export default {
   },
 
   async created() {
-    await this.userStore.fetchUserReservations(localStorage.getItem("user"));
-    this.allReservations = this.userStore.reservations;
-    await this.fetchPropertyDetails();
+    await this.userStore.fetchUser(`${this.loggedUser}?field=properties`)
+    this.reservations()
     this.filterReservationsByDate();
   },
 
@@ -215,19 +210,17 @@ export default {
     totalPagesPrevious() {
       return Math.ceil(this.previousReservations.length / this.pageSizeCards);
     },
+
+    loggedUser (){
+      return localStorage.getItem("user")
+    },
+
+    properties (){
+      return this.userStore.getUser.properties
+    },
   },
 
   methods: {
-    async fetchPropertyDetails() {
-      for (const reservation of this.allReservations) {
-        const propertyDetails = await this.propertiesStore.fetchProperty(
-          reservation.property_ID
-        );
-        reservation.title = propertyDetails.title;
-        reservation.guests = propertyDetails.guest_number;
-      }
-    },
-
     filterReservationsByDate() {
       const currentDate = new Date();
       this.currentReservations = this.allReservations.filter((reservation) => {
@@ -278,6 +271,22 @@ export default {
         }
       }
     },
+
+    reservations (){
+      for (let property of this.properties) {
+        if (property.reservations.length != 0) {
+          for (let reservation of property.reservations) {
+            this.allReservations.push({
+              ...reservation,
+              title: property.title,
+              id: property.ID
+            });
+          }
+        }
+      }
+      console.log(this.allReservations);
+      this.filterReservationsByDate();
+    }
   },
 };
 </script>

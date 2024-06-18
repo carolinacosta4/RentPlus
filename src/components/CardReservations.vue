@@ -1,6 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
-    <router-link :to="{name: 'property', params: { id: 26 } }"> <!-- mudar -->
+    <router-link :to="{name: 'property', params: { id: id } }"> <!-- mudar -->
     <img
       :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
       :alt="`${city}, ${country}`"
@@ -27,7 +27,8 @@ export default {
     guest: String,
     property : String,
     startDate: String,
-    endDate: String
+    endDate: String,
+    id: Number
   }
 };
 </script>

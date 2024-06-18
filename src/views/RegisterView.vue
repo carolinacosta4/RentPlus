@@ -37,6 +37,9 @@
         <div class="error-message">
           <p v-if="showError" class="font-size-13 inter-medium">{{ errorMessage }}</p>
         </div>
+        <div class="confirmation-message">
+          <p v-if="showConfirmation" class="font-size-13 inter-medium">{{ confirmationMessage }}</p>
+        </div>
         <button type="submit" class="button-green font-size-20">Sign in</button>
       </form>
 
@@ -89,7 +92,9 @@ export default {
       },
       usersStore: useUsersStore(),
       showError: false,
-      errorMessage: ''
+      errorMessage: '',
+      showConfirmation: false,
+      confirmationMessage: ''
     }
   },
   methods: {
@@ -122,11 +127,14 @@ export default {
           lastName: this.lastName
         }
         await this.usersStore.register(newUser)
-        if (this.usersStore.getToken != null) {
-          this.$router.push({ name: "home" })
-        }
+        this.showConfirmation = true
+        // if (this.usersStore.getToken != null) {
+        //   this.$router.push({ name: "home" })
+        // }
+        this.confirmationMessage = 'A confirmation email was sent please confirm your email.'
         this.showError = false
       } catch (error) {
+        this.showConfirmation = false
         this.showError = true
         if (error === 'API request failed with status 409: {"success":false,"msg":"The username is already taken. Please choose another one."}') {
           this.errorMessage = 'The username is already taken.';
@@ -229,6 +237,11 @@ input#privacyPolicy {
 
 .error-message {
   color: rgb(168, 6, 6);
+  margin-bottom: 1em;
+}
+
+.confirmation-message {
+  color: green;
   margin-bottom: 1em;
 }
 </style>

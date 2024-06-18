@@ -11,18 +11,23 @@
       </p>
       <hr />
       <!-- Cards -->
-      <div
+      <div v-if="currentTrips.length != 0"
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in currentTrips"
-          :key="index"
-          :city="card.city"
-          :country="card.country"
-          :host="card.host"
-          :startDate="formatDate(card.dateIn)"
-          :endDate="formatDate(card.dateOut)"
+          v-for="trip in currentTrips"
+          :key="trip.ID"
+          :id="trip.property_ID"
+          :city="trip.city"
+          :country="trip.country"
+          :host="trip.host"
+          :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)"
         />
+      </div>
+      <div v-else class="noDataDiv gap-4 mt-6 mb-4">
+        <p>There are no current trips</p>
+        <SadFaceIcon class="font-color-green"></SadFaceIcon>
       </div>
     </div>
 
@@ -34,18 +39,23 @@
       </p>
       <hr />
       <!-- Cards -->
-      <div
+      <div v-if="futureTrips.length != 0"
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in futureTrips"
-          :key="index"
-          :city="card.city"
-          :country="card.country"
-          :host="card.host"
-          :startDate="formatDate(card.dateIn)"
-          :endDate="formatDate(card.dateOut)"
+          v-for="trip in futureTrips"
+          :key="trip.ID"
+          :id="trip.property_ID"
+          :city="trip.city"
+          :country="trip.country"
+          :host="trip.host"
+          :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)"
         />
+      </div>
+      <div v-else class="noDataDiv gap-4 mt-6 mb-4">
+        <p>There are no future trips</p>
+        <SadFaceIcon class="font-color-green"></SadFaceIcon>
       </div>
     </div>
 
@@ -57,20 +67,26 @@
       </p>
       <hr />
       <!-- Cards -->
-      <div
+      <div v-if="previousTrips.length != 0"
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
       >
         <CardTrips
-          v-for="(card, index) in previousTrips"
-          :key="index"
-          :city="card.city"
-          :country="card.country"
-          :host="card.host"
-          :startDate="formatDate(card.dateIn)"
-          :endDate="formatDate(card.dateOut)"
+          v-for="trip in previousTrips"
+          :key="trip.ID"
+          :id="trip.property_ID"
+          :city="trip.city"
+          :country="trip.country"
+          :host="trip.host"
+          :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)"
           :isButton="true"
-          @leave-review="showModal"
+          :isReviewed="trip.isReviewed"
+          @leave-review="showModal({reservation: trip.ID, property: trip.property_ID})"
         />
+      </div>
+      <div v-else class="noDataDiv gap-4 mt-6 mb-4">
+        <p>There are no previous trips</p>
+        <SadFaceIcon class="font-color-green"></SadFaceIcon>
       </div>
     </div>
 
@@ -137,11 +153,13 @@ import { useReservationsStore } from "@/stores/reservations";
 import { usePropertiesStore } from "@/stores/properties";
 import { useReviewsStore } from "@/stores/reviews";
 import Star from "vue-material-design-icons/Star.vue";
+import SadFaceIcon from "vue-material-design-icons/EmoticonSadOutline.vue";
 
 export default {
   components: {
     CardTrips,
     Star,
+    SadFaceIcon
   },
   data() {
     return {
@@ -155,11 +173,13 @@ export default {
       isModalVisible: false,
       reviewText: "",
       selectedRating: 0,
+      reservationID: 0,
+      propertyID: 0
     };
   },
 
   async created() {
-    await this.reservationsStore.getUserTrips(localStorage.getItem("user"));
+    await this.reservationsStore.getUserTrips(this.loggedUser);
     this.allTrips = this.reservationsStore.userTrips;
     await this.fetchPropertyDetails();
     this.filterTripsByDate();
@@ -171,10 +191,13 @@ export default {
         const propertyDetails = await this.propertiesStore.fetchProperty(
           trip.property_ID
         );
+        await this.reviewsStore.fetchReviews(trip.property_ID);
         // Extract city, country, and host from property details and update trip object
         trip.city = propertyDetails.location.split(",")[0].trim();
         trip.country = propertyDetails.location.split(",")[1].trim();
         trip.host = propertyDetails.owner_username;
+        trip.ID = trip.ID
+        trip.isReviewed = this.reviewsStore.getReviews.find(review => review.reservation_ID === trip.ID);
       }
     },
 
@@ -203,7 +226,9 @@ export default {
       return date.toLocaleDateString("en-EN", options);
     },
 
-    showModal() {
+    showModal(data) {
+      this.reservationID = data.reservation
+      this.propertyID = data.property
       this.isModalVisible = true;
     },
 
@@ -216,14 +241,16 @@ export default {
       const comment = this.reviewText || "";
 
       try {
-        await this.reviewsStore.postReview(79, {
-          reservationID: 79,
+        await this.reviewsStore.postReview(this.propertyID, {
+          reservationID: this.reservationID,
           comment: comment,
           rating: this.selectedRating,
         });
 
         // RESET STATE
         this.isModalVisible = false;
+        this.reservationID = 0
+        this.propertyID = 0
         this.reviewText = "";
         this.selectedRating = 0;
       } catch (error) {
@@ -234,5 +261,20 @@ export default {
       }
     },
   },
+
+  computed: {
+    loggedUser() {
+      return localStorage.getItem("user")
+    }
+  },
 };
 </script>
+
+<style scoped>
+.noDataDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 0.5em;
+}
+</style>

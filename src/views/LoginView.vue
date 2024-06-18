@@ -14,7 +14,7 @@
         <button type="submit" class="button-green font-size-20">Get in</button>
       </form>
       <p class="inter-light font-color-green font-size-14">
-        <a href="">Forgot password?</a>
+        <router-link :to="{name: 'forgot-password'}">Forgot password?</router-link>
       </p>
       <p class="inter-light font-color-green font-size-14">
         Don't have an account? <b><router-link :to="{ name: 'register' }">Register!</router-link></b>
@@ -65,6 +65,8 @@ export default {
         }
         else if (error === 'API request failed with status 400: {"success":false,"msg":"Must provide username and password."}'){
           this.errorMessage = 'Username and password are required';
+        }else if (error === 'API request failed with status 400: {"success":false,"msg":"Email not confirmed."}'){
+          this.errorMessage = 'Email not confirmed.';
         }
         else if(error === 'API request failed with status 403: {"success":false,"accessToken":null,"msg":"User blocked"}'){
           this.errorMessage = 'User is blocked. Contact us for more information.';
@@ -123,7 +125,7 @@ p {
   margin-bottom: -1em;
 }
 
-.error-message{
+.error-message {
   color: rgb(168, 6, 6);
   margin-top: -0.5em;
   margin-bottom: 0.2em;

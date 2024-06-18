@@ -1,6 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
-    <router-link :to="{ name: 'property', params: { id: 26 } }">
+    <router-link :to="{ name: 'property', params: { id: id } }">
       <!-- mudar -->
       <img
         :src="`https://via.placeholder.com/200x200?text=${city},${country}`"
@@ -17,7 +17,7 @@
         </p>
       </div>
     </router-link>
-    <button class="button-green" v-if="isButton" @click="leaveReview">
+    <button class="button-green" v-if="!isReviewed" @click="leaveReview">
       Leave a review
     </button>
   </div>
@@ -31,10 +31,8 @@ export default {
     host: String,
     startDate: String,
     endDate: String,
-    isButton: {
-      type: Boolean,
-      default: false,
-    },
+    id: Number,
+    isReviewed: Boolean
   },
 
   methods: {
