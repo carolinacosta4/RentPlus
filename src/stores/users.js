@@ -128,6 +128,10 @@ export const useUsersStore = defineStore("user", {
           last_name: newUser.lastName,
         });
 
+        if (response) {
+
+        }
+
         if (!response.success) {
           throw new Error("Registration failed");
         }
@@ -199,7 +203,7 @@ export const useUsersStore = defineStore("user", {
       }
     },
 
-    async updateProfilePicture(formData, username){
+    async updateProfilePicture(formData, username) {
       try {
         const response = await api.patchForm(API_BASE_URL, `users/${username}/change-profile-picture`, formData, this.token);
         return response;
@@ -208,6 +212,8 @@ export const useUsersStore = defineStore("user", {
         throw error;
       }
     },
+
+
 
     async resetPassword(data) {
       try {

@@ -128,15 +128,18 @@ export default {
         }
         await this.usersStore.register(newUser)
         this.showConfirmation = true
+        
+
         this.confirmationMessage = 'A confirmation email was sent please confirm your email.'
         this.showError = false
       } catch (error) {
+        console.log(error);
         this.showConfirmation = false
         this.showError = true
         if (error === 'API request failed with status 409: {"success":false,"msg":"The username is already taken. Please choose another one."}') {
           this.errorMessage = 'The username is already taken.';
         }
-        if (error === 'API request failed with status 400: {"success":false,"msg":["email_UNIQUE must be unique"]}') {
+        if (error === 'API request failed with status 409: {"success":false,"msg":"The email is already in use. Please choose another one."}') {
           this.errorMessage = 'The email is already in use.';
         }
       }

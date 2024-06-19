@@ -178,12 +178,12 @@ export default {
     async updateProfilePicture(event) {
       try {
 
-        const file = event.target.files[0]; // Obtém o arquivo do input
+        const file = event.target.files[0];
         if (!file) {
           console.error('Nenhuma imagem selecionada.');
           return;
         }
-
+        
         let formData = new FormData()
         formData.append("inputProfilePicture", file)
         const result = await this.usersStore.updateProfilePicture(formData, this.loggedUser);

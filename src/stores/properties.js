@@ -65,8 +65,9 @@ export const usePropertiesStore = defineStore("property", {
 
     async delete(id) {
       try {
-        const response = await api.remove(API_BASE_URL,`properties/${id}`,this.token);
+        const response = await api.remove(API_BASE_URL,`properties/${id}`, this.token);
       } catch (error) {
+        console.log(error);
         console.error(error)
       }
     },
