@@ -181,24 +181,19 @@ export default {
     async updateProfilePicture(event) {
       try {
 
-        const file = event.target.files[0]; // Obtém o arquivo do input
+        const file = event.target.files[0];
         if (!file) {
           console.error('Nenhuma imagem selecionada.');
           return;
         }
-        console.log(file);
-
+        
         let formData = new FormData()
         formData.append("inputProfilePicture", file)
         const result = await this.usersStore.updateProfilePicture(formData, this.loggedUser);
-      //   console.log('Profile picture updated successfully:', result);
 
         if (response.ok) {
-          alert('Foto atualizada com sucesso');
-          // Atualize o estado do usuário com a nova URL do avatar, se necessário
           this.user.profile_image = result.profile_image;
         } else {
-          alert('Falha ao atualizar a foto');
           console.error(result);
         }
       } catch (err) {
