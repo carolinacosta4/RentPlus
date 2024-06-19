@@ -13,7 +13,7 @@
     ></BookmarkIcon>
 
     <EditIcon
-      v-if="route == 'properties'"
+      v-if="route == 'properties' && this.$route.params.id == loggedUser"
       @click="this.$router.push(`/edit-property/${id}`)"
     ></EditIcon>
   </button>
@@ -84,6 +84,10 @@ export default {
     route() {
       return this.$route.name;
     },
+
+    loggedUser() {
+      return localStorage.getItem('user')
+    }
   },
 
   methods: {

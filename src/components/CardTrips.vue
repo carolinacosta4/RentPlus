@@ -1,7 +1,6 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
     <router-link :to="{ name: 'property', params: { id: id } }">
-      <!-- mudar -->
       <img
         :src="image"
         class="rounded-md"
@@ -42,6 +41,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>

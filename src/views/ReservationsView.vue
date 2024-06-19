@@ -219,7 +219,6 @@ export default {
     },
 
     properties (){
-      console.log(this.userStore.getUser.properties)
       return this.userStore.getUser.properties
     },
   },
@@ -289,7 +288,6 @@ export default {
           }
         }
       }
-      console.log(this.allReservations);
       this.filterReservationsByDate();
     }
   },

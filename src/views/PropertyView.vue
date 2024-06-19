@@ -19,7 +19,7 @@
               <ArrowRight />
             </v-btn>
           </template>
-          <v-carousel-item v-for="(image, i) in property.photos" :key="i">
+          <v-carousel-item v-for="(image, i) in images" :key="i">
             <v-sheet>
               <div class="d-flex justify-center align-center">
                 <img :src="image.photo" class="carousel-img" />
@@ -125,15 +125,14 @@
               @click="prevPage('extras')" :disabled="currentPageExtras == 0" />
             <div id="extrasGrid" v-if="property.amenities?.length > 0">
               <div v-for="(extra, index) in paginatedExtras" :key="index">
-                <Television fillColor="#133E1A" />
-                <p class="font-size-18 inter-light font-color-green">{{ extra.amenity_name }}</p>
+                <p class="font-size-18 inter-light font-color-green"><li>{{ extra.amenity_name }}</li></p>
               </div>
             </div>
             <div v-else>No amenities found.</div>
             <ArrowRight v-if="property.amenities && property.amenities.length > 6" fillColor="#133E1A"
               @click="nextPage('extras')" :disabled="currentPageExtras == totalPagesExtras - 1" />
           </div>
-          <p v-if="property.amenities && property.amenities.length > 6"
+          <p v-if="property.amenities && property.amenities.length > 6" id="pagination"
             class="font-size-14 inter-light font-color-green">
             {{ currentPageExtras + 1 }} of {{ totalPagesExtras }}</p>
         </div>
@@ -149,7 +148,7 @@
             <div v-for="review in paginatedReviews" id="review" :key="review.id">
               <div id="mainInfo">
                 <img id="reviewsPhoto"
-                :src="owner.profile_image" />
+                :src="review['userReview.profile_image']" />
                 <div id="infoUser">
                   <h3 class="font-size-16 inter-light font-color-green">{{ review.username }}</h3>
                   <div class="rating">
@@ -215,7 +214,6 @@ import ArrowLeft from "vue-material-design-icons/ArrowLeft.vue";
 import ArrowRight from "vue-material-design-icons/ArrowRight.vue";
 import Guests from "vue-material-design-icons/AccountPlusOutline.vue";
 import Star from "vue-material-design-icons/Star.vue";
-import Television from "vue-material-design-icons/Television.vue";
 import SadFaceIcon from "vue-material-design-icons/EmoticonSadOutline.vue";
 import Calendar from "vue-material-design-icons/Calendar.vue";
 import { usePropertiesStore } from "@/stores/properties";
@@ -228,11 +226,6 @@ import { ref } from 'vue';
 export default {
   data() {
     return {
-      propertyImages: [
-        "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg",
-        "https://media.istockphoto.com/id/1456467039/photo/beautiful-living-room-and-kitchen-in-new-luxury-home-with-white-cabinets-wood-beams-pendant.jpg?s=612x612&w=0&k=20&c=x_ZXg6o_H6Bsww7Vr8126nXnNJULmYKABuXS3sc8qqE=",
-        "https://st.depositphotos.com/1321174/2454/i/450/depositphotos_24547869-stock-photo-modern-living-room.jpg",
-      ],
       dateOut: "",
       dateIn: "",
       formattedDateOut: "Select a date out",
@@ -267,13 +260,12 @@ export default {
     ArrowRight,
     Guests,
     Star,
-    Television,
     Calendar,
     SadFaceIcon
   },
 
   async created() {
-    await this.propertiesStore.fetchProperty(this.$route.params.id);
+    this.propertiesStore.fetchProperty(this.$route.params.id);
     await this.reviewsStore.fetchReviews(this.$route.params.id);
     await this.usersStore.fetchUser(this.property.owner_username);
     await this.usersStore.fetchUserReviews(this.property.owner_username);
@@ -332,7 +324,6 @@ export default {
     },
 
     property() {
-      console.log(this.propertiesStore.getProperty);
       return this.propertiesStore.getProperty;
     },
 
@@ -376,6 +367,10 @@ export default {
 
     loggedUser() {
       return this.usersStore.getUserLogged
+    },
+
+    images(){
+      return this.property.photos
     }
   },
 
@@ -757,5 +752,9 @@ iframe {
   flex-direction: column;
   align-items: center;
   row-gap: 2em;
+}
+
+#pagination{
+  text-align: center;
 }
 </style>

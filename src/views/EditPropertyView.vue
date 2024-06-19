@@ -1,10 +1,5 @@
 <template>
-  <div v-if="loggedUser != property.owner_username" id="ohNo">
-    <h1 class=" font-color-green font-size-24 inter-semiBold">Oh no...</h1>
-    <h1 class="inter-light font-color-green font-size-18">You have no permission to access this page</h1>
-  </div>
-
-  <main v-else class="py-8 px-4">
+  <main class="py-8 px-4">
     <h1 class="inter-medium font-color-green font-size-24 page-title">
       Edit property {{ property.title }}
     </h1>
@@ -175,7 +170,7 @@
             </div>
           </div>
           <div id="buttons">
-            <button type="cancel" class="font-color-green" @click="this.$router.push({ name: 'properties' })">
+            <button type="cancel" class="font-color-green" @click="this.$router.push({ name: 'properties', params: {id: loggedUser} })">
               <u>Cancel</u>
             </button>
             <button type="submit" class="button-green">Save property</button>
@@ -248,7 +243,7 @@ export default {
       rules: {
         required: (value) => !!value || "Required.",
         max50: (value) => value.length <= 50 || "Max. 50 characters",
-        fileInputRules: (value) => value.length > 0 || "Please select at least one file.",   // VOLTAR AQUI
+        fileInputRules: (value) => value.length > 0 || "Please select at least one file.",
         isANumber: (value) => !isNaN(value) || "Please enter a valid number.",
         isInteger: (value) =>
           Number.isInteger(Number(value)) || "Please enter an integer number.",
@@ -281,7 +276,6 @@ export default {
     },
   },
   async created() {
-    // localStorage.clear()
     await this.amenitiesStore.fetchAmenitiesName()
     await this.amenitiesStore.fetchAmenities()
     await this.propertyTypesStore.fetchPropertyTypes()
@@ -314,7 +308,6 @@ export default {
         !property.title ||
         !property.map_url ||
         !property.description ||
-        // property.amenities.length == 0 ||
         !property.property_type
       ) {
         throw new Error("Missing information");
@@ -336,6 +329,8 @@ export default {
       } else {
         let countryShort = selectedCountry.short;
 
+        console.log(countryShort);
+        console.log(selectedCountry.short);
         let amenitiesInfo = []
         this.property.amenities.map(name => {
           let amenity = this.amenities.find(item => item.amenity_name === name);

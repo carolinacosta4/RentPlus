@@ -54,7 +54,6 @@
           <router-link :to="{ name: 'messages', params: { id: user.username } }"><button class="button-green"
               id="msgBtn">Message {{ user.username
               }}</button></router-link></button>
-        <!-- AQUI -->
         <input type="file" ref="fileInput" name="inputProfilePicture" style="display: none"
           @change="updateProfilePicture" />
       </div>
@@ -115,7 +114,7 @@
               class="button-green inter-bold">
               Add new property
             </button></router-link>
-          <router-link :to="{ name: 'properties' }"><button class="button-white inter-bold">
+          <router-link :to="{ name: 'properties', params: {id: user.username} }"><button class="button-white inter-bold">
               See properties
             </button></router-link>
         </div>
@@ -152,8 +151,6 @@ import Edit from "vue-material-design-icons/Pencil.vue";
 import Star from "vue-material-design-icons/Star.vue";
 import { useUsersStore } from "@/stores/users";
 
-const API_BASE_URL = "http://127.0.0.1:3000"
-
 export default {
   data() {
     return {
@@ -186,19 +183,14 @@ export default {
           console.error('Nenhuma imagem selecionada.');
           return;
         }
-        console.log(file);
 
         let formData = new FormData()
         formData.append("inputProfilePicture", file)
         const result = await this.usersStore.updateProfilePicture(formData, this.loggedUser);
-      //   console.log('Profile picture updated successfully:', result);
-
-        if (response.ok) {
-          alert('Foto atualizada com sucesso');
-          // Atualize o estado do usuário com a nova URL do avatar, se necessário
+        if (result.success) {
           this.user.profile_image = result.profile_image;
+          location.reload()
         } else {
-          alert('Falha ao atualizar a foto');
           console.error(result);
         }
       } catch (err) {
@@ -268,7 +260,7 @@ export default {
     ownerRating() {
       let total = 0;
       if (this.user.user_role == 'owner') {
-        this.usersStore.getOwnerReviews.forEach((review) => {
+        this.usersStore.getOwnerReviews?.forEach((review) => {
           total += review.rating;
         });
 

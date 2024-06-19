@@ -128,9 +128,6 @@ export default {
         }
         await this.usersStore.register(newUser)
         this.showConfirmation = true
-        // if (this.usersStore.getToken != null) {
-        //   this.$router.push({ name: "home" })
-        // }
         this.confirmationMessage = 'A confirmation email was sent please confirm your email.'
         this.showError = false
       } catch (error) {
