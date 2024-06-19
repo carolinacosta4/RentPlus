@@ -183,6 +183,31 @@
         </div>
       </div>
     </v-form>
+
+    <v-dialog max-width="500" v-model="showModal">
+      <template v-slot:default="{ isActive }">
+        <v-card class="green-bg">
+          <v-card-text>
+            <h1 class="page-title font-size-18 inter-semiBold font-color-white">
+              Property edited!
+            </h1>
+            <h2 class="font-size-14 inter-semiBold font-color-white">
+              Your new property information is already available on our app!
+            </h2>
+            <p class="inter-light font-size-14 font-color-white">
+              Check your owners page to see your previous, pending and current guests!
+            </p>
+          </v-card-text>
+
+          <v-card-actions id="containerBtn" class="btnsModalCongratulations">
+            <button class="inter-medium button-white"
+              @click="manageClose">
+              Close
+            </button>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
   </main>
 
 </template>
@@ -257,7 +282,8 @@ export default {
       amenitiesStore: useAmenitiesStore(),
       propertyTypesStore: usePropertyTypesStore(),
       usersStore: useUsersStore(),
-      photos: []
+      photos: [],
+      showModal: false
     };
   },
   computed: {
@@ -308,8 +334,9 @@ export default {
     async editProperty() {
       const property = await this.propertiesStore.fetchProperty(this.$route.params.id);
 
-      let countryShort = property.location.split(', ')[1]
-      let selectedCountry = this.countries.find((c) => c.short == countryShort)
+      // let countryShort = property.location.split(', ')[1]
+      let selectedCountry = this.countries.find((c) => c.name == this.property.country)
+      
       if (
         !property.title ||
         !property.map_url ||
@@ -363,8 +390,13 @@ export default {
         }
 
         await this.propertiesStore.editProperty(this.$route.params.id, formDataImg);
+        this.showModal = true;
       }
     },
+    async manageClose(){
+      this.showModal = false
+      this.$router.push({ name: 'properties' })
+    }
   },
 };
 </script>

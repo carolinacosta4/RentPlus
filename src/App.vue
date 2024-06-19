@@ -146,6 +146,15 @@ export default{
   font-size: 15px;
 }
 
+.button-red {
+  background-color: #ff0000;
+  color: #f5f5f5;
+  border-radius: 8px;
+  width: 10em;
+  height: 2.5em;
+  font-size: 15px;
+}
+
 .button-border-green {
   border: #133e1a20 solid 1px;
   color: #133e1a;
