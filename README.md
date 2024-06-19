@@ -77,27 +77,27 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
-sh
+```sh
 npm install
-
+```
 
 ### Compile and Hot-Reload for Development
 
-sh
+```sh
 npm run dev
-
+```
 
 ### Compile and Minify for Production
 
-sh
+```sh
 npm run build
-
+```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
-sh
+```sh
 npm run test:unit
-
+```
 
 
 <hr>
