@@ -197,10 +197,12 @@
       </div>
 
       <div v-if="showStepThree" class="inter-light" id="checkbox">
-        <v-checkbox v-model="checkbox"
-          label="I consent on sharing my information online and I have read the Privacy Policy"
-          :rules="[rules.checkboxRequired]"></v-checkbox>
+          <input type="checkbox" id="terms" name="terms" v-model="checkbox" class="font-color-green">
+          <label for="PrivacyPolicy" class="font-color-green">I consent on sharing my information online and I have read the Privacy Policy</label>
       </div>
+      <div class="error-message">
+          <p v-if="showError" class="font-size-13 inter-medium">{{ errorMessage }}</p>
+        </div>
 
       <div class="buttons">
         <div>
@@ -364,7 +366,9 @@ export default {
       amenitiesStore: useAmenitiesStore(),
       propertyTypesStore: usePropertyTypesStore(),
       usersStore: useUsersStore(),
-      images: []
+      images: [],
+      showError: false,
+      errorMessage: '',
     };
   },
   components: {
@@ -392,7 +396,6 @@ export default {
     }
   },
   async created() {
-    // localStorage.clear()
     await this.amenitiesStore.fetchAmenitiesName()
     await this.amenitiesStore.fetchAmenities()
     await this.propertyTypesStore.fetchPropertyTypes()
@@ -425,7 +428,6 @@ export default {
             console.error('Erro:', err);
           }
 
-          // outros
           let countryShort = selectedCountry.short;
           this.newProperty.owner_username = this.loggedUser;
           this.newProperty.title = this.title;
@@ -462,7 +464,8 @@ export default {
           throw new Error("Invalid number format");
         }
         else if (!this.checkbox) {
-          new Error("Consent to our privacy policy is required");
+          this.showError = true
+          this.errorMessage = 'You have to agree with our terms!';
         }
         else {
           if (this.property_type != "") {
@@ -511,7 +514,6 @@ export default {
           formDataImg.append("inputPropertyImages", img)
         }
 
-        console.log(...formDataImg);
         if (this.checkbox) {
           await this.propertiesStore.create(formDataImg)
           this.showModal = true;
@@ -660,5 +662,11 @@ export default {
 
 .btnsModalCongratulations {
   padding: 1.5em;
+}
+
+.error-message {
+  color: rgb(168, 6, 6);
+  margin-bottom: 1em;
+  text-align: center;
 }
 </style>

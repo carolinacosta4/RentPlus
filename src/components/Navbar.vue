@@ -70,7 +70,7 @@
             >
             <router-link v-if="loggedUser && loggedUserInfo.user_role == 'owner'"
               @click="toggleDropdown"
-              :to="{ name: 'properties' }"
+              :to="{ name: 'properties', params: {id: loggedUser} }"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Properties</router-link
             >

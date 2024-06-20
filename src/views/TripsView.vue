@@ -12,19 +12,10 @@
       <hr />
       <!-- Cards -->
       <div v-if="currentTrips.length != 0"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
-      >
-        <CardTrips
-          v-for="trip in currentTrips"
-          :key="trip.ID"
-          :image="trip.image"
-          :id="trip.property_ID"
-          :city="trip.city"
-          :country="trip.country"
-          :host="trip.host"
-          :startDate="formatDate(trip.dateIn)"
-          :endDate="formatDate(trip.dateOut)"
-        />
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
+        <CardTrips v-for="trip in currentTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
+          :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no current trips</p>
@@ -41,19 +32,10 @@
       <hr />
       <!-- Cards -->
       <div v-if="futureTrips.length != 0"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
-      >
-        <CardTrips
-          v-for="trip in futureTrips"
-          :key="trip.ID"
-          :image="trip.image"
-          :id="trip.property_ID"
-          :city="trip.city"
-          :country="trip.country"
-          :host="trip.host"
-          :startDate="formatDate(trip.dateIn)"
-          :endDate="formatDate(trip.dateOut)"
-        />
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
+        <CardTrips v-for="trip in futureTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
+          :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no future trips</p>
@@ -70,22 +52,11 @@
       <hr />
       <!-- Cards -->
       <div v-if="previousTrips.length != 0"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4"
-      >
-        <CardTrips
-          v-for="trip in previousTrips"
-          :key="trip.ID"
-          :image="trip.image"
-          :id="trip.property_ID"
-          :city="trip.city"
-          :country="trip.country"
-          :host="trip.host"
-          :startDate="formatDate(trip.dateIn)"
-          :endDate="formatDate(trip.dateOut)"
-          :isButton="true"
-          :isReviewed="trip.isReviewed"
-          @leave-review="showModal({reservation: trip.ID, property: trip.property_ID})"
-        />
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
+        <CardTrips v-for="trip in previousTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
+          :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
+          :endDate="formatDate(trip.dateOut)" :isButton="true" :isReviewed="trip.isReviewed"
+          @leave-review="showModal({ reservation: trip.ID, property: trip.property_ID })" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no previous trips</p>
@@ -93,9 +64,7 @@
       </div>
     </div>
 
-    <!--  -->
     <!-- MODAL -->
-    <!--  -->
     <v-dialog v-model="isModalVisible" max-width="500px">
       <v-card>
         <v-card-text>
@@ -107,37 +76,25 @@
           <div>
             <h1 class="pb-1 font-size-14 inter-medium">Rate this property</h1>
             <div class="flex items-center space-x-1">
-              <Star
-                v-for="n in 5"
-                :key="n"
-                class="cursor-pointer"
-                :class="{
-                  'text-gray-400': n > selectedRating,
-                  'text-yellow-500': n <= selectedRating,
-                }"
-                @click="selectedRating = n"
-              />
+              <Star v-for="n in 5" :key="n" class="cursor-pointer" :class="{
+                'text-gray-400': n > selectedRating,
+                'text-yellow-500': n <= selectedRating,
+              }" @click="selectedRating = n" />
             </div>
           </div>
 
           <!-- Comment -->
           <h1 class="py-2 font-size-14 inter-medium">Write a Comment</h1>
-          <textarea
-            v-model="reviewText"
-            placeholder="Write your review here..."
-            class="w-full p-2 border border-gray-300 rounded"
-          ></textarea>
+          <textarea v-model="reviewText" placeholder="Write your review here..."
+            class="w-full p-2 border border-gray-300 rounded"></textarea>
         </v-card-text>
         <v-card-actions>
           <div class="flex gap-2 justify-end w-full">
-            <button
-              class="inter-medium button-border-green"
-              @click="
-                isModalVisible = false;
-                selectedRating = 0;
-                reviewText = '';
-              "
-            >
+            <button class="inter-medium button-border-green" @click="
+              isModalVisible = false;
+            selectedRating = 0;
+            reviewText = '';
+            ">
               Close
             </button>
             <button class="inter-medium button-green" @click="submitReview">
@@ -200,7 +157,11 @@ export default {
         trip.host = propertyDetails.owner_username;
         trip.ID = trip.ID
         trip.image = propertyDetails.photos[0].photo
-        // trip.isReviewed = this.reviewsStore.getReviews.find(review => review.reservation_ID === trip.ID);
+        if (this.reviewsStore.getReviews) {
+          trip.isReviewed = this.reviewsStore.getReviews.some(review => review.reservation_ID === trip.ID);
+        }else{
+          trip.isReviewed = false
+        }
       }
     },
 

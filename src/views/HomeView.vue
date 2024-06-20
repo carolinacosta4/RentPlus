@@ -38,7 +38,11 @@
     <!-- CARDS -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div v-for="property in filters" :key="property.ID">
-        <PropertyContainer :image="property.photo"
+        <PropertyContainer v-if="!property.photo" :image="null"
+          :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID"
+          :bookmark="isFavorite(property.ID)" />
+
+        <PropertyContainer v-else :image="property.photo"
           :name="property.title" :location="property.location" :price="property.daily_price" :id="property.ID"
           :bookmark="isFavorite(property.ID)" />
       </div>
@@ -122,7 +126,7 @@ export default {
 
     loggedUser() {
       localStorage.getItem('user')
-    }
+    },
   },
 
   methods: {

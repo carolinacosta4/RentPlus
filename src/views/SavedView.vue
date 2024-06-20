@@ -49,7 +49,6 @@ export default {
     this.usersStore.fetchUser(this.loggedUser).then(() => {
       this.usersStore.getUser.favorites.forEach((fav) => {
         this.propertiesStore.fetchProperty(fav.property_ID).then(() => {
-          console.log(this.propertiesStore.getProperty);
           this.favProperties.push(this.propertiesStore.getProperty);
         });
       });

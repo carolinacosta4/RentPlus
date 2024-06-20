@@ -1,6 +1,7 @@
 <template>
   <main class="py-8 px-4">
-    <h1 class="inter-medium font-color-green font-size-24 page-title">Your properties</h1>
+    <h1 class="inter-medium font-color-green font-size-24 page-title" v-if="this.$route.params.id == loggedUser">Your properties</h1>
+    <h1 class="inter-medium font-color-green font-size-24 page-title" v-else>Properties</h1>
     <nav id="properties" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
       <div v-for="property in properties" :key="property.ID">
         <PropertyContainer :id="property.ID" :image="property.photos[0].photo" :name="property.title"
@@ -27,7 +28,7 @@ export default {
   },
 
   created() {
-    this.usersStore.fetchUser(`${this.loggedUser}?field=properties`)
+    this.usersStore.fetchUser(`${this.$route.params.id}?field=properties`)
   },
 
   computed: {

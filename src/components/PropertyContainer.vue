@@ -9,7 +9,7 @@
   </div>
 
 
-  <div v-if="route == 'properties'" class="iconsAlterProperty">
+  <div v-if="route == 'properties' && loggedUser == $route.params.id" class="iconsAlterProperty">
     <button
       class="z-50 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
       <EditIcon @click="this.$router.push(`/edit-property/${id}`)"></EditIcon>
@@ -119,6 +119,10 @@ export default {
     route() {
       return this.$route.name;
     },
+
+    loggedUser() {
+      return localStorage.getItem('user')
+    }
   },
 
   methods: {

@@ -32,7 +32,7 @@
                         <div v-else id="received">
                             <p class="inter-light">{{ user.content }}</p>
                         </div>
-                        <img v-if="user.sender_username == loggedUser" :src="user.receiver.profile_image" id="imageReceived">
+                        <img v-if="user.sender_username == loggedUser" :src="user.sender.profile_image" id="imageReceived">
                     </div>
                 </div>
             </div>
@@ -198,23 +198,19 @@ export default {
         users() {
             const users = this.messages.reduce((recentUsers, message) => {
                 if (message.sender_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.sender_username)) {
-                    console.log(message.sender.profile_image);
                     recentUsers.push({
                         sender_username: message.sender.username,
                         image: message.sender.profile_image,
                         first: message.sender.first_name,
                         last: message.sender.last_name
-                        // image: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541'
                     });
                 }
                 if (message.receiver_username !== this.loggedUser && !recentUsers.some(user => user.sender_username === message.receiver_username)) {
-                    console.log(message.receiver.profile_image);
                     recentUsers.push({
                         sender_username: message.receiver.username,
                         image: message.receiver.profile_image,
                         first: message.receiver.first_name,
                         last: message.receiver.last_name
-                        // image: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541'
                     });
                 }
 
@@ -225,7 +221,6 @@ export default {
         },
 
         openConvo() {
-            console.log(this.messages.filter((user) => user.receiver_username == this.conversation.sender_username || user.sender_username == this.conversation.sender_username));
             return (this.messages.filter((user) => user.receiver_username == this.conversation.sender_username || user.sender_username == this.conversation.sender_username)).reverse()
         },
 
@@ -264,7 +259,7 @@ main {
 
 #user {
     display: grid;
-    grid-template-columns: 70px 1fr;
+    grid-template-columns: 60px 1fr;
     column-gap: 2em;
     text-align: left;
     align-items: center;
@@ -272,7 +267,10 @@ main {
 }
 
 #pfp {
-    border-radius: 100%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 #recentMessages {
@@ -391,12 +389,14 @@ main {
     width: 40px;
     height: 40px;
     border-radius: 100%;
+    object-fit: cover;
 }
 
 #imageReceived {
     width: 40px;
     height: 40px;
     border-radius: 100%;
+    object-fit: cover;
 }
 
 #sendNew {

@@ -39,7 +39,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/properties",
+      path: "/properties/:id",
       name: "properties",
       component: PropertiesView,
       meta: { requiresAuth: true },
