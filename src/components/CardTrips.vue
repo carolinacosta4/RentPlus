@@ -15,7 +15,7 @@
         </p>
       </div>
     </router-link>
-    <button class="button-green" v-if="!isReviewed" @click="leaveReview">
+    <button class="button-green" v-if="!isReviewed & review" @click="leaveReview">
       Leave a review
     </button>
   </div>
@@ -31,7 +31,8 @@ export default {
     endDate: String,
     id: Number,
     isReviewed: Boolean,
-    image: String
+    image: String,
+    review: Boolean
   },
 
   methods: {
