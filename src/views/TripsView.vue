@@ -15,7 +15,7 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
         <CardTrips v-for="trip in currentTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
           :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
-          :endDate="formatDate(trip.dateOut)" />
+          :review="false" :endDate="formatDate(trip.dateOut)" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no current trips</p>
@@ -35,7 +35,7 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6 mb-4">
         <CardTrips v-for="trip in futureTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
           :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
-          :endDate="formatDate(trip.dateOut)" />
+          :review="false" :endDate="formatDate(trip.dateOut)" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no future trips</p>
@@ -56,7 +56,7 @@
         <CardTrips v-for="trip in previousTrips" :key="trip.ID" :image="trip.image" :id="trip.property_ID"
           :city="trip.city" :country="trip.country" :host="trip.host" :startDate="formatDate(trip.dateIn)"
           :endDate="formatDate(trip.dateOut)" :isButton="true" :isReviewed="trip.isReviewed"
-          @leave-review="showModal({ reservation: trip.ID, property: trip.property_ID })" />
+          :review="true" @leave-review="showModal({ reservation: trip.ID, property: trip.property_ID })" />
       </div>
       <div v-else class="noDataDiv gap-4 mt-6 mb-4">
         <p>There are no previous trips</p>
