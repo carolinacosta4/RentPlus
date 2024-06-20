@@ -1,7 +1,7 @@
 <template>
   <div class="flex-shrink-0 max-w-[200px] flex flex-col gap-4">
     <router-link :to="{name: 'property', params: { id: id } }">
-    <img
+    <img id="img"
       :src="image"
       class="rounded-md"
     />
@@ -26,3 +26,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+}
+</style>

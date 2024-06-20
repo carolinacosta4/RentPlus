@@ -390,7 +390,7 @@ export default {
     },
     async manageClose(){
       this.showModal = false
-      this.$router.push({ name: 'properties' })
+      this.$router.push({ name: 'properties', params: {id: this.loggedUser} })
     }
   },
 };

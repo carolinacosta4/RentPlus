@@ -295,6 +295,8 @@ export default {
       }
 
       const dateIn = this.dateIn;
+      dateIn.setDate(dateIn.getDate() + 1)
+      
       const dateOut = this.dateOut;
       const timeDiff = dateOut.getTime() - dateIn.getTime();
       const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -350,12 +352,12 @@ export default {
 
     ownerRating() {
       let total = 0;
-      this.usersStore.getOwnerReviews.forEach((review) => {
+      this.usersStore.getOwnerReviews?.forEach((review) => {
         total += review.rating;
       });
 
       if (total > 0) {
-        return total / this.usersStore.getOwnerReviews.length;
+        return total / this.usersStore.getOwnerReviews?.length;
       } else {
         return 0;
       }

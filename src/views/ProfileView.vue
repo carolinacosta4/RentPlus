@@ -214,8 +214,8 @@ export default {
 
       this.usersStore.editProfile(fields, this.loggedUser)
         .then(() => {
-          if (this.newUsername != "") {
-            this.$router.push({ name: 'profile', params: { id: this.newUsername } })
+          if (fields.username) {
+            this.$router.push({ name: 'profile', params: { id: fields.username } })
           } else {
             this.fetchUserData()
           }

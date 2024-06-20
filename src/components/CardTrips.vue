@@ -3,7 +3,7 @@
     <router-link :to="{ name: 'property', params: { id: id } }">
       <img
         :src="image"
-        class="rounded-md"
+        class="rounded-md" id="img"
       />
       <div class="flex flex-col gap-1">
         <p class="inter-semiBold font-color-green">{{ city }}, {{ country }}</p>
@@ -41,3 +41,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+}
+</style>
