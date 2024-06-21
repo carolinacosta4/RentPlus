@@ -67,7 +67,7 @@
       </table>
     </div>
     <div id="tools">
-      <router-link :to="{ name: 'profile', params: { id: 'alice_smith' } }">
+      <router-link :to="{ name: 'profile', params: { id: loggedUser } }">
         <button id="back" class="button-green inter-bold font-size-14">Go
           back</button></router-link>
       <div id="pagination" class="inter-medium">
@@ -140,6 +140,10 @@ export default {
 
     users() {
       return this.usersStore.getUsers
+    },
+
+    loggedUser(){
+      return localStorage.getItem('user')
     }
   },
 
