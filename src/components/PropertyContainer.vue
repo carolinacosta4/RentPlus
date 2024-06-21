@@ -1,7 +1,7 @@
 <template>
   <div v-if="route != 'properties'">
     <button
-      class="z-50 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
+      class="z-10 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
       <BookmarkIcon fillColor="#133E1A" v-if='bookmark' @click="handleFav(true)"></BookmarkIcon>
       <BookmarkIcon v-if="!bookmark" @click="handleFav(false)"></BookmarkIcon>
     </button>
@@ -11,11 +11,11 @@
 
   <div v-if="route == 'properties' && loggedUser == $route.params.id" class="iconsAlterProperty">
     <button
-      class="z-50 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
+      class="z-10 absolute mt-2 ml-40 bg-[#133e1a60] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
       <EditIcon @click="this.$router.push(`/edit-property/${id}`)"></EditIcon>
     </button>
     <button
-      class="z-50 absolute mt-13 ml-40 bg-[red] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
+      class="z-10 absolute mt-13 ml-40 bg-[red] rounded-full text-white p-2 scale-75 hover:scale-[0.8] hover:bg-gray-800 transition">
 
       <DeleteIcon @click="this.showModal = true"></DeleteIcon>
     </button>
