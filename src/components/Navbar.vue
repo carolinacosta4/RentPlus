@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white fixed w-full z-20 top-0 border-b">
+  <nav class="z-200 bg-white fixed w-full z-20 top-0 border-b">
     <div class="max-w-screen-3xl flex items-center justify-between mx-auto p-4">
       <!-- LOGO -->
       <router-link :to="{ name: 'home' }" @click="toggleDropdown">
@@ -40,7 +40,7 @@
         <div
           @mouseleave="toggleDropdown"
           v-show="isDropdownOpen"
-          class="absolute right-0 top-16 w-48 bg-white rounded-md shadow-lg"
+          class="z-20 absolute right-0 top-16 w-48 bg-white rounded-md shadow-lg"
         >
           <div>
             <router-link v-if="loggedUser"
@@ -83,12 +83,12 @@
             <router-link v-if="loggedUser"
               :to="{ name: 'login' }"
               @click="usersStore.logout"
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              class="z-20 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Logout</router-link
             >
             <router-link v-else
               :to="{ name: 'login' }"
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              class="z-20 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Login</router-link
             >
           </div>
