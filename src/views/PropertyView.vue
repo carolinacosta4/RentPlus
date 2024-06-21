@@ -439,8 +439,8 @@ export default {
         try {
           await this.reservationsStore.createReservation({
             "property_ID": this.property.ID,
-            "dateIn": `${dtIn.getFullYear()}-${dtIn.getMonth() + 1}-${dtIn.getDate()}`,
-            "dateOut": `${dtOut.getFullYear()}-${dtOut.getMonth() + 1}-${dtOut.getDate() + 1}`,
+            "dateIn": `${dtIn.getFullYear()}-${dtIn.getMonth() + 1}-${dtIn.getDate() - 1}`,
+            "dateOut": `${dtOut.getFullYear()}-${dtOut.getMonth() + 1}-${dtOut.getDate()}`,
             "total_price": this.total,
             "payment_type": this.selectedMethod
           })
