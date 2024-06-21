@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import * as api from "../api/api";
 
-const API_BASE_URL = "http://127.0.0.1:3000";
+// const API_BASE_URL = "http://127.0.0.1:3000";
+const API_BASE_URL = "https://rentplus-back-end.onrender.com"
 
 export const usePaymentTypesStore = defineStore("paymentTypes", {
   state: () => ({
